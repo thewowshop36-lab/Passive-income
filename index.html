@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Passive Income - Smart VIP Earning Platform</title>
-  <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
@@ -16,10 +15,8 @@
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex justify-center selection:bg-orange-500 selection:text-white">
 
-  <!-- Mobile Container Wrapper -->
   <div id="app" class="w-full max-w-md bg-white min-h-screen shadow-2xl relative flex flex-col pb-20">
 
-    <!-- Global App Header -->
     <header id="global-header" class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-3 flex items-center justify-between transition-all hidden">
       <div class="flex items-center space-x-2.5">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-400 flex items-center justify-center text-white shadow-md shadow-orange-500/20">
@@ -40,7 +37,6 @@
       </div>
     </header>
 
-    <!-- Dropdown User Menu -->
     <div id="user-menu-dropdown" class="hidden absolute top-14 right-4 z-50 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 text-xs space-y-1">
       <div class="p-2.5 bg-slate-50 rounded-xl mb-1 border border-slate-100">
         <p class="font-extrabold text-slate-900 text-xs truncate" id="menu-user-name">User</p>
@@ -67,10 +63,9 @@
       </button>
     </div>
 
-    <!-- MAIN SCREENS CONTAINER -->
     <main class="flex-1 overflow-y-auto">
 
-      <!-- ================= 1. AUTH SCREEN ================= -->
+      <!-- AUTH SCREEN -->
       <section id="screen-auth" class="p-6 flex flex-col justify-center min-h-[90vh]">
         <div class="text-center mb-6">
           <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-400 mx-auto flex items-center justify-center text-white shadow-xl shadow-orange-500/30 mb-3">
@@ -80,13 +75,11 @@
           <p class="text-xs text-slate-500 mt-1">Earn Daily Micro-Rewards & Fixed $0.05 Ad Returns</p>
         </div>
 
-        <!-- Auth Tabs -->
         <div class="flex p-1 bg-slate-100 rounded-xl mb-5">
           <button id="auth-tab-login" onclick="setAuthMode('login')" class="flex-1 py-2.5 text-xs font-bold rounded-lg bg-white text-orange-600 shadow-sm transition">Sign In</button>
           <button id="auth-tab-register" onclick="setAuthMode('register')" class="flex-1 py-2.5 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition">Create Account</button>
         </div>
 
-        <!-- Auth Form -->
         <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-3.5">
           <div id="auth-fullname-field" class="hidden">
             <label class="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
@@ -115,7 +108,6 @@
             </div>
           </div>
 
-          <!-- Referral Code Input -->
           <div id="auth-referral-field" class="hidden">
             <div class="flex items-center justify-between mb-1">
               <label class="block text-xs font-bold text-slate-700">Referral Code (Optional)</label>
@@ -131,48 +123,9 @@
             <span>Sign In</span> <i class="fa-solid fa-arrow-right text-xs"></i>
           </button>
         </form>
-
-        <!-- Official Partners Grid -->
-        <div class="mt-6 pt-5 border-t border-slate-200 space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] uppercase tracking-wider font-extrabold text-slate-500 flex items-center gap-1.5">
-              <i class="fa-solid fa-handshake text-orange-500"></i> Official Partners & Ecosystem
-            </span>
-            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-              <i class="fa-solid fa-shield-check"></i> Verified Network
-            </span>
-          </div>
-
-          <div class="grid grid-cols-3 gap-2">
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm">
-              <div class="w-8 h-8 rounded-lg bg-amber-400/10 text-amber-500 flex items-center justify-center text-lg font-black mb-1"><i class="fa-brands fa-bitcoin"></i></div>
-              <span class="text-[11px] font-black text-slate-800 leading-tight">Binance</span>
-            </div>
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm">
-              <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-coins"></i></div>
-              <span class="text-[11px] font-black text-slate-800 leading-tight">Tether USDT</span>
-            </div>
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm">
-              <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-cube"></i></div>
-              <span class="text-[11px] font-black text-slate-800 leading-tight">Tron DAO</span>
-            </div>
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm">
-              <div class="w-8 h-8 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-money-bill-wave"></i></div>
-              <span class="text-[11px] font-black text-slate-800 leading-tight">JazzCash</span>
-            </div>
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm">
-              <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-wallet"></i></div>
-              <span class="text-[11px] font-black text-slate-800 leading-tight">EasyPaisa</span>
-            </div>
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm">
-              <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-shield-halved"></i></div>
-              <span class="text-[11px] font-black text-slate-800 leading-tight">Cloudflare</span>
-            </div>
-          </div>
-        </div>
       </section>
 
-      <!-- ================= 2. HOME SCREEN ================= -->
+      <!-- HOME SCREEN -->
       <section id="screen-home" class="hidden p-4 space-y-4">
         <div class="bg-gradient-to-br from-orange-500 via-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-xl shadow-orange-500/25 relative overflow-hidden">
           <div class="flex justify-between items-start mb-2">
@@ -193,7 +146,6 @@
           </div>
         </div>
 
-        <!-- VIP Plan & Ads Widget -->
         <div id="home-vip-card" class="bg-white rounded-2xl p-4 border border-orange-100 shadow-sm relative overflow-hidden">
           <div class="flex items-center justify-between mb-3">
             <div>
@@ -218,7 +170,6 @@
           </button>
         </div>
 
-        <!-- Invite Friends Card -->
         <div class="bg-gradient-to-br from-orange-50 via-amber-50 to-orange-100/50 rounded-2xl p-4 border border-orange-200 shadow-sm relative overflow-hidden">
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-2.5">
@@ -242,7 +193,6 @@
           </div>
         </div>
 
-        <!-- 4 Quick Cards -->
         <div class="grid grid-cols-2 gap-3">
           <div onclick="switchScreen('plans')" class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm hover:border-orange-200 transition cursor-pointer flex items-center space-x-3">
             <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-bold"><i class="fa-solid fa-layer-group text-lg"></i></div>
@@ -275,7 +225,7 @@
         </div>
       </section>
 
-      <!-- ================= 3. PLANS SCREEN ================= -->
+      <!-- PLANS SCREEN -->
       <section id="screen-plans" class="hidden p-4 space-y-4">
         <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-4 text-white shadow-md">
           <h2 class="text-lg font-black tracking-tight">10 VIP Investment Plans</h2>
@@ -284,7 +234,7 @@
         <div id="plans-container" class="space-y-3"></div>
       </section>
 
-      <!-- ================= 4. WATCH ADS SCREEN ================= -->
+      <!-- WATCH ADS SCREEN -->
       <section id="screen-watch" class="hidden p-4 space-y-4">
         <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-4 shadow-lg border border-slate-700">
           <div class="flex items-center justify-between">
@@ -338,7 +288,7 @@
         </div>
       </section>
 
-      <!-- ================= 5. DEPOSIT SCREEN ================= -->
+      <!-- DEPOSIT SCREEN -->
       <section id="screen-deposit" class="hidden p-4 space-y-4">
         <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-4 text-white shadow-md">
           <h2 class="text-lg font-black tracking-tight">Deposit Funds</h2>
@@ -383,7 +333,7 @@
         </form>
       </section>
 
-      <!-- ================= 6. WITHDRAW SCREEN ================= -->
+      <!-- WITHDRAW SCREEN -->
       <section id="screen-withdraw" class="hidden p-4 space-y-4">
         <div class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-4 text-white shadow-md">
           <div class="flex justify-between items-center">
@@ -425,7 +375,7 @@
         </div>
       </section>
 
-      <!-- ================= 7. ADMIN BACKOFFICE ================= -->
+      <!-- ADMIN BACKOFFICE -->
       <section id="screen-admin" class="hidden p-4 space-y-4">
         <div class="bg-slate-950 text-white rounded-2xl p-4 border border-slate-800 shadow-xl">
           <div class="flex items-center justify-between mb-3">
@@ -479,7 +429,6 @@
 
     </main>
 
-    <!-- Global Receipt Preview Modal -->
     <div id="receipt-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
       <div class="bg-white rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl relative">
         <div class="p-3 bg-slate-900 text-white flex justify-between items-center">
@@ -495,7 +444,6 @@
       </div>
     </div>
 
-    <!-- Bottom Navigation Bar -->
     <nav id="bottom-nav-bar" class="fixed bottom-0 z-40 w-full max-w-md bg-white/95 backdrop-blur-md border-t border-slate-200 px-3 py-2 flex items-center justify-around text-[10px] font-bold text-slate-400 hidden">
       <button onclick="switchScreen('home')" id="nav-btn-home" class="flex flex-col items-center gap-1 transition py-1 text-orange-600">
         <i class="fa-solid fa-house text-base"></i><span>Home</span>
@@ -517,7 +465,6 @@
       </button>
     </nav>
 
-    <!-- Toast Notification Popup -->
     <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 transform hidden">
       <div class="px-4 py-2.5 rounded-xl bg-slate-900/95 text-white shadow-xl text-xs font-bold flex items-center gap-2 border border-slate-700">
         <span id="toast-icon"></span>
@@ -527,14 +474,11 @@
 
   </div>
 
-  <!-- APPLICATION LOGIC SCRIPT (JSONBin Cloud Sync) -->
   <script>
     const ADMIN_EMAIL = "adjatt87@gmail.com";
     const USD_TO_PKR = 280.0;
     const AD_REWARD_USD = 0.05;
 
-    // JSONBin Configuration (بالکل مفت کلاؤڈ ڈیٹا بیس)
-    // یہاں اپنی JSONBin.io کی Bin ID اور Master Key درج کریں
     const JSONBIN_BIN_ID = "https://api.jsonbin.io/v3/b/6ab4e6b7ffd5d1605329b5fd"; 
     const JSONBIN_API_KEY = "$2a$10$2zkWHyyET6.M2zVcJkTBX.nlWrpw51LweZM.KFfaZRJgqW071pFqq";
 
@@ -552,17 +496,15 @@
     ];
 
     const PAYMENT_CHANNELS = {
-      usdt: { name: "USDT (TRC20)", address: "TTrgXzK7v91bNqV81903XkLA9821hUqwZp", title: "Binance TRC20 Settlement", currency: "USD", note: "Send only TRC20 USDT network tokens to this address." },
-      jazzcash: { name: "JazzCash", address: "0300-1234567", title: "Passive Income Official", currency: "PKR", note: "Send via JazzCash mobile app or retail agent." },
-      easypaisa: { name: "EasyPaisa", address: "0345-9876543", title: "Passive Income Official", currency: "PKR", note: "Send via EasyPaisa mobile app or retail agent." }
+      usdt: { name: "USDT (TRC20)", address: "TTrgXzK7v91bNqV81903XkLA9821hUqwZp", title: "Binance TRC20 Settlement", currency: "USD", note: "Send only TRC20 USDT network tokens." },
+      jazzcash: { name: "JazzCash", address: "0300-1234567", title: "Passive Income Official", currency: "PKR", note: "Send via JazzCash mobile app." },
+      easypaisa: { name: "EasyPaisa", address: "0345-9876543", title: "Passive Income Official", currency: "PKR", note: "Send via EasyPaisa mobile app." }
     };
 
-    // Cloud Database Handlers using JSONBin
     let cloudDB = { users: [], deposits: [], withdrawals: [] };
 
     async function loadCloudData() {
       if (JSONBIN_BIN_ID === "YOUR_JSONBIN_BIN_ID") {
-        // Fallback to local storage if API is not set yet
         cloudDB.users = JSON.parse(localStorage.getItem("pi_users") || "[]");
         cloudDB.deposits = JSON.parse(localStorage.getItem("pi_deposits") || "[]");
         cloudDB.withdrawals = JSON.parse(localStorage.getItem("pi_withdrawals") || "[]");
@@ -642,9 +584,7 @@
     function getCurrentUser() {
       const id = parseInt(localStorage.getItem("pi_current_user_id") || "0");
       if (!id) return null;
-      const user = getUsers().find(u => u.id === id);
-      if (!user) return null;
-      return user;
+      return getUsers().find(u => u.id === id) || null;
     }
 
     function updateCurrentUser(updatedFields) {
@@ -671,7 +611,7 @@
 
       if (screen === "admin") {
         if (!user || user.identifier.toLowerCase() !== ADMIN_EMAIL) {
-          showToast("Access Denied: Admin authorization required.", "error");
+          showToast("Access Denied", "error");
           screen = "home";
         }
       }
@@ -762,21 +702,21 @@
 
       if (authMode === "login") {
         const user = users.find(u => u.identifier.toLowerCase() === identifier.toLowerCase());
-        if (!user) return showToast("No account found with this email/phone", "error");
-        if (user.password !== password) return showToast("Incorrect password.", "error");
+        if (!user) return showToast("No account found", "error");
+        if (user.password !== password) return showToast("Incorrect password", "error");
 
         localStorage.setItem("pi_current_user_id", user.id.toString());
         if (isTryingAdmin || user.isAdmin === true) {
-          showToast("Admin authenticated!", "success");
+          showToast("Admin authenticated", "success");
           switchScreen("admin");
         } else {
-          showToast(`Welcome back, ${user.fullName}!`, "success");
+          showToast(`Welcome back, ${user.fullName}`, "success");
           switchScreen("home");
         }
       } else {
-        if (!fullName) return showToast("Please enter your full name", "error");
+        if (!fullName) return showToast("Enter full name", "error");
         if (users.find(u => u.identifier.toLowerCase() === identifier.toLowerCase())) {
-          return showToast("Account already exists.", "error");
+          return showToast("Account already exists", "error");
         }
 
         let uniqueCode = "PI-" + Math.floor(100000 + Math.random() * 900000);
@@ -807,7 +747,7 @@
         if (isTryingAdmin) {
           switchScreen("admin");
         } else {
-          showToast("Account created successfully!", "success");
+          showToast("Account created successfully", "success");
           switchScreen("home");
         }
       }
@@ -816,7 +756,7 @@
     function handleLogout() {
       localStorage.removeItem("pi_current_user_id");
       closeUserMenu();
-      showToast("Logged out successfully");
+      showToast("Logged out");
       switchScreen("auth");
     }
 
@@ -831,7 +771,7 @@
       const user = getCurrentUser();
       if (!user) return;
       const code = user.referralCode || ("PI-" + (user.id % 900000 + 100000));
-      navigator.clipboard.writeText(code).then(() => showToast(`Referral code ${code} copied!`, "success"));
+      navigator.clipboard.writeText(code).then(() => showToast(`Code ${code} copied`, "success"));
     }
 
     function shareReferralLink() {
@@ -839,7 +779,7 @@
       if (!user) return;
       const code = user.referralCode || ("PI-" + (user.id % 900000 + 100000));
       const url = window.location.origin + window.location.pathname + "?ref=" + code;
-      navigator.clipboard.writeText(url).then(() => showToast("Invite link copied!", "success"));
+      navigator.clipboard.writeText(url).then(() => showToast("Link copied", "success"));
     }
 
     function refreshCurrentScreen(screen) {
@@ -882,7 +822,7 @@
         document.getElementById("home-plan-subtitle").textContent = `${limit} Daily Ads unlocked`;
       } else {
         document.getElementById("home-plan-title").innerHTML = `<i class="fa-solid fa-gem text-slate-400"></i> No Active VIP Plan`;
-        document.getElementById("home-plan-subtitle").textContent = "Purchase any of the 10 VIP plans to unlock daily earnings";
+        document.getElementById("home-plan-subtitle").textContent = "Purchase any VIP plan to unlock earnings";
       }
 
       const codeEl = document.getElementById("home-referral-code");
@@ -924,7 +864,7 @@
       if (!plan) return;
 
       if (user.balanceUsd < plan.priceUsd && user.balancePkr < plan.pricePkr) {
-        showToast(`Insufficient balance! You need ${plan.pricePkr} PKR.`, "error");
+        showToast(`Insufficient balance! Needed: ${plan.pricePkr} PKR`, "error");
         setTimeout(() => switchScreen("deposit"), 1200);
         return;
       }
@@ -1241,7 +1181,7 @@
         user.balancePkr += dep.creditedPkr;
         saveUsers(users);
       }
-      showToast("Deposit approved successfully!", "success");
+      showToast("Deposit approved", "success");
       renderAdminScreen();
     }
 
