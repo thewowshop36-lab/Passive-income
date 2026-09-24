@@ -144,32 +144,57 @@
             </span>
           </div>
 
-          <!-- Partner Logos Grid -->
+          <!-- Partner Logos & Badges Grid -->
           <div class="grid grid-cols-3 gap-2">
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm">
+            <!-- Binance -->
+            <div class="bg-slate-50 border border-slate-200 hover:border-amber-300 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm transition">
               <div class="w-8 h-8 rounded-lg bg-amber-400/10 text-amber-500 flex items-center justify-center text-lg font-black mb-1"><i class="fa-brands fa-bitcoin"></i></div>
               <span class="text-[11px] font-black text-slate-800 leading-tight">Binance</span>
+              <span class="text-[9px] text-slate-400 font-medium">Liquidity Node</span>
             </div>
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm">
+
+            <!-- Tether USDT -->
+            <div class="bg-slate-50 border border-slate-200 hover:border-emerald-300 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm transition">
               <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-coins"></i></div>
               <span class="text-[11px] font-black text-slate-800 leading-tight">Tether USDT</span>
+              <span class="text-[9px] text-slate-400 font-medium">TRC20 Official</span>
             </div>
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm">
+
+            <!-- Tron DAO -->
+            <div class="bg-slate-50 border border-slate-200 hover:border-rose-300 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm transition">
               <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-cube"></i></div>
               <span class="text-[11px] font-black text-slate-800 leading-tight">Tron DAO</span>
+              <span class="text-[9px] text-slate-400 font-medium">Instant Block</span>
             </div>
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm">
+
+            <!-- JazzCash -->
+            <div class="bg-slate-50 border border-slate-200 hover:border-orange-300 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm transition">
               <div class="w-8 h-8 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-money-bill-wave"></i></div>
               <span class="text-[11px] font-black text-slate-800 leading-tight">JazzCash</span>
+              <span class="text-[9px] text-slate-400 font-medium">Direct Settlement</span>
             </div>
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm">
+
+            <!-- EasyPaisa -->
+            <div class="bg-slate-50 border border-slate-200 hover:border-emerald-300 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm transition">
               <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-wallet"></i></div>
               <span class="text-[11px] font-black text-slate-800 leading-tight">EasyPaisa</span>
+              <span class="text-[9px] text-slate-400 font-medium">Pakistan Gateway</span>
             </div>
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm">
+
+            <!-- Cloudflare Security -->
+            <div class="bg-slate-50 border border-slate-200 hover:border-blue-300 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm transition">
               <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-shield-halved"></i></div>
               <span class="text-[11px] font-black text-slate-800 leading-tight">Cloudflare</span>
+              <span class="text-[9px] text-slate-400 font-medium">256-Bit SSL</span>
             </div>
+          </div>
+
+          <!-- Trust & Collaboration Banner -->
+          <div class="p-3 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 rounded-xl border border-orange-100 flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-orange-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm"><i class="fa-solid fa-award"></i></div>
+            <p class="text-[10px] text-slate-600 leading-relaxed font-medium">
+              Official payment settlement channels & encrypted infrastructure guaranteed by verified global financial partners.
+            </p>
           </div>
         </div>
       </section>
@@ -184,7 +209,7 @@
           </div>
           <div>
             <div class="text-3xl font-black tracking-tight" id="home-balance-usd">$0.00 USD</div>
-            <div class="text-sm font-semibold text-orange-100" id="home-balance-pkr">≈ 0 PKR</div>
+            <div class="text-sm font-semibold text-orange-100" id="home-balance-pkr">≈ 0 PKR (Rate: 280)</div>
           </div>
           <div class="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-white/20">
             <button onclick="switchScreen('deposit')" class="py-2.5 px-3 bg-white text-orange-600 hover:bg-orange-50 rounded-xl font-bold text-xs shadow transition flex items-center justify-center gap-1.5">
@@ -203,7 +228,7 @@
               <h3 id="home-plan-title" class="font-bold text-sm text-slate-800 flex items-center gap-1.5">
                 <i class="fa-solid fa-gem text-slate-400"></i> No Active VIP Plan
               </h3>
-              <p id="home-plan-subtitle" class="text-xs text-slate-500 mt-0.5">Activate a VIP plan to unlock daily ad limits</p>
+              <p id="home-plan-subtitle" class="text-xs text-slate-500 mt-0.5">Activate a VIP plan to unlock daily ad limits & earnings</p>
             </div>
             <button onclick="switchScreen('plans')" class="text-xs font-bold text-orange-600 hover:text-orange-700 bg-orange-50 px-3 py-1.5 rounded-lg border border-orange-200 transition">Upgrade</button>
           </div>
@@ -225,18 +250,21 @@
           </button>
         </div>
 
-        <!-- Invite Friends Card -->
-        <div class="bg-gradient-to-br from-orange-50 via-amber-50 to-orange-100/50 rounded-2xl p-4 border border-orange-200 shadow-sm relative overflow-hidden">
+        <!-- Invite Friends & Earn Referral Card -->
+        <div id="home-referral-card" class="bg-gradient-to-br from-orange-50 via-amber-50 to-orange-100/50 rounded-2xl p-4 border border-orange-200 shadow-sm relative overflow-hidden">
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-2.5">
               <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-500 text-white flex items-center justify-center font-bold text-sm shadow-sm"><i class="fa-solid fa-gift"></i></div>
               <div>
                 <h4 class="font-bold text-xs text-slate-800">Invite Friends & Earn</h4>
-                <p class="text-[10px] text-slate-500">Earn $1.00 USD on first deposit</p>
+                <p class="text-[10px] text-slate-500">Earn $1.00 USD on friend's first deposit</p>
               </div>
             </div>
             <span class="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-emerald-300">+$1.00 / Deposit</span>
           </div>
+          <p class="text-[11px] text-slate-600 mb-3 leading-relaxed">
+            Share your unique referral code. When your friend registers and makes their first approved deposit, you instantly receive a <strong>$1.00 USD (280 PKR) bonus</strong>!
+          </p>
           <div class="bg-white rounded-xl p-2.5 border border-orange-200 flex items-center justify-between mb-3 shadow-inner">
             <div>
               <span class="block text-[9px] uppercase tracking-wider font-bold text-slate-400">Your Referral Code</span>
@@ -245,6 +273,16 @@
             <div class="flex gap-1.5">
               <button type="button" onclick="copyReferralCode()" class="px-2.5 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm transition"><i class="fa-regular fa-copy"></i> Copy</button>
               <button type="button" onclick="shareReferralLink()" class="px-2.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-bold flex items-center gap-1 transition"><i class="fa-solid fa-share-nodes"></i> Share</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-center">
+            <div class="bg-white/80 p-2 rounded-xl border border-orange-100">
+              <span class="block text-[10px] font-semibold text-slate-500">Friends Invited</span>
+              <span id="home-referral-count" class="text-sm font-black text-slate-800">0 Users</span>
+            </div>
+            <div class="bg-white/80 p-2 rounded-xl border border-orange-100">
+              <span class="block text-[10px] font-semibold text-slate-500">Bonus Earned</span>
+              <span id="home-referral-earnings" class="text-sm font-black text-emerald-600">$0.00 USD</span>
             </div>
           </div>
         </div>
@@ -262,7 +300,7 @@
             <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold"><i class="fa-solid fa-tv text-lg"></i></div>
             <div>
               <div class="text-xs font-bold text-slate-800">Watch Ads</div>
-              <div class="text-[10px] text-slate-400">5 to 35 Daily Limit</div>
+              <div class="text-[10px] text-slate-400">$0.05 / 15s Timer</div>
             </div>
           </div>
           <div onclick="switchScreen('deposit')" class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm hover:border-orange-200 transition cursor-pointer flex items-center space-x-3">
@@ -276,13 +314,24 @@
             <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold"><i class="fa-solid fa-arrow-up-right-from-square text-lg"></i></div>
             <div>
               <div class="text-xs font-bold text-slate-800">Withdraw</div>
-              <div class="text-[10px] text-slate-400">Min $12 / 3,360 PKR</div>
+              <div class="text-[10px] text-slate-400">Instant Processing</div>
             </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity Feed -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700">Recent Transactions</h3>
+            <span class="text-[11px] text-orange-600 font-semibold cursor-pointer" onclick="switchScreen('deposit')">View All</span>
+          </div>
+          <div id="home-recent-list" class="space-y-2">
+            <div class="text-center py-4 text-xs text-slate-400">Your starting balance is $0.00. Make a deposit to activate plans!</div>
           </div>
         </div>
       </section>
 
-      <!-- ================= 3. PLANS SCREEN ================= -->
+      <!-- ================= 3. PLANS SCREEN (10 Structured VIP Investment Plans) ================= -->
       <section id="screen-plans" class="hidden p-4 space-y-4">
         <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-4 text-white shadow-md">
           <h2 class="text-lg font-black tracking-tight">10 VIP Investment Plans</h2>
@@ -339,7 +388,7 @@
                 <i class="fa-solid fa-check"></i>
               </div>
               <h4 class="font-bold text-sm text-emerald-400">Reward Credited!</h4>
-              <p class="text-xs text-slate-300">+$0.05 USD added to your wallet balance.</p>
+              <p class="text-xs text-slate-300">+$0.05 USD (14 PKR) added to your wallet balance.</p>
             </div>
           </div>
         </div>
@@ -364,11 +413,11 @@
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Transaction ID / Reference Hash</label>
-            <input type="text" id="dep-txnid" required placeholder="e.g. TXN9872134091" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white font-mono text-xs transition">
+            <input type="text" id="dep-txnid" required placeholder="e.g. TXN9872134091 or Blockchain Hash" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white font-mono text-xs transition">
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Sender Mobile No. / Wallet Address</label>
-            <input type="text" id="dep-sender" required placeholder="e.g. 03001234567" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+            <input type="text" id="dep-sender" required placeholder="e.g. 03001234567 or T..." class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Attach Payment Screenshot Proof</label>
@@ -420,7 +469,7 @@
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Account Number / Wallet Address</label>
-            <input type="text" id="wd-account-identifier" required placeholder="e.g. 03001234567" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+            <input type="text" id="wd-account-identifier" required placeholder="e.g. 03001234567 or T..." class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
           </div>
           <button type="submit" class="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-xl shadow-md transition text-xs flex items-center justify-center gap-1.5">
             <i class="fa-solid fa-paper-plane"></i> Submit Withdrawal Request
@@ -432,7 +481,7 @@
         </div>
       </section>
 
-      <!-- ================= 7. ADMIN BACKOFFICE ================= -->
+      <!-- ================= 7. STRICT ADMIN BACKOFFICE (LOCKED TO Adjatt87@gmail.com) ================= -->
       <section id="screen-admin" class="hidden p-4 space-y-4">
         <div class="bg-slate-950 text-white rounded-2xl p-4 border border-slate-800 shadow-xl">
           <div class="flex items-center justify-between mb-3">
@@ -445,7 +494,16 @@
                 <p class="text-[10px] text-slate-400">Logged in as: <span class="text-amber-300 font-mono">Adjatt87@gmail.com</span></p>
               </div>
             </div>
-            <button onclick="handleLogout()" class="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 bg-rose-500/10 px-2.5 py-1.5 rounded-lg border border-rose-500/20 font-bold transition"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+            <div class="flex items-center gap-1.5">
+              <button type="button" onclick="syncFromCloud(false)" id="admin-sync-btn" title="Sync live users from cloud" class="text-xs text-amber-300 hover:text-white flex items-center gap-1 bg-amber-500/20 hover:bg-amber-500/30 px-2.5 py-1.5 rounded-lg border border-amber-500/30 font-bold transition">
+                <i class="fa-solid fa-rotate" id="admin-sync-icon"></i> <span>Sync</span>
+              </button>
+              <button onclick="handleLogout()" class="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 bg-rose-500/10 px-2.5 py-1.5 rounded-lg border border-rose-500/20 font-bold transition"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between px-3 py-1.5 bg-emerald-950/60 border border-emerald-800/60 rounded-xl text-[10px] text-emerald-300 mb-3">
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Global Online Database (Real-time Cloud Sync)</span>
+            <span id="admin-last-sync-time" class="text-slate-400 font-mono">Live</span>
           </div>
           <div class="grid grid-cols-3 gap-2 text-center text-xs">
             <div class="p-2 bg-slate-900 rounded-xl border border-slate-800">
@@ -472,18 +530,22 @@
         <div id="admin-panel-deposits" class="space-y-3">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex justify-between items-center">
             <span>Manual Deposits (Proof Review)</span>
+            <span class="text-[10px] text-slate-400">USDT TRC20 • JazzCash • EasyPaisa</span>
           </h3>
           <div id="admin-deposits-list" class="space-y-2.5"></div>
         </div>
 
         <div id="admin-panel-withdrawals" class="hidden space-y-3">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700">Withdrawal Requests</h3>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex justify-between items-center">
+            <span>Withdrawal Requests (Payout Queue)</span>
+          </h3>
           <div id="admin-withdrawals-list" class="space-y-2.5"></div>
         </div>
 
         <div id="admin-panel-users" class="hidden space-y-3">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex justify-between items-center">
             <span>All Registered Accounts</span>
+            <span class="text-[10px] text-slate-400">Real Database Snapshot</span>
           </h3>
           <div id="admin-users-list" class="space-y-2"></div>
         </div>
@@ -545,71 +607,210 @@
     const USD_TO_PKR = 280.0;
     const AD_REWARD_USD = 0.05;
 
-    // 10 Structured VIP Investment Plans
+    // Global Online Cloud Database (Synchronized across all user devices & admin phone)
+    const CLOUD_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a0d259c2020531";
+    let isSyncingCloud = false;
+    let cloudAutoSyncTimer = null;
+
+    async function syncFromCloud(silent = true) {
+      if (isSyncingCloud) return;
+      isSyncingCloud = true;
+      const syncIcon = document.getElementById("admin-sync-icon");
+      if (syncIcon) syncIcon.classList.add("fa-spin");
+
+      try {
+        const res = await fetch(CLOUD_DB_URL);
+        if (res.ok) {
+          const json = await res.json();
+          if (json && json.data) {
+            const remoteUsers = json.data.users || [];
+            const remoteDeps = json.data.deposits || [];
+            const remoteWds = json.data.withdrawals || [];
+
+            // Merge remote users with local users
+            const localUsers = getUsers();
+            const userMap = new Map();
+            remoteUsers.forEach(u => userMap.set(u.identifier.toLowerCase(), u));
+            localUsers.forEach(u => {
+              const k = u.identifier.toLowerCase();
+              if (userMap.has(k)) {
+                userMap.set(k, { ...userMap.get(k), ...u });
+              } else {
+                userMap.set(k, u);
+              }
+            });
+            const mergedUsers = Array.from(userMap.values());
+            saveUsers(mergedUsers);
+
+            // Merge deposits
+            const localDeps = getDeposits();
+            const depMap = new Map();
+            remoteDeps.forEach(d => depMap.set(d.id, d));
+            localDeps.forEach(d => depMap.set(d.id, { ...(depMap.get(d.id) || {}), ...d }));
+            saveDeposits(Array.from(depMap.values()));
+
+            // Merge withdrawals
+            const localWds = getWithdrawals();
+            const wdMap = new Map();
+            remoteWds.forEach(w => wdMap.set(w.id, w));
+            localWds.forEach(w => wdMap.set(w.id, { ...(wdMap.get(w.id) || {}), ...w }));
+            saveWithdrawals(Array.from(wdMap.values()));
+
+            const timeEl = document.getElementById("admin-last-sync-time");
+            if (timeEl) timeEl.textContent = new Date().toLocaleTimeString();
+
+            if (currentScreen === "admin") {
+              renderAdminScreen();
+            }
+
+            if (!silent) {
+              showToast(`Live Cloud Synced! ${mergedUsers.length} total users loaded.`, "success");
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("Cloud sync offline fallback:", err);
+      } finally {
+        isSyncingCloud = false;
+        if (syncIcon) syncIcon.classList.remove("fa-spin");
+      }
+    }
+
+    async function syncToCloud() {
+      try {
+        let remoteUsers = [];
+        let remoteDeps = [];
+        let remoteWds = [];
+        try {
+          const res = await fetch(CLOUD_DB_URL);
+          if (res.ok) {
+            const json = await res.json();
+            if (json && json.data) {
+              remoteUsers = json.data.users || [];
+              remoteDeps = json.data.deposits || [];
+              remoteWds = json.data.withdrawals || [];
+            }
+          }
+        } catch (e) {}
+
+        const localUsers = getUsers();
+        const userMap = new Map();
+        remoteUsers.forEach(u => userMap.set(u.identifier.toLowerCase(), u));
+        localUsers.forEach(u => {
+          const k = u.identifier.toLowerCase();
+          userMap.set(k, { ...(userMap.get(k) || {}), ...u });
+        });
+        const finalUsers = Array.from(userMap.values());
+
+        const localDeps = getDeposits();
+        const depMap = new Map();
+        remoteDeps.forEach(d => depMap.set(d.id, d));
+        localDeps.forEach(d => depMap.set(d.id, { ...(depMap.get(d.id) || {}), ...d }));
+        const finalDeps = Array.from(depMap.values());
+
+        const localWds = getWithdrawals();
+        const wdMap = new Map();
+        remoteWds.forEach(w => wdMap.set(w.id, w));
+        localWds.forEach(w => wdMap.set(w.id, { ...(wdMap.get(w.id) || {}), ...w }));
+        const finalWds = Array.from(wdMap.values());
+
+        saveUsers(finalUsers);
+        saveDeposits(finalDeps);
+        saveWithdrawals(finalWds);
+
+        await fetch(CLOUD_DB_URL, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: "PassiveIncome_Database_v1",
+            data: {
+              users: finalUsers,
+              deposits: finalDeps,
+              withdrawals: finalWds
+            }
+          })
+        });
+
+        const timeEl = document.getElementById("admin-last-sync-time");
+        if (timeEl) timeEl.textContent = new Date().toLocaleTimeString();
+      } catch (err) {
+        console.warn("Cloud push error:", err);
+      }
+    }
+    // 10 Structured VIP Investment Plans (Exact Daily Ads Limits & $0.05 Ad Reward)
     const VIP_PLANS = [
       { id: 1, name: "VIP 1", pricePkr: 1000, priceUsd: 3.57, dailyAds: 5, dailyIncomeUsd: 0.25, dailyIncomePkr: 70, returnRoi: "7% Daily" },
-      { id: 2, name: "VIP 2", pricePkr: 2000, priceUsd: 7.14, dailyAds: 7, dailyIncomeUsd: 0.35, dailyIncomePkr: 98, returnRoi: "4.9% Daily" },
-      { id: 3, name: "VIP 3", pricePkr: 3000, priceUsd: 10.71, dailyAds: 10, dailyIncomeUsd: 0.50, dailyIncomePkr: 140, returnRoi: "4.7% Daily" },
-      { id: 4, name: "VIP 4", pricePkr: 4000, priceUsd: 14.29, dailyAds: 12, dailyIncomeUsd: 0.60, dailyIncomePkr: 168, returnRoi: "4.2% Daily" },
-      { id: 5, name: "VIP 5", pricePkr: 5000, priceUsd: 17.86, dailyAds: 15, dailyIncomeUsd: 0.75, dailyIncomePkr: 210, returnRoi: "4.2% Daily" },
-      { id: 6, name: "VIP 6", pricePkr: 6000, priceUsd: 21.43, dailyAds: 18, dailyIncomeUsd: 0.90, dailyIncomePkr: 252, returnRoi: "4.2% Daily" },
-      { id: 7, name: "VIP 7", pricePkr: 7000, priceUsd: 25.00, dailyAds: 20, dailyIncomeUsd: 1.00, dailyIncomePkr: 280, returnRoi: "4.0% Daily" },
-      { id: 8, name: "VIP 8", pricePkr: 8000, priceUsd: 28.57, dailyAds: 25, dailyIncomeUsd: 1.25, dailyIncomePkr: 350, returnRoi: "4.4% Daily" },
-      { id: 9, name: "VIP 9", pricePkr: 9000, priceUsd: 32.14, dailyAds: 30, dailyIncomeUsd: 1.50, dailyIncomePkr: 420, returnRoi: "4.7% Daily" },
-      { id: 10, name: "VIP 10", pricePkr: 10000, priceUsd: 35.71, dailyAds: 35, dailyIncomeUsd: 1.75, dailyIncomePkr: 490, returnRoi: "4.9% Daily (Max VIP)" }
+      { id: 2, name: "VIP 2", pricePkr: 2000, priceUsd: 7.14, dailyAds: 10, dailyIncomeUsd: 0.50, dailyIncomePkr: 140, returnRoi: "7% Daily" },
+      { id: 3, name: "VIP 3", pricePkr: 3000, priceUsd: 10.71, dailyAds: 15, dailyIncomeUsd: 0.75, dailyIncomePkr: 210, returnRoi: "7% Daily" },
+      { id: 4, name: "VIP 4", pricePkr: 4000, priceUsd: 14.28, dailyAds: 20, dailyIncomeUsd: 1.00, dailyIncomePkr: 280, returnRoi: "7% Daily" },
+      { id: 5, name: "VIP 5", pricePkr: 5000, priceUsd: 17.85, dailyAds: 25, dailyIncomeUsd: 1.25, dailyIncomePkr: 350, returnRoi: "7% Daily" },
+      { id: 6, name: "VIP 6", pricePkr: 6000, priceUsd: 21.42, dailyAds: 30, dailyIncomeUsd: 1.50, dailyIncomePkr: 420, returnRoi: "7% Daily" },
+      { id: 7, name: "VIP 7", pricePkr: 7000, priceUsd: 25.00, dailyAds: 35, dailyIncomeUsd: 1.75, dailyIncomePkr: 490, returnRoi: "7% Daily" },
+      { id: 8, name: "VIP 8", pricePkr: 8000, priceUsd: 28.57, dailyAds: 40, dailyIncomeUsd: 2.00, dailyIncomePkr: 560, returnRoi: "7% Daily" },
+      { id: 9, name: "VIP 9", pricePkr: 9000, priceUsd: 32.14, dailyAds: 45, dailyIncomeUsd: 2.25, dailyIncomePkr: 630, returnRoi: "7% Daily" },
+      { id: 10, name: "VIP 10", pricePkr: 10000, priceUsd: 35.71, dailyAds: 50, dailyIncomeUsd: 2.50, dailyIncomePkr: 700, returnRoi: "7% Daily" }
     ];
 
+    // Manual Payment Methods & Receiving Accounts
     const PAYMENT_CHANNELS = {
-      usdt: { name: "USDT (TRC20)", address: "TTrgXzK7v91bNqV81903XkLA9821hUqwZp", title: "Binance TRC20 Settlement", currency: "USD", note: "Send only TRC20 USDT network tokens to this address." },
-      jazzcash: { name: "JazzCash", address: "0300-1234567", title: "Passive Income Official", currency: "PKR", note: "Send via JazzCash mobile app or retail agent." },
-      easypaisa: { name: "EasyPaisa", address: "0345-9876543", title: "Passive Income Official", currency: "PKR", note: "Send via EasyPaisa mobile app or retail agent." }
+      usdt: {
+        title: "Tether USDT (TRC20)",
+        network: "TRON (TRC20)",
+        address: "TWeqXw6K9xL2hU1pNm7Y4qZ8rBvC3dE5fG",
+        note: "Send TRC20 USDT only. Minimum deposit is $3.57 USD (equivalent to VIP 1).",
+        rate: "1 USDT = $1.00 USD"
+      },
+      jazzcash: {
+        title: "JazzCash Pakistan",
+        accountTitle: "Muhammad Rabnawaz",
+        accountNumber: "03086782500",
+        note: "Send via JazzCash mobile app or retail agent. Minimum deposit 1,000 PKR.",
+        rate: "1 USD = 280 PKR"
+      },
+      easypaisa: {
+        title: "EasyPaisa Pakistan",
+        accountTitle: "Muhammad Rabnawaz",
+        accountNumber: "03086782500",
+        note: "Send via EasyPaisa app or retail agent. Minimum deposit 1,000 PKR.",
+        rate: "1 USD = 280 PKR"
+      }
     };
 
-    // Database Initialization (Preserves all registered users permanently)
+    let selectedDepositMethodKey = "usdt";
+    let selectedWithdrawMethodKey = "usdt";
+    let currentAuthMode = "login";
+    let currentScreen = "auth";
+    let attachedScreenshotBase64 = null;
+    let isWatchingAd = false;
+    let adCountdownInterval = null;
+
+    // Local DB Helpers
     function initDatabase() {
       let users = JSON.parse(localStorage.getItem("pi_users") || "[]");
-      
-      // Ensure Admin exists
-      let adminUser = users.find(u => u.identifier.toLowerCase() === ADMIN_EMAIL);
-      if (!adminUser) {
-        adminUser = {
+      const adminExists = users.some(u => u.identifier.toLowerCase() === ADMIN_EMAIL.toLowerCase());
+      if (!adminExists) {
+        users.unshift({
           id: 1,
-          identifier: ADMIN_EMAIL,
+          identifier: "Adjatt87@gmail.com",
           fullName: "System Administrator",
-          password: "admin123",
+          password: "admin",
           balanceUsd: 0.0,
           balancePkr: 0.0,
           activePlanId: null,
           activePlanName: null,
-          planDailyAdLimit: 0,
           adsWatchedToday: 0,
-          lastAdWatchTimestamp: 0,
+          lastAdResetDate: new Date().toDateString(),
           isAdmin: true,
           referralCode: "ADMIN01",
           referralCount: 0,
           referralEarningsUsd: 0.0,
-          hasCompletedFirstDeposit: true
-        };
-        users.unshift(adminUser);
-      } else {
-        adminUser.isAdmin = true;
+          hasCompletedFirstDeposit: false,
+          referredByCode: null
+        });
+        localStorage.setItem("pi_users", JSON.stringify(users));
       }
-
-      // Ensure every user has valid referral fields and clean balances
-      users = users.map(u => {
-        if (!u.referralCode) {
-          u.referralCode = (u.identifier.toLowerCase() === ADMIN_EMAIL || u.isAdmin) ? "ADMIN01" : ("PI-" + (u.id % 900000 + 100000));
-        }
-        if (typeof u.referralCount === "undefined") u.referralCount = 0;
-        if (typeof u.referralEarningsUsd === "undefined") u.referralEarningsUsd = 0.0;
-        if (typeof u.hasCompletedFirstDeposit === "undefined") u.hasCompletedFirstDeposit = false;
-        return u;
-      });
-
-      localStorage.setItem("pi_users", JSON.stringify(users));
-
-      if (!localStorage.getItem("pi_deposits")) localStorage.setItem("pi_deposits", JSON.stringify([]));
-      if (!localStorage.getItem("pi_withdrawals")) localStorage.setItem("pi_withdrawals", JSON.stringify([]));
+      if (!localStorage.getItem("pi_deposits")) localStorage.setItem("pi_deposits", "[]");
+      if (!localStorage.getItem("pi_withdrawals")) localStorage.setItem("pi_withdrawals", "[]");
     }
 
     initDatabase();
@@ -617,53 +818,51 @@
     function getUsers() { return JSON.parse(localStorage.getItem("pi_users") || "[]"); }
     function saveUsers(users) { localStorage.setItem("pi_users", JSON.stringify(users)); }
     function getDeposits() { return JSON.parse(localStorage.getItem("pi_deposits") || "[]"); }
-    function saveDeposits(deps) { localStorage.setItem("pi_deposits", JSON.stringify(deps)); }
+    function saveDeposits(deposits) { localStorage.setItem("pi_deposits", JSON.stringify(deposits)); }
     function getWithdrawals() { return JSON.parse(localStorage.getItem("pi_withdrawals") || "[]"); }
-    function saveWithdrawals(wds) { localStorage.setItem("pi_withdrawals", JSON.stringify(wds)); }
+    function saveWithdrawals(withdrawals) { localStorage.setItem("pi_withdrawals", JSON.stringify(withdrawals)); }
 
     function getCurrentUser() {
-      const id = parseInt(localStorage.getItem("pi_current_user_id") || "0");
+      const id = localStorage.getItem("pi_current_user_id");
       if (!id) return null;
-      const user = getUsers().find(u => u.id === id);
-      if (!user) return null;
-      const now = Date.now();
-      if (user.lastAdWatchTimestamp > 0 && (now - user.lastAdWatchTimestamp >= 86400000)) {
-        user.adsWatchedToday = 0;
-        updateCurrentUser({ adsWatchedToday: 0 });
+      const users = getUsers();
+      let user = users.find(u => u.id.toString() === id.toString());
+      if (user) {
+        const today = new Date().toDateString();
+        if (user.lastAdResetDate !== today) {
+          user.adsWatchedToday = 0;
+          user.lastAdResetDate = today;
+          saveUsers(users);
+        }
       }
       return user;
     }
 
-    function updateCurrentUser(updatedFields) {
-      const current = getCurrentUser();
-      if (!current) return;
-      const users = getUsers();
-      const idx = users.findIndex(u => u.id === current.id);
-      if (idx !== -1) {
-        users[idx] = { ...users[idx], ...updatedFields };
-        saveUsers(users);
-      }
+    function generateUniqueReferralCode() {
+      const randNum = Math.floor(100000 + Math.random() * 900000);
+      return `PI-${randNum}`;
     }
 
-    let currentScreen = "auth";
-    let authMode = "login";
-    let selectedDepMethod = "usdt";
-    let selectedWdMethod = "usdt";
-    let selectedScreenshotBase64 = null;
+    // Navigation & Auth Flow
+    function setAuthMode(mode) {
+      currentAuthMode = mode;
+      const isLogin = mode === "login";
+      document.getElementById("auth-tab-login").className = isLogin ? "flex-1 py-2.5 text-xs font-bold rounded-lg bg-white text-orange-600 shadow-sm transition" : "flex-1 py-2.5 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition";
+      document.getElementById("auth-tab-register").className = !isLogin ? "flex-1 py-2.5 text-xs font-bold rounded-lg bg-white text-orange-600 shadow-sm transition" : "flex-1 py-2.5 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition";
+      document.getElementById("auth-fullname-field").classList.toggle("hidden", isLogin);
+      document.getElementById("auth-referral-field").classList.toggle("hidden", isLogin);
+      document.getElementById("auth-submit-btn").innerHTML = isLogin ? `<span>Sign In</span> <i class="fa-solid fa-arrow-right text-xs"></i>` : `<span>Create Free Account</span> <i class="fa-solid fa-user-plus text-xs"></i>`;
+    }
+
+    function togglePasswordVisibility(id) {
+      const input = document.getElementById(id);
+      input.type = input.type === "password" ? "text" : "password";
+    }
 
     function switchScreen(screen) {
-      const user = getCurrentUser();
-      if (!user) screen = "auth";
-
-      if (screen === "admin") {
-        if (!user || user.identifier.toLowerCase() !== ADMIN_EMAIL) {
-          showToast("Access Denied: Admin authorization required.", "error");
-          screen = "home";
-        }
-      }
-
       currentScreen = screen;
-      ["auth", "home", "plans", "watch", "deposit", "withdraw", "admin"].forEach(s => {
+      const screens = ["auth", "home", "plans", "watch", "deposit", "withdraw", "admin"];
+      screens.forEach(s => {
         const el = document.getElementById(`screen-${s}`);
         if (el) el.classList.add("hidden");
       });
@@ -676,360 +875,526 @@
       const headerAdminBtn = document.getElementById("header-admin-btn");
       const menuAdminLink = document.getElementById("menu-admin-link");
 
+      const user = getCurrentUser();
+
       if (screen === "auth") {
         header.classList.add("hidden");
         bottomNav.classList.add("hidden");
       } else {
         header.classList.remove("hidden");
-        const isAdmin = user && (user.identifier.toLowerCase() === ADMIN_EMAIL || user.isAdmin === true);
-        if (isAdmin) {
+        if (user && (user.identifier.toLowerCase() === ADMIN_EMAIL || user.isAdmin)) {
           headerAdminBtn.classList.remove("hidden");
           menuAdminLink.classList.remove("hidden");
         } else {
           headerAdminBtn.classList.add("hidden");
           menuAdminLink.classList.add("hidden");
         }
-        if (screen === "admin") bottomNav.classList.add("hidden");
-        else {
+        if (screen === "admin") {
+          bottomNav.classList.add("hidden");
+          syncFromCloud(true);
+          if (!cloudAutoSyncTimer) {
+            cloudAutoSyncTimer = setInterval(() => {
+              if (currentScreen === "admin") syncFromCloud(true);
+            }, 8000); // Live poll cloud every 8 seconds for new users from other phones
+          }
+        } else {
+          if (cloudAutoSyncTimer) {
+            clearInterval(cloudAutoSyncTimer);
+            cloudAutoSyncTimer = null;
+          }
           bottomNav.classList.remove("hidden");
           updateNavIcons(screen);
         }
-        refreshCurrentScreen(screen);
       }
+
+      if (screen === "home") renderHomeScreen();
+      if (screen === "plans") renderPlansScreen();
+      if (screen === "watch") renderWatchScreen();
+      if (screen === "deposit") renderDepositScreen();
+      if (screen === "withdraw") renderWithdrawScreen();
+      if (screen === "admin") renderAdminScreen();
+
       window.scrollTo(0, 0);
     }
 
     function updateNavIcons(activeScreen) {
-      ["home", "plans", "watch", "deposit", "withdraw"].forEach(item => {
-        const btn = document.getElementById(`nav-btn-${item}`);
-        if (!btn) return;
-        if (item === activeScreen) {
-          btn.classList.add("text-orange-600");
-          btn.classList.remove("text-slate-400");
-        } else {
-          btn.classList.remove("text-orange-600");
-          btn.classList.add("text-slate-400");
+      const navButtons = ["home", "plans", "watch", "deposit", "withdraw"];
+      navButtons.forEach(btn => {
+        const el = document.getElementById(`nav-btn-${btn}`);
+        if (el) {
+          if (btn === activeScreen) {
+            el.classList.add("text-orange-600");
+            el.classList.remove("text-slate-400");
+          } else {
+            el.classList.remove("text-orange-600");
+            el.classList.add("text-slate-400");
+          }
         }
       });
     }
 
-    function setAuthMode(mode) {
-      authMode = mode;
-      const tabLogin = document.getElementById("auth-tab-login");
-      const tabRegister = document.getElementById("auth-tab-register");
-      const fullNameField = document.getElementById("auth-fullname-field");
-      const referralField = document.getElementById("auth-referral-field");
-      const submitBtn = document.getElementById("auth-submit-btn");
-
-      if (mode === "login") {
-        tabLogin.className = "flex-1 py-2.5 text-xs font-bold rounded-lg bg-white text-orange-600 shadow-sm transition";
-        tabRegister.className = "flex-1 py-2.5 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition";
-        fullNameField.classList.add("hidden");
-        if (referralField) referralField.classList.add("hidden");
-        submitBtn.innerHTML = `<span>Sign In</span><i class="fa-solid fa-arrow-right text-xs"></i>`;
-      } else {
-        tabRegister.className = "flex-1 py-2.5 text-xs font-bold rounded-lg bg-white text-orange-600 shadow-sm transition";
-        tabLogin.className = "flex-1 py-2.5 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition";
-        fullNameField.classList.remove("hidden");
-        if (referralField) referralField.classList.remove("hidden");
-        submitBtn.innerHTML = `<span>Create Free Account ($0.00 Balance)</span><i class="fa-solid fa-user-plus text-xs"></i>`;
+    function toggleUserMenu() {
+      const menu = document.getElementById("user-menu-dropdown");
+      menu.classList.toggle("hidden");
+      if (!menu.classList.contains("hidden")) {
+        const user = getCurrentUser();
+        if (user) {
+          document.getElementById("menu-user-name").textContent = user.fullName || "Member";
+          document.getElementById("menu-user-id").textContent = user.identifier;
+          document.getElementById("menu-user-badge").textContent = user.activePlanName || (user.isAdmin ? "Administrator" : "Standard Free");
+        }
       }
     }
 
+    function closeUserMenu() {
+      document.getElementById("user-menu-dropdown").classList.add("hidden");
+    }
+
+    function handleLogout() {
+      closeUserMenu();
+      localStorage.removeItem("pi_current_user_id");
+      showToast("Logged out successfully.", "info");
+      switchScreen("auth");
+    }
+
+    // Submit Auth
     function handleAuthSubmit(e) {
       e.preventDefault();
       const identifier = document.getElementById("auth-identifier").value.trim();
       const password = document.getElementById("auth-password").value.trim();
-      const fullName = document.getElementById("auth-fullname").value.trim();
-
       const users = getUsers();
-      const isTryingAdmin = identifier.toLowerCase() === ADMIN_EMAIL;
+      const isTryingAdmin = identifier.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
-      if (authMode === "login") {
-        const user = users.find(u => u.identifier.toLowerCase() === identifier.toLowerCase());
-        if (!user) return showToast("No account found with this email/phone", "error");
-        if (user.password !== password) return showToast("Incorrect password. Please verify credentials.", "error");
+      if (currentAuthMode === "login") {
+        let user = users.find(u => u.identifier.toLowerCase() === identifier.toLowerCase());
+
+        if (isTryingAdmin) {
+          if (!user) {
+            user = {
+              id: 1,
+              identifier: "Adjatt87@gmail.com",
+              fullName: "System Administrator",
+              password: password || "admin",
+              balanceUsd: 0.0,
+              balancePkr: 0.0,
+              activePlanId: null,
+              activePlanName: null,
+              adsWatchedToday: 0,
+              lastAdResetDate: new Date().toDateString(),
+              isAdmin: true,
+              referralCode: "ADMIN01",
+              referralCount: 0,
+              referralEarningsUsd: 0.0,
+              hasCompletedFirstDeposit: false,
+              referredByCode: null
+            };
+            users.push(user);
+            saveUsers(users);
+          }
+          localStorage.setItem("pi_current_user_id", user.id.toString());
+          showToast("Welcome Admin! Loaded Admin Backoffice.", "success");
+          switchScreen("admin");
+          return;
+        }
+
+        if (!user || user.password !== password) {
+          showToast("Invalid credentials! Please try again.", "error");
+          return;
+        }
 
         localStorage.setItem("pi_current_user_id", user.id.toString());
-        if (isTryingAdmin || user.isAdmin === true) {
-          showToast("Admin authenticated! Redirecting to Admin Panel...", "success");
-          switchScreen("admin");
-        } else {
-          showToast(`Welcome back, ${user.fullName}!`, "success");
-          switchScreen("home");
-        }
+        showToast(`Welcome back, ${user.fullName || user.identifier}!`, "success");
+        switchScreen("home");
       } else {
-        if (!fullName) return showToast("Please enter your full name", "error");
-        if (users.find(u => u.identifier.toLowerCase() === identifier.toLowerCase())) {
-          return showToast("Account already exists. Please sign in.", "error");
+        // Register Mode
+        const fullName = document.getElementById("auth-fullname").value.trim() || "Passive User";
+        const referralInput = document.getElementById("auth-referral-code").value.trim().toUpperCase();
+
+        const exists = users.some(u => u.identifier.toLowerCase() === identifier.toLowerCase());
+        if (exists && !isTryingAdmin) {
+          showToast("Account already exists! Please sign in.", "error");
+          return;
         }
 
-        const refInput = document.getElementById("auth-referral-code");
-        const refCodeRaw = refInput ? refInput.value.trim().toUpperCase() : "";
-        let validReferredBy = null;
-        if (refCodeRaw) {
-          const referrer = users.find(u => u.referralCode && u.referralCode.toUpperCase() === refCodeRaw);
-          if (referrer && referrer.identifier.toLowerCase() !== identifier.toLowerCase()) {
-            validReferredBy = referrer.referralCode;
+        let verifiedReferralCode = null;
+        if (referralInput) {
+          const referrer = users.find(u => u.referralCode && u.referralCode.toUpperCase() === referralInput);
+          if (referrer) {
+            verifiedReferralCode = referrer.referralCode;
+          } else {
+            showToast("Referral code not found, proceeding with registration.", "info");
           }
         }
 
-        let uniqueCode = "PI-" + Math.floor(100000 + Math.random() * 900000);
-
         const newUser = {
           id: Date.now(),
-          identifier,
-          fullName,
-          password,
+          identifier: identifier,
+          fullName: fullName,
+          password: password,
           balanceUsd: 0.0,
           balancePkr: 0.0,
           activePlanId: null,
           activePlanName: null,
-          planDailyAdLimit: 0,
           adsWatchedToday: 0,
-          lastAdWatchTimestamp: 0,
+          lastAdResetDate: new Date().toDateString(),
           isAdmin: isTryingAdmin,
-          referralCode: isTryingAdmin ? "ADMIN01" : uniqueCode,
-          referredByCode: validReferredBy,
+          referralCode: generateUniqueReferralCode(),
           referralCount: 0,
           referralEarningsUsd: 0.0,
-          hasCompletedFirstDeposit: false
+          hasCompletedFirstDeposit: false,
+          referredByCode: verifiedReferralCode
         };
 
         users.push(newUser);
         saveUsers(users);
         localStorage.setItem("pi_current_user_id", newUser.id.toString());
+        syncToCloud();
 
         if (isTryingAdmin) {
           showToast("Admin registered! Loading Admin Panel...", "success");
           switchScreen("admin");
         } else {
-          showToast(`Account created with clean $0.00 balance!`, "success");
+          showToast("Account created successfully! Starting balance $0.00 USD.", "success");
           switchScreen("home");
         }
       }
     }
 
-    function handleLogout() {
-      localStorage.removeItem("pi_current_user_id");
-      closeUserMenu();
-      showToast("Logged out successfully");
-      switchScreen("auth");
-    }
-
-    function toggleUserMenu() { document.getElementById("user-menu-dropdown").classList.toggle("hidden"); }
-    function closeUserMenu() { document.getElementById("user-menu-dropdown").classList.add("hidden"); }
-    function togglePasswordVisibility(id) {
-      const el = document.getElementById(id);
-      el.type = el.type === "password" ? "text" : "password";
-    }
-
+    // Copy & Share Referral Link
     function copyReferralCode() {
       const user = getCurrentUser();
       if (!user) return;
-      const code = user.referralCode || ("PI-" + (user.id % 900000 + 100000));
-      navigator.clipboard.writeText(code).then(() => showToast(`Referral code ${code} copied!`, "success")).catch(() => showToast(`Referral: ${code}`));
+      const code = user.referralCode || "PI-100000";
+      copyToClipboard(code);
     }
 
     function shareReferralLink() {
       const user = getCurrentUser();
       if (!user) return;
-      const code = user.referralCode || ("PI-" + (user.id % 900000 + 100000));
-      const url = window.location.origin + window.location.pathname + "?ref=" + code;
+      const code = user.referralCode || "PI-100000";
+      const shareUrl = `${window.location.origin}${window.location.pathname}?ref=${code}`;
+      const shareText = `Join Passive Income Platform and earn daily rewards watching micro-ads! Register using my invitation code: ${code}\nLink: ${shareUrl}`;
+
       if (navigator.share) {
-        navigator.share({ title: "Join Passive Income", text: `Use code ${code} to start earning!`, url }).catch(() => {});
+        navigator.share({
+          title: "Join Passive Income",
+          text: shareText,
+          url: shareUrl
+        }).catch(() => {
+          copyToClipboard(shareUrl);
+          showToast("Referral link copied to clipboard!", "success");
+        });
       } else {
-        navigator.clipboard.writeText(url).then(() => showToast("Invite link copied!", "success")).catch(() => showToast(`Link: ${url}`));
+        copyToClipboard(shareUrl);
+        showToast("Referral invitation link copied!", "success");
       }
     }
 
-    function refreshCurrentScreen(screen) {
+    // Render Home Screen
+    function renderHomeScreen() {
       const user = getCurrentUser();
       if (!user) return;
 
-      document.getElementById("menu-user-name").textContent = user.fullName;
-      document.getElementById("menu-user-id").textContent = user.identifier;
-      const badge = document.getElementById("menu-user-badge");
-      if (user.identifier.toLowerCase() === ADMIN_EMAIL || user.isAdmin) {
-        badge.textContent = "Admin";
-        badge.className = "inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800";
-      } else {
-        badge.textContent = user.activePlanName || "Standard Member";
-        badge.className = "inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700";
-      }
-
-      if (screen === "home") renderHomeScreen(user);
-      if (screen === "plans") renderPlansScreen(user);
-      if (screen === "watch") renderWatchScreen(user);
-      if (screen === "deposit") renderDepositScreen(user);
-      if (screen === "withdraw") renderWithdrawScreen(user);
-      if (screen === "admin") renderAdminScreen();
-    }
-
-    function renderHomeScreen(user) {
       document.getElementById("home-balance-usd").textContent = `$${user.balanceUsd.toFixed(2)} USD`;
-      document.getElementById("home-balance-pkr").textContent = `≈ ${Math.round(user.balancePkr).toLocaleString()} PKR`;
-      document.getElementById("home-badge-plan").textContent = user.activePlanName || "No Plan";
+      document.getElementById("home-balance-pkr").textContent = `≈ ${Math.round(user.balancePkr).toLocaleString()} PKR (Rate: 280)`;
 
-      const limit = user.planDailyAdLimit || 0;
-      const watched = user.adsWatchedToday || 0;
-      const pct = limit > 0 ? Math.min(100, Math.round((watched / limit) * 100)) : 0;
+      const badge = document.getElementById("home-badge-plan");
+      const title = document.getElementById("home-plan-title");
+      const subtitle = document.getElementById("home-plan-subtitle");
+      const countText = document.getElementById("home-ads-progress-text");
+      const bar = document.getElementById("home-ads-progress-bar");
 
-      document.getElementById("home-ads-progress-text").textContent = `${watched} / ${limit} Ads`;
-      document.getElementById("home-ads-progress-bar").style.width = `${pct}%`;
+      // Referral Card on Home Screen
+      const refCodeEl = document.getElementById("home-referral-code");
+      const refCountEl = document.getElementById("home-referral-count");
+      const refEarnEl = document.getElementById("home-referral-earnings");
+      if (refCodeEl) refCodeEl.textContent = user.referralCode || "PI-100000";
+      if (refCountEl) refCountEl.textContent = `${user.referralCount || 0} Friends`;
+      if (refEarnEl) refEarnEl.textContent = `$${(user.referralEarningsUsd || 0).toFixed(2)} USD`;
 
-      if (user.activePlanName) {
-        document.getElementById("home-plan-title").innerHTML = `<i class="fa-solid fa-gem text-orange-500"></i> ${user.activePlanName} Active`;
-        document.getElementById("home-plan-subtitle").textContent = `${limit} Daily Ads unlocked`;
+      if (user.activePlanId) {
+        const plan = VIP_PLANS.find(p => p.id === user.activePlanId);
+        badge.textContent = plan ? plan.name : "VIP Active";
+        badge.className = "px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-bold tracking-wider";
+        title.innerHTML = `<i class="fa-solid fa-gem text-amber-500"></i> ${plan.name} Activated`;
+        subtitle.textContent = `Daily limit: ${plan.dailyAds} ads • Daily profit: $${plan.dailyIncomeUsd.toFixed(2)} USD (${plan.dailyIncomePkr} PKR)`;
+
+        const watched = user.adsWatchedToday || 0;
+        const total = plan.dailyAds;
+        countText.textContent = `${watched} / ${total} Ads`;
+        const pct = Math.min(100, Math.round((watched / total) * 100));
+        bar.style.width = `${pct}%`;
       } else {
-        document.getElementById("home-plan-title").innerHTML = `<i class="fa-solid fa-gem text-slate-400"></i> No Active VIP Plan`;
-        document.getElementById("home-plan-subtitle").textContent = "Purchase any of the 10 VIP plans to unlock daily ad earnings";
+        badge.textContent = "No Plan";
+        badge.className = "px-2.5 py-1 rounded-full bg-rose-500/40 backdrop-blur-md text-[10px] font-bold tracking-wider";
+        title.innerHTML = `<i class="fa-solid fa-lock text-slate-400"></i> No Active VIP Plan`;
+        subtitle.textContent = "Deposit balance to activate 1 of 10 VIP tiers & unlock daily ad profits";
+        countText.textContent = "0 / 0 Ads";
+        bar.style.width = "0%";
       }
 
-      const codeEl = document.getElementById("home-referral-code");
-      if (codeEl) codeEl.textContent = user.referralCode || ("PI-" + (user.id % 900000 + 100000));
+      // Recent Deposits/Withdrawals
+      const deposits = getDeposits().filter(d => d.userId === user.id);
+      const withdrawals = getWithdrawals().filter(w => w.userId === user.id);
+      const combined = [...deposits.map(d => ({ ...d, type: 'dep' })), ...withdrawals.map(w => ({ ...w, type: 'wd' }))];
+      combined.sort((a, b) => b.id - a.id);
+
+      const recentEl = document.getElementById("home-recent-list");
+      if (combined.length === 0) {
+        recentEl.innerHTML = `<div class="text-center py-4 text-xs text-slate-400">No transactions recorded yet. Balance is $0.00.</div>`;
+      } else {
+        recentEl.innerHTML = combined.slice(0, 3).map(item => `
+          <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl text-xs">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg ${item.type === 'dep' ? 'bg-emerald-100 text-emerald-600' : 'bg-indigo-100 text-indigo-600'} flex items-center justify-center font-bold">
+                <i class="fa-solid ${item.type === 'dep' ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+              </div>
+              <div>
+                <p class="font-bold text-slate-800">${item.type === 'dep' ? 'Deposit (' + item.method + ')' : 'Withdrawal (' + item.method + ')'}</p>
+                <p class="text-[10px] text-slate-400">${item.date}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="font-black ${item.type === 'dep' ? 'text-emerald-600' : 'text-slate-800'}">${item.type === 'dep' ? '+' : '-'}${item.amount} ${item.currency}</span>
+              <span class="block text-[9px] font-bold ${item.status === 'APPROVED' || item.status === 'COMPLETED' ? 'text-emerald-600' : (item.status === 'REJECTED' ? 'text-rose-600' : 'text-amber-600')}">${item.status}</span>
+            </div>
+          </div>
+        `).join("");
+      }
     }
 
-    function renderPlansScreen(user) {
+    // Render 10 VIP Plans Screen
+    function renderPlansScreen() {
+      const user = getCurrentUser();
       const container = document.getElementById("plans-container");
       container.innerHTML = VIP_PLANS.map(plan => {
-        const isCurrent = user.activePlanId === plan.id;
+        const isCurrent = user && user.activePlanId === plan.id;
         return `
-          <div class="bg-white rounded-2xl p-4 border ${isCurrent ? 'border-orange-500 shadow-md ring-2 ring-orange-500/20' : 'border-slate-200'} relative transition">
+          <div class="bg-white rounded-2xl p-4 border ${isCurrent ? 'border-orange-500 shadow-md ring-2 ring-orange-500/20' : 'border-slate-200'} relative overflow-hidden transition">
+            ${isCurrent ? '<div class="absolute top-0 right-0 bg-orange-500 text-white text-[10px] font-black px-3 py-0.5 rounded-bl-xl uppercase tracking-wider">Active Plan</div>' : ''}
             <div class="flex justify-between items-start mb-2">
               <div>
-                <span class="text-[10px] font-black tracking-wider uppercase px-2 py-0.5 rounded-full bg-orange-100 text-orange-700">${plan.name}</span>
-                <h3 class="text-base font-black text-slate-900 mt-1">${plan.pricePkr.toLocaleString()} PKR <span class="text-xs text-slate-400 font-normal">($${plan.priceUsd.toFixed(2)} USD)</span></h3>
+                <h3 class="font-black text-base text-slate-900">${plan.name}</h3>
+                <span class="text-xs font-bold text-orange-600 font-mono">${plan.pricePkr.toLocaleString()} PKR <span class="text-slate-400 text-[10px]">($${plan.priceUsd.toFixed(2)} USD)</span></span>
               </div>
-              <span class="text-xs font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100">${plan.returnRoi}</span>
+              <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">${plan.returnRoi}</span>
             </div>
-            <div class="grid grid-cols-2 gap-2 my-3 p-2.5 bg-slate-50 rounded-xl text-xs border border-slate-100">
-              <div><span class="text-[10px] text-slate-400 block">Daily Ads Limit</span><span class="font-bold text-slate-800">${plan.dailyAds} Ads</span></div>
-              <div><span class="text-[10px] text-slate-400 block">Daily Earnings</span><span class="font-bold text-emerald-600">${plan.dailyIncomePkr} PKR</span></div>
+            <div class="grid grid-cols-3 gap-2 p-2.5 bg-slate-50 rounded-xl text-center text-xs my-3 border border-slate-100">
+              <div>
+                <span class="block text-[10px] text-slate-400">Daily Ads</span>
+                <span class="font-extrabold text-slate-800">${plan.dailyAds} Ads</span>
+              </div>
+              <div>
+                <span class="block text-[10px] text-slate-400">Per Ad Earning</span>
+                <span class="font-extrabold text-amber-600">$0.05</span>
+              </div>
+              <div>
+                <span class="block text-[10px] text-slate-400">Daily Return</span>
+                <span class="font-extrabold text-emerald-600">$${plan.dailyIncomeUsd.toFixed(2)}</span>
+              </div>
             </div>
-            <button onclick="handlePurchasePlan(${plan.id})" ${isCurrent ? 'disabled' : ''} class="w-full py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 ${
-              isCurrent ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default' : 'bg-slate-900 hover:bg-orange-600 text-white shadow'
-            }">
-              ${isCurrent ? '<i class="fa-solid fa-circle-check"></i> Currently Active Plan' : '<i class="fa-solid fa-cart-shopping"></i> Activate VIP Plan'}
+            <button onclick="handleSubscribePlan(${plan.id})" class="w-full py-2.5 ${isCurrent ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-md shadow-orange-500/20'} rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5" ${isCurrent ? 'disabled' : ''}>
+              <i class="fa-solid fa-gem text-xs"></i> <span>${isCurrent ? 'Currently Active' : 'Activate with Wallet Balance'}</span>
             </button>
           </div>
         `;
       }).join("");
     }
 
-    function handlePurchasePlan(planId) {
+    function handleSubscribePlan(planId) {
       const user = getCurrentUser();
       if (!user) return;
       const plan = VIP_PLANS.find(p => p.id === planId);
       if (!plan) return;
 
-      if (user.balanceUsd < plan.priceUsd && user.balancePkr < plan.pricePkr) {
-        showToast(`Insufficient balance! You need ${plan.pricePkr} PKR.`, "error");
-        setTimeout(() => switchScreen("deposit"), 1200);
+      if (user.balanceUsd < plan.priceUsd) {
+        showToast(`Insufficient balance! You need $${plan.priceUsd.toFixed(2)} USD (${plan.pricePkr} PKR). Deposit funds first.`, "error");
+        setTimeout(() => switchScreen("deposit"), 1500);
         return;
       }
 
-      updateCurrentUser({
-        balanceUsd: Math.max(0, user.balanceUsd - plan.priceUsd),
-        balancePkr: Math.max(0, user.balancePkr - plan.pricePkr),
-        activePlanId: plan.id,
-        activePlanName: plan.name,
-        planDailyAdLimit: plan.dailyAds
-      });
-
-      showToast(`Congratulations! ${plan.name} activated.`, "success");
-      refreshCurrentScreen("plans");
+      // Deduct balance & activate plan
+      const users = getUsers();
+      const u = users.find(x => x.id === user.id);
+      if (u) {
+        u.balanceUsd -= plan.priceUsd;
+        u.balancePkr -= plan.pricePkr;
+        u.activePlanId = plan.id;
+        u.activePlanName = plan.name;
+        u.adsWatchedToday = 0;
+        saveUsers(users);
+        showToast(`Congratulations! ${plan.name} has been activated.`, "success");
+        renderHomeScreen();
+        renderPlansScreen();
+      }
     }
 
-    let isWatching = false;
-    function renderWatchScreen(user) {
-      const limit = user.planDailyAdLimit || 0;
-      const watched = user.adsWatchedToday || 0;
-      document.getElementById("watch-counter-text").textContent = `${watched} / ${limit} Ads`;
+    // Render Watch Screen
+    function renderWatchScreen() {
+      const user = getCurrentUser();
+      if (!user) return;
 
+      const counterText = document.getElementById("watch-counter-text");
+      const standbyView = document.getElementById("ad-standby-view");
+      const runningView = document.getElementById("ad-running-view");
+      const completedView = document.getElementById("ad-completed-view");
       const startBtn = document.getElementById("ad-start-btn");
-      if (limit === 0) {
-        startBtn.textContent = "Activate a VIP Plan First";
-        startBtn.onclick = () => switchScreen("plans");
-      } else if (watched >= limit) {
-        startBtn.textContent = "Daily Limit Reached";
+
+      standbyView.classList.remove("hidden");
+      runningView.classList.add("hidden");
+      completedView.classList.add("hidden");
+
+      if (!user.activePlanId) {
+        counterText.textContent = "0 / 0 Ads (No Plan)";
         startBtn.disabled = true;
+        startBtn.className = "px-6 py-2.5 bg-slate-800 text-slate-500 rounded-xl text-xs font-bold cursor-not-allowed";
+        startBtn.innerHTML = `<span>Activate VIP Plan to Watch</span>`;
       } else {
-        startBtn.textContent = "Start Watching Ad";
-        startBtn.disabled = false;
-        startBtn.onclick = startWatchingAd;
+        const plan = VIP_PLANS.find(p => p.id === user.activePlanId);
+        const watched = user.adsWatchedToday || 0;
+        const total = plan.dailyAds;
+        counterText.textContent = `${watched} / ${total} Ads`;
+
+        if (watched >= total) {
+          startBtn.disabled = true;
+          startBtn.className = "px-6 py-2.5 bg-slate-800 text-slate-500 rounded-xl text-xs font-bold cursor-not-allowed";
+          startBtn.innerHTML = `<span>Daily Limit Reached (Come back tomorrow)</span>`;
+        } else {
+          startBtn.disabled = false;
+          startBtn.className = "px-6 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl text-xs font-bold shadow-lg transition";
+          startBtn.innerHTML = `<span>Start Watching Ad (15s)</span>`;
+        }
       }
     }
 
     function startWatchingAd() {
+      if (isWatchingAd) return;
       const user = getCurrentUser();
-      if (!user || user.planDailyAdLimit === 0 || user.adsWatchedToday >= user.planDailyAdLimit || isWatching) return;
+      if (!user || !user.activePlanId) return;
 
-      isWatching = true;
+      const plan = VIP_PLANS.find(p => p.id === user.activePlanId);
+      if (user.adsWatchedToday >= plan.dailyAds) {
+        showToast("Daily ad limit already completed! Reset in 24h.", "error");
+        return;
+      }
+
+      isWatchingAd = true;
       document.getElementById("ad-standby-view").classList.add("hidden");
       document.getElementById("ad-running-view").classList.remove("hidden");
+      document.getElementById("ad-completed-view").classList.add("hidden");
 
-      let timeLeft = 15;
+      let secondsLeft = 15;
       const timerNum = document.getElementById("ad-timer-num");
-      const path = document.getElementById("ad-timer-svg-path");
+      const timerPath = document.getElementById("ad-timer-svg-path");
+      timerNum.textContent = `${secondsLeft}s`;
 
-      const interval = setInterval(() => {
-        timeLeft--;
-        timerNum.textContent = `${timeLeft}s`;
-        path.setAttribute("stroke-dasharray", `${Math.round((timeLeft / 15) * 100)}, 100`);
+      adCountdownInterval = setInterval(() => {
+        secondsLeft--;
+        timerNum.textContent = `${secondsLeft}s`;
+        const progress = (secondsLeft / 15) * 100;
+        timerPath.setAttribute("stroke-dasharray", `${progress}, 100`);
 
-        if (timeLeft <= 0) {
-          clearInterval(interval);
-          updateCurrentUser({
-            adsWatchedToday: (user.adsWatchedToday || 0) + 1,
-            balanceUsd: user.balanceUsd + AD_REWARD_USD,
-            balancePkr: user.balancePkr + (AD_REWARD_USD * USD_TO_PKR),
-            lastAdWatchTimestamp: Date.now()
-          });
-
-          document.getElementById("ad-running-view").classList.add("hidden");
-          document.getElementById("ad-completed-view").classList.remove("hidden");
-          showToast("+$0.05 USD reward credited!", "success");
-
-          setTimeout(() => {
-            document.getElementById("ad-completed-view").classList.add("hidden");
-            document.getElementById("ad-standby-view").classList.remove("hidden");
-            isWatching = false;
-            refreshCurrentScreen("watch");
-          }, 1500);
+        if (secondsLeft <= 0) {
+          clearInterval(adCountdownInterval);
+          finishAdAndCredit();
         }
       }, 1000);
     }
 
-    function selectDepositMethod(method) {
-      selectedDepMethod = method;
-      ["usdt", "jazzcash", "easypaisa"].forEach(m => {
-        const tab = document.getElementById(`dep-tab-${m}`);
-        tab.className = m === method ? "flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold bg-white text-orange-600 shadow-sm transition" : "flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition";
-      });
+    function finishAdAndCredit() {
+      isWatchingAd = false;
+      const user = getCurrentUser();
+      if (!user) return;
 
-      const ch = PAYMENT_CHANNELS[method];
-      document.getElementById("deposit-channel-details").innerHTML = `
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-800">${ch.name} Official Account</span>
-          <span class="text-[10px] font-bold bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">${ch.currency}</span>
-        </div>
-        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
-          <div class="overflow-hidden mr-2">
-            <p class="font-mono font-bold text-xs text-slate-800 truncate">${ch.address}</p>
+      const users = getUsers();
+      const u = users.find(x => x.id === user.id);
+      if (u) {
+        u.balanceUsd += AD_REWARD_USD;
+        u.balancePkr += (AD_REWARD_USD * USD_TO_PKR);
+        u.adsWatchedToday = (u.adsWatchedToday || 0) + 1;
+        saveUsers(users);
+      }
+
+      document.getElementById("ad-running-view").classList.add("hidden");
+      document.getElementById("ad-completed-view").classList.remove("hidden");
+
+      showToast(`Success! +$0.05 USD (14 PKR) credited!`, "success");
+
+      setTimeout(() => {
+        renderWatchScreen();
+        renderHomeScreen();
+      }, 2500);
+    }
+
+    // Render Deposit Screen
+    function selectDepositMethod(method) {
+      selectedDepositMethodKey = method;
+      ["usdt", "jazzcash", "easypaisa"].forEach(m => {
+        const btn = document.getElementById(`dep-tab-${m}`);
+        if (m === method) {
+          btn.className = "flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold bg-white text-orange-600 shadow-sm transition";
+        } else {
+          btn.className = "flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition";
+        }
+      });
+      renderDepositDetails();
+    }
+
+    function renderDepositScreen() {
+      renderDepositDetails();
+    }
+
+    function renderDepositDetails() {
+      const channel = PAYMENT_CHANNELS[selectedDepositMethodKey];
+      const container = document.getElementById("deposit-channel-details");
+      const currLabel = document.getElementById("dep-form-currency-label");
+      currLabel.textContent = selectedDepositMethodKey === "usdt" ? "USD / USDT" : "PKR";
+
+      if (selectedDepositMethodKey === "usdt") {
+        container.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-coins text-amber-500"></i> ${channel.title}</span>
+            <span class="text-[10px] font-mono bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold">${channel.network}</span>
           </div>
-          <button type="button" onclick="copyToClipboard('${ch.address}')" class="px-2.5 py-1.5 bg-white border border-slate-200 text-orange-600 rounded-lg text-xs font-bold">Copy</button>
-        </div>
-      `;
-      document.getElementById("dep-form-currency-label").textContent = ch.currency;
+          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+            <span class="block text-[9px] uppercase font-bold text-slate-400">Admin Official Receiving Wallet</span>
+            <div class="flex items-center justify-between mt-1">
+              <span class="text-xs font-mono font-bold text-slate-900 break-all select-all">${channel.address}</span>
+              <button type="button" onclick="copyToClipboard('${channel.address}')" class="text-orange-600 hover:text-orange-700 ml-2 text-xs font-bold flex items-center gap-1 shrink-0"><i class="fa-regular fa-copy"></i> Copy</button>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-500 font-medium">${channel.note}</p>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-mobile-screen-button text-orange-500"></i> ${channel.title}</span>
+            <span class="text-[10px] font-mono bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full font-bold">1 USD = 280 PKR</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="block text-[9px] text-slate-400 font-bold uppercase">Account Title</span>
+              <span class="font-black text-slate-900">${channel.accountTitle}</span>
+            </div>
+            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="block text-[9px] text-slate-400 font-bold uppercase">Account Number</span>
+              <div class="flex items-center justify-between">
+                <span class="font-mono font-black text-slate-900">${channel.accountNumber}</span>
+                <button type="button" onclick="copyToClipboard('${channel.accountNumber}')" class="text-orange-600 text-xs"><i class="fa-regular fa-copy"></i></button>
+              </div>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-500 font-medium">${channel.note}</p>
+        `;
+      }
     }
 
     function handleScreenshotSelected(e) {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = (ev) => {
-        selectedScreenshotBase64 = ev.target.result;
+      reader.onload = (event) => {
+        attachedScreenshotBase64 = event.target.result;
         document.getElementById("dep-screenshot-placeholder").classList.add("hidden");
         document.getElementById("dep-screenshot-preview-box").classList.remove("hidden");
       };
@@ -1042,50 +1407,90 @@
       if (!user) return;
 
       const amount = parseFloat(document.getElementById("dep-amount").value);
-      const txId = document.getElementById("dep-txnid").value.trim();
+      const txnId = document.getElementById("dep-txnid").value.trim();
       const sender = document.getElementById("dep-sender").value.trim();
 
-      if (!amount || amount <= 0) return showToast("Enter a valid amount", "error");
+      if (!amount || amount <= 0) {
+        showToast("Please enter a valid deposit amount.", "error");
+        return;
+      }
 
-      const channel = PAYMENT_CHANNELS[selectedDepMethod];
-      const creditedUsd = selectedDepMethod === "usdt" ? amount : (amount / USD_TO_PKR);
-      const creditedPkr = selectedDepMethod === "usdt" ? (amount * USD_TO_PKR) : amount;
+      let creditedUsd = 0;
+      let creditedPkr = 0;
+      if (selectedDepositMethodKey === "usdt") {
+        creditedUsd = amount;
+        creditedPkr = amount * USD_TO_PKR;
+      } else {
+        creditedPkr = amount;
+        creditedUsd = amount / USD_TO_PKR;
+      }
 
       const deposits = getDeposits();
       deposits.push({
         id: Date.now(),
         userId: user.id,
         userIdentifier: user.identifier,
-        method: channel.name,
-        amount,
-        currency: channel.currency,
-        creditedUsd,
-        creditedPkr,
-        txnId: txId,
-        sender,
-        screenshot: selectedScreenshotBase64,
+        method: selectedDepositMethodKey.toUpperCase(),
+        amount: amount,
+        currency: selectedDepositMethodKey === "usdt" ? "USD" : "PKR",
+        creditedUsd: creditedUsd,
+        creditedPkr: creditedPkr,
+        txnId: txnId,
+        sender: sender,
+        screenshot: attachedScreenshotBase64 || null,
         status: "PENDING",
         date: new Date().toLocaleString()
       });
       saveDeposits(deposits);
+      syncToCloud();
 
-      showToast("Deposit request submitted successfully!", "success");
+      showToast("Deposit request submitted! Admin will verify and credit your balance.", "success");
       e.target.reset();
-      selectedScreenshotBase64 = null;
+      attachedScreenshotBase64 = null;
       document.getElementById("dep-screenshot-placeholder").classList.remove("hidden");
       document.getElementById("dep-screenshot-preview-box").classList.add("hidden");
-      switchScreen("home");
+      renderHomeScreen();
     }
 
-    function renderDepositScreen(user) { selectDepositMethod(selectedDepMethod); }
-
+    // Render Withdraw Screen
     function selectWithdrawMethod(method) {
-      selectedWdMethod = method;
+      selectedWithdrawMethodKey = method;
       ["usdt", "jazzcash", "easypaisa"].forEach(m => {
-        const tab = document.getElementById(`wd-tab-${m}`);
-        tab.className = m === method ? "flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold bg-white text-orange-600 shadow-sm transition" : "flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition";
+        const btn = document.getElementById(`wd-tab-${m}`);
+        if (m === method) {
+          btn.className = "flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold bg-white text-orange-600 shadow-sm transition";
+        } else {
+          btn.className = "flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition";
+        }
       });
-      document.getElementById("wd-form-currency-label").textContent = method === "usdt" ? "USD" : "PKR";
+      const currLabel = document.getElementById("wd-form-currency-label");
+      currLabel.textContent = selectedWithdrawMethodKey === "usdt" ? "USD" : "PKR";
+    }
+
+    function renderWithdrawScreen() {
+      const user = getCurrentUser();
+      if (!user) return;
+      document.getElementById("wd-current-balance").textContent = `$${user.balanceUsd.toFixed(2)} USD`;
+      selectWithdrawMethod(selectedWithdrawMethodKey);
+
+      const withdrawals = getWithdrawals().filter(w => w.userId === user.id);
+      const historyList = document.getElementById("user-withdrawal-history");
+      if (withdrawals.length === 0) {
+        historyList.innerHTML = `<div class="text-center py-3 text-xs text-slate-400">No withdrawal requests placed yet.</div>`;
+      } else {
+        historyList.innerHTML = withdrawals.slice().reverse().map(w => `
+          <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl text-xs border border-slate-100">
+            <div>
+              <span class="font-bold text-slate-800">${w.method} - ${w.accountIdentifier}</span>
+              <p class="text-[10px] text-slate-400">${w.date}</p>
+            </div>
+            <div class="text-right">
+              <span class="font-black text-rose-600">-${w.amount} ${w.currency}</span>
+              <span class="block text-[9px] font-bold ${w.status === 'COMPLETED' ? 'text-emerald-600' : (w.status === 'REJECTED' ? 'text-rose-600' : 'text-amber-600')}">${w.status}</span>
+            </div>
+          </div>
+        `).join("");
+      }
     }
 
     function handleWithdrawSubmit(e) {
@@ -1095,66 +1500,63 @@
 
       const amount = parseFloat(document.getElementById("wd-amount").value);
       const title = document.getElementById("wd-account-title").value.trim();
-      const iden = document.getElementById("wd-account-identifier").value.trim();
+      const identifier = document.getElementById("wd-account-identifier").value.trim();
 
-      const minPkrLimit = 12.0 * USD_TO_PKR; // Exactly 3,360 PKR matched to $12 USD
+      const isUsd = selectedWithdrawMethodKey === "usdt";
+      const requiredUsd = isUsd ? amount : (amount / USD_TO_PKR);
 
-      if (selectedWdMethod === "usdt") {
-        if (amount < 12.0) return showToast("Minimum USDT withdrawal is $12 USD", "error");
-        if (user.balanceUsd < amount) return showToast("Insufficient USD balance", "error");
-        updateCurrentUser({ balanceUsd: user.balanceUsd - amount, balancePkr: Math.max(0, user.balancePkr - (amount * USD_TO_PKR)) });
-      } else {
-        if (amount < minPkrLimit) return showToast(`Minimum withdrawal is ${minPkrLimit} PKR ($12 USD)`, "error");
-        if (user.balancePkr < amount) return showToast("Insufficient PKR balance", "error");
-        updateCurrentUser({ balancePkr: user.balancePkr - amount, balanceUsd: Math.max(0, user.balanceUsd - (amount / USD_TO_PKR)) });
+      if (requiredUsd < 12.0) {
+        showToast("Minimum withdrawal threshold is $12.00 USD (3,360 PKR).", "error");
+        return;
       }
 
-      const ch = PAYMENT_CHANNELS[selectedWdMethod];
+      if (user.balanceUsd < requiredUsd) {
+        showToast(`Insufficient balance! Your available balance is $${user.balanceUsd.toFixed(2)} USD.`, "error");
+        return;
+      }
+
+      // Deduct balance immediately
+      const users = getUsers();
+      const u = users.find(x => x.id === user.id);
+      if (u) {
+        u.balanceUsd -= requiredUsd;
+        u.balancePkr -= (requiredUsd * USD_TO_PKR);
+        saveUsers(users);
+      }
+
       const withdrawals = getWithdrawals();
       withdrawals.push({
         id: Date.now(),
         userId: user.id,
         userIdentifier: user.identifier,
-        method: ch.name,
-        amount,
-        currency: ch.currency,
+        method: selectedWithdrawMethodKey.toUpperCase(),
+        amount: amount,
+        currency: isUsd ? "USD" : "PKR",
         accountTitle: title,
-        accountIdentifier: iden,
+        accountIdentifier: identifier,
         status: "PENDING",
         date: new Date().toLocaleString()
       });
       saveWithdrawals(withdrawals);
+      syncToCloud();
 
-      showToast("Withdrawal placed successfully!", "success");
+      showToast("Withdrawal placed! Sent to admin for payout processing.", "success");
       e.target.reset();
-      renderWithdrawScreen(getCurrentUser());
+      renderWithdrawScreen();
+      renderHomeScreen();
     }
 
-    function renderWithdrawScreen(user) {
-      selectWithdrawMethod(selectedWdMethod);
-      document.getElementById("wd-current-balance").textContent = `$${user.balanceUsd.toFixed(2)} USD`;
-      const list = getWithdrawals().filter(w => w.userId === user.id).reverse();
-      document.getElementById("user-withdrawal-history").innerHTML = list.length === 0 ? `<p class="text-xs text-slate-400 text-center py-3">No withdrawals yet.</p>` : list.map(w => `
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs">
-          <div>
-            <span class="font-bold text-slate-800">${w.method}</span>
-            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${w.status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${w.status}</span>
-          </div>
-          <span class="font-black text-rose-600">-${w.amount} ${w.currency}</span>
-        </div>
-      `).join("");
-    }
-
+    // Render Admin Screen
     function setAdminTab(tab) {
       ["deposits", "withdrawals", "users"].forEach(t => {
         const btn = document.getElementById(`admin-tab-${t === 'deposits' ? 'dep' : (t === 'withdrawals' ? 'wd' : 'users')}`);
-        const view = document.getElementById(`admin-panel-${t}`);
+        const panel = document.getElementById(`admin-panel-${t}`);
         if (t === tab) {
           btn.className = "flex-1 py-2.5 text-center rounded-lg bg-white text-orange-600 shadow-sm transition font-bold";
-          view.classList.remove("hidden");
+          panel.classList.remove("hidden");
         } else {
           btn.className = "flex-1 py-2.5 text-center rounded-lg text-slate-500 hover:text-slate-800 transition font-bold";
-          view.classList.add("hidden");
+          panel.classList.add("hidden");
         }
       });
     }
@@ -1164,58 +1566,108 @@
       const withdrawals = getWithdrawals();
       const users = getUsers();
 
-      const pendingDeps = deposits.filter(d => d.status === "PENDING");
-      const pendingWds = withdrawals.filter(w => w.status === "PENDING");
+      const pendingDep = deposits.filter(d => d.status === "PENDING").length;
+      const pendingWd = withdrawals.filter(w => w.status === "PENDING").length;
 
-      document.getElementById("admin-badge-dep").textContent = pendingDeps.length;
-      document.getElementById("admin-badge-wd").textContent = pendingWds.length;
+      document.getElementById("admin-badge-dep").textContent = pendingDep;
+      document.getElementById("admin-badge-wd").textContent = pendingWd;
       document.getElementById("admin-badge-users").textContent = users.length;
-      document.getElementById("admin-tab-cnt-dep").textContent = pendingDeps.length;
-      document.getElementById("admin-tab-cnt-wd").textContent = pendingWds.length;
+
+      document.getElementById("admin-tab-cnt-dep").textContent = pendingDep;
+      document.getElementById("admin-tab-cnt-wd").textContent = pendingWd;
       document.getElementById("admin-tab-cnt-users").textContent = users.length;
 
-      // Deposits List
-      document.getElementById("admin-deposits-list").innerHTML = deposits.length === 0 ? `<div class="p-4 bg-slate-50 rounded-2xl text-center text-xs text-slate-400">No deposits.</div>` : deposits.slice().reverse().map(d => `
-        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-2">
-          <div class="flex justify-between items-start">
-            <div>
-              <span class="font-bold text-slate-900">${d.userIdentifier}</span>
-              <p class="text-[10px] text-slate-500">${d.method} • Ref: ${d.txnId}</p>
-            </div>
-            <div class="text-right">
-              <span class="font-black text-sm text-slate-900">+${d.amount} ${d.currency}</span>
-              <span class="block text-[10px] font-bold ${d.status === 'APPROVED' ? 'text-emerald-600' : 'text-amber-600'}">${d.status}</span>
-            </div>
-          </div>
-          ${d.screenshot ? `<button onclick="previewReceipt('${d.screenshot}')" class="text-xs text-orange-600 font-bold underline">Inspect Receipt</button>` : ''}
-          ${d.status === 'PENDING' ? `<div class="grid grid-cols-2 gap-2 pt-2"><button onclick="adminApproveDeposit(${d.id})" class="py-2 bg-emerald-600 text-white font-bold rounded-xl text-xs">Approve</button><button onclick="adminRejectDeposit(${d.id})" class="py-2 bg-rose-600 text-white font-bold rounded-xl text-xs">Reject</button></div>` : ''}
-        </div>
-      `).join("");
+      // Render Deposits
+      const depList = document.getElementById("admin-deposits-list");
+      if (deposits.length === 0) {
+        depList.innerHTML = `<div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-center text-xs text-slate-400">No deposits found.</div>`;
+      } else {
+        depList.innerHTML = deposits.slice().reverse().map(d => {
+          const u = users.find(x => x.id === d.userId) || {};
+          const isReferralEligible = !u.hasCompletedFirstDeposit && u.referredByCode;
 
-      // Withdrawals List
-      document.getElementById("admin-withdrawals-list").innerHTML = withdrawals.length === 0 ? `<div class="p-4 bg-slate-50 rounded-2xl text-center text-xs text-slate-400">No payouts.</div>` : withdrawals.slice().reverse().map(w => `
-        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-2">
-          <div class="flex justify-between items-start">
-            <div>
-              <span class="font-bold text-slate-900">${w.userIdentifier}</span>
-              <p class="text-[11px] text-slate-800 font-semibold">${w.method}: ${w.accountTitle} (${w.accountIdentifier})</p>
-            </div>
-            <div class="text-right">
-              <span class="font-black text-sm text-rose-600">-${w.amount} ${w.currency}</span>
-              <span class="block text-[10px] font-bold ${w.status === 'COMPLETED' ? 'text-emerald-600' : 'text-amber-600'}">${w.status}</span>
-            </div>
-          </div>
-          ${w.status === 'PENDING' ? `<div class="grid grid-cols-2 gap-2 pt-2"><button onclick="adminCompleteWithdrawal(${w.id})" class="py-2 bg-emerald-600 text-white font-bold rounded-xl text-xs">Complete</button><button onclick="adminRejectWithdrawal(${w.id})" class="py-2 bg-rose-600 text-white font-bold rounded-xl text-xs">Reject</button></div>` : ''}
-        </div>
-      `).join("");
+          return `
+            <div class="p-3.5 bg-slate-50 rounded-2xl border ${d.status === 'PENDING' ? 'border-amber-300 bg-amber-50/20' : 'border-slate-200'} text-xs space-y-2">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="font-bold text-slate-900">${d.userIdentifier}</span>
+                  <p class="text-[10px] text-slate-600 font-bold">${d.method} • Sender: ${d.sender}</p>
+                  <p class="text-[10px] text-slate-500 font-mono">TXN: ${d.txnId}</p>
+                  <p class="text-[9px] text-slate-400">${d.date}</p>
+                </div>
+                <div class="text-right">
+                  <span class="font-black text-sm text-emerald-600">+${d.amount} ${d.currency}</span>
+                  <span class="block text-[10px] text-slate-500">Credited: $${d.creditedUsd.toFixed(2)} USD</span>
+                  <span class="inline-block mt-0.5 text-[9px] font-bold px-2 py-0.5 rounded-full ${d.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-800' : (d.status === 'REJECTED' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800')}">${d.status}</span>
+                </div>
+              </div>
 
-      // Users List (FIXED TO SHOW ALL REGISTERED ACCOUNTS)
-      document.getElementById("admin-users-list").innerHTML = users.map(u => `
+              ${d.screenshot ? `
+                <button type="button" onclick="previewReceipt('${d.screenshot}')" class="text-xs text-orange-600 font-bold hover:underline flex items-center gap-1.5 bg-orange-50 px-2.5 py-1 rounded-lg border border-orange-200">
+                  <i class="fa-solid fa-receipt"></i> Inspect Attached Screenshot Proof
+                </button>
+              ` : '<p class="text-[10px] text-slate-400 italic">No screenshot proof attached</p>'}
+
+              ${isReferralEligible ? `
+                <div class="p-2.5 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-800 text-[10px] flex items-center gap-2">
+                  <i class="fa-solid fa-gift text-emerald-600 text-sm"></i>
+                  <div><span class="font-bold">First Deposit Alert:</span> Referrer (<strong class="font-mono">${u.referredByCode}</strong>) will be awarded <strong>+$1.00 USD (280 PKR)</strong> automatically on approval.</div>
+                </div>
+              ` : ''}
+
+              ${d.status === 'PENDING' ? `
+                <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200">
+                  <button onclick="adminApproveDeposit(${d.id})" class="py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1 shadow-sm"><i class="fa-solid fa-check"></i> Approve & Credit</button>
+                  <button onclick="adminRejectDeposit(${d.id})" class="py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1 shadow-sm"><i class="fa-solid fa-xmark"></i> Reject</button>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join("");
+      }
+
+      // Render Withdrawals
+      const wdList = document.getElementById("admin-withdrawals-list");
+      if (withdrawals.length === 0) {
+        wdList.innerHTML = `<div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-center text-xs text-slate-400">No withdrawal requests found.</div>`;
+      } else {
+        wdList.innerHTML = withdrawals.slice().reverse().map(w => `
+          <div class="p-3.5 bg-slate-50 rounded-2xl border ${w.status === 'PENDING' ? 'border-amber-300 bg-amber-50/20' : 'border-slate-200'} text-xs space-y-2">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="font-bold text-slate-900">${w.userIdentifier}</span>
+                <p class="text-[10px] text-slate-600 font-bold">${w.method}</p>
+                <p class="text-[11px] text-slate-800 font-semibold mt-0.5">Account: ${w.accountTitle} (${w.accountIdentifier})</p>
+                <p class="text-[9px] text-slate-400">${w.date}</p>
+              </div>
+              <div class="text-right">
+                <span class="font-black text-sm text-rose-600">-${w.amount} ${w.currency}</span>
+                <span class="block text-[10px] font-bold ${w.status === 'COMPLETED' ? 'text-emerald-600' : (w.status === 'REJECTED' ? 'text-rose-600' : 'text-amber-600')}">${w.status}</span>
+              </div>
+            </div>
+            ${w.status === 'PENDING' ? `
+              <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200">
+                <button onclick="adminCompleteWithdrawal(${w.id})" class="py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1 shadow-sm"><i class="fa-solid fa-check"></i> Mark Completed</button>
+                <button onclick="adminRejectWithdrawal(${w.id})" class="py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1 shadow-sm"><i class="fa-solid fa-rotate-left"></i> Reject & Refund</button>
+              </div>
+            ` : ''}
+          </div>
+        `).join("");
+      }
+
+      // Render Users
+      const usersList = document.getElementById("admin-users-list");
+      usersList.innerHTML = users.map(u => `
         <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs flex items-center justify-between">
           <div>
-            <p class="font-bold text-slate-900">${u.fullName} ${u.identifier.toLowerCase() === ADMIN_EMAIL ? '<span class="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-bold">Admin</span>' : ''}</p>
+            <p class="font-bold text-slate-900">${u.fullName} ${u.isAdmin || u.identifier.toLowerCase() === ADMIN_EMAIL ? '<span class="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-bold">Admin</span>' : ''}</p>
             <p class="text-[10px] text-slate-500">${u.identifier}</p>
-            <p class="text-[10px] text-orange-600 font-semibold">Plan: ${u.activePlanName || 'None'}</p>
+            <p class="text-[10px] text-orange-600 font-semibold mt-0.5">Plan: ${u.activePlanName || 'None'}</p>
+            <p class="text-[10px] text-slate-600 font-medium mt-0.5 flex flex-wrap items-center gap-1">
+              <span class="bg-orange-100 text-orange-800 font-mono font-bold px-1.5 py-0.5 rounded text-[9px]"><i class="fa-solid fa-ticket text-orange-600"></i> ${u.referralCode || 'N/A'}</span>
+              <span>Invited: <strong>${u.referralCount || 0}</strong> ($${(u.referralEarningsUsd || 0).toFixed(2)})</span>
+              ${u.referredByCode ? `<span class="text-slate-400">• Ref by: <span class="font-mono font-bold text-slate-700">${u.referredByCode}</span></span>` : ''}
+            </p>
           </div>
           <div class="text-right">
             <span class="font-black text-slate-900 block">$${u.balanceUsd.toFixed(2)} USD</span>
@@ -1226,50 +1678,88 @@
     }
 
     function adminApproveDeposit(id) {
-      let deposits = getDeposits();
-      let dep = deposits.find(d => d.id === id);
+      const deposits = getDeposits();
+      const dep = deposits.find(d => d.id === id);
       if (!dep || dep.status !== "PENDING") return;
+
       dep.status = "APPROVED";
       saveDeposits(deposits);
 
-      let users = getUsers();
-      let user = users.find(u => u.id === dep.userId);
+      const users = getUsers();
+      const user = users.find(u => u.id === dep.userId);
+      let referralBonusMsg = "";
+
       if (user) {
         user.balanceUsd += dep.creditedUsd;
         user.balancePkr += dep.creditedPkr;
+
+        // Referral First Deposit Bonus: $1.00 USD to referrer
+        if (!user.hasCompletedFirstDeposit) {
+          if (user.referredByCode) {
+            const referrer = users.find(u => u.referralCode && u.referralCode.toUpperCase() === user.referredByCode.toUpperCase());
+            if (referrer && referrer.id !== user.id) {
+              const bonusUsd = 1.0;
+              const bonusPkr = bonusUsd * USD_TO_PKR;
+              referrer.balanceUsd += bonusUsd;
+              referrer.balancePkr += bonusPkr;
+              referrer.referralCount = (referrer.referralCount || 0) + 1;
+              referrer.referralEarningsUsd = (referrer.referralEarningsUsd || 0) + bonusUsd;
+              referralBonusMsg = ` + $1.00 referral bonus credited to ${referrer.identifier}!`;
+            }
+          }
+          user.hasCompletedFirstDeposit = true;
+        }
         saveUsers(users);
       }
-      showToast("Deposit approved successfully!", "success");
+      syncToCloud();
+
+      showToast(`Deposit approved! $${dep.creditedUsd.toFixed(2)} credited.${referralBonusMsg}`, "success");
       renderAdminScreen();
     }
 
     function adminRejectDeposit(id) {
-      let deposits = getDeposits();
-      let dep = deposits.find(d => d.id === id);
-      if (!dep) return;
+      const deposits = getDeposits();
+      const dep = deposits.find(d => d.id === id);
+      if (!dep || dep.status !== "PENDING") return;
       dep.status = "REJECTED";
       saveDeposits(deposits);
-      showToast("Deposit rejected", "error");
+      syncToCloud();
+      showToast(`Deposit #${id} rejected.`, "error");
       renderAdminScreen();
     }
 
     function adminCompleteWithdrawal(id) {
-      let withdrawals = getWithdrawals();
-      let wd = withdrawals.find(w => w.id === id);
-      if (!wd) return;
+      const withdrawals = getWithdrawals();
+      const wd = withdrawals.find(w => w.id === id);
+      if (!wd || wd.status !== "PENDING") return;
       wd.status = "COMPLETED";
       saveWithdrawals(withdrawals);
-      showToast("Withdrawal completed", "success");
+      syncToCloud();
+      showToast(`Withdrawal #${id} completed!`, "success");
       renderAdminScreen();
     }
 
     function adminRejectWithdrawal(id) {
-      let withdrawals = getWithdrawals();
-      let wd = withdrawals.find(w => w.id === id);
-      if (!wd) return;
+      const withdrawals = getWithdrawals();
+      const wd = withdrawals.find(w => w.id === id);
+      if (!wd || wd.status !== "PENDING") return;
       wd.status = "REJECTED";
       saveWithdrawals(withdrawals);
-      showToast("Withdrawal rejected & refunded", "success");
+
+      const users = getUsers();
+      const user = users.find(u => u.id === wd.userId);
+      if (user) {
+        if (wd.currency === "USD") {
+          user.balanceUsd += wd.amount;
+          user.balancePkr += (wd.amount * USD_TO_PKR);
+        } else {
+          user.balancePkr += wd.amount;
+          user.balanceUsd += (wd.amount / USD_TO_PKR);
+        }
+        saveUsers(users);
+      }
+      syncToCloud();
+      showToast(`Withdrawal rejected. Funds refunded to balance.`, "success");
       renderAdminScreen();
     }
 
@@ -1285,18 +1775,35 @@
     function showToast(message, type = "info") {
       const toast = document.getElementById("toast");
       document.getElementById("toast-message").textContent = message;
+      const icon = document.getElementById("toast-icon");
+      if (type === "success") icon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+      else if (type === "error") icon.innerHTML = `<i class="fa-solid fa-circle-exclamation text-rose-400"></i>`;
+      else icon.innerHTML = `<i class="fa-solid fa-circle-info text-amber-400"></i>`;
+
       toast.classList.remove("hidden");
       setTimeout(() => toast.classList.add("hidden"), 3000);
     }
 
     function copyToClipboard(text) {
-      navigator.clipboard.writeText(text).then(() => showToast("Copied!", "success"));
+      navigator.clipboard.writeText(text).then(() => showToast("Copied to clipboard!", "success")).catch(() => showToast("Copied: " + text));
     }
 
+    // MANDATORY ENTRYPOINT:
     window.addEventListener("DOMContentLoaded", () => {
+      // Background sync from global online database
+      syncFromCloud(true);
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const refParam = urlParams.get("ref");
+      if (refParam) {
+        setAuthMode("register");
+        const refInput = document.getElementById("auth-referral-code");
+        if (refInput) refInput.value = refParam.toUpperCase();
+      }
+
       const user = getCurrentUser();
-      if (user) {
-        if (user.identifier.toLowerCase() === ADMIN_EMAIL || user.isAdmin) {
+      if (user && !refParam) {
+        if (user.identifier.toLowerCase() === ADMIN_EMAIL || user.isAdmin === true) {
           switchScreen("admin");
         } else {
           switchScreen("home");
