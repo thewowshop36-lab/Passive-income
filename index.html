@@ -146,42 +146,31 @@
 
           <!-- Partner Logos & Badges Grid -->
           <div class="grid grid-cols-3 gap-2">
-            <!-- Binance -->
             <div class="bg-slate-50 border border-slate-200 hover:border-amber-300 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm transition">
               <div class="w-8 h-8 rounded-lg bg-amber-400/10 text-amber-500 flex items-center justify-center text-lg font-black mb-1"><i class="fa-brands fa-bitcoin"></i></div>
               <span class="text-[11px] font-black text-slate-800 leading-tight">Binance</span>
               <span class="text-[9px] text-slate-400 font-medium">Liquidity Node</span>
             </div>
-
-            <!-- Tether USDT -->
             <div class="bg-slate-50 border border-slate-200 hover:border-emerald-300 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm transition">
               <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-coins"></i></div>
               <span class="text-[11px] font-black text-slate-800 leading-tight">Tether USDT</span>
               <span class="text-[9px] text-slate-400 font-medium">TRC20 Official</span>
             </div>
-
-            <!-- Tron DAO -->
             <div class="bg-slate-50 border border-slate-200 hover:border-rose-300 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm transition">
               <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-cube"></i></div>
               <span class="text-[11px] font-black text-slate-800 leading-tight">Tron DAO</span>
               <span class="text-[9px] text-slate-400 font-medium">Instant Block</span>
             </div>
-
-            <!-- JazzCash -->
             <div class="bg-slate-50 border border-slate-200 hover:border-orange-300 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm transition">
               <div class="w-8 h-8 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-money-bill-wave"></i></div>
               <span class="text-[11px] font-black text-slate-800 leading-tight">JazzCash</span>
               <span class="text-[9px] text-slate-400 font-medium">Direct Settlement</span>
             </div>
-
-            <!-- EasyPaisa -->
             <div class="bg-slate-50 border border-slate-200 hover:border-emerald-300 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm transition">
               <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-wallet"></i></div>
               <span class="text-[11px] font-black text-slate-800 leading-tight">EasyPaisa</span>
               <span class="text-[9px] text-slate-400 font-medium">Pakistan Gateway</span>
             </div>
-
-            <!-- Cloudflare Security -->
             <div class="bg-slate-50 border border-slate-200 hover:border-blue-300 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm transition">
               <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-shield-halved"></i></div>
               <span class="text-[11px] font-black text-slate-800 leading-tight">Cloudflare</span>
@@ -189,7 +178,6 @@
             </div>
           </div>
 
-          <!-- Trust & Collaboration Banner -->
           <div class="p-3 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 rounded-xl border border-orange-100 flex items-center gap-2.5">
             <div class="w-7 h-7 rounded-lg bg-orange-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm"><i class="fa-solid fa-award"></i></div>
             <p class="text-[10px] text-slate-600 leading-relaxed font-medium">
@@ -331,7 +319,7 @@
         </div>
       </section>
 
-      <!-- ================= 3. PLANS SCREEN (10 Structured VIP Investment Plans) ================= -->
+      <!-- ================= 3. PLANS SCREEN ================= -->
       <section id="screen-plans" class="hidden p-4 space-y-4">
         <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-4 text-white shadow-md">
           <h2 class="text-lg font-black tracking-tight">10 VIP Investment Plans</h2>
@@ -481,7 +469,7 @@
         </div>
       </section>
 
-      <!-- ================= 7. STRICT ADMIN BACKOFFICE (LOCKED TO Adjatt87@gmail.com) ================= -->
+      <!-- ================= 7. STRICT ADMIN BACKOFFICE ================= -->
       <section id="screen-admin" class="hidden p-4 space-y-4">
         <div class="bg-slate-950 text-white rounded-2xl p-4 border border-slate-800 shadow-xl">
           <div class="flex items-center justify-between mb-3">
@@ -502,7 +490,7 @@
             </div>
           </div>
           <div class="flex items-center justify-between px-3 py-1.5 bg-emerald-950/60 border border-emerald-800/60 rounded-xl text-[10px] text-emerald-300 mb-3">
-            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Global Online Database (Real-time Cloud Sync)</span>
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Dedicated Cloud Database (JSONBin.io Private Key)</span>
             <span id="admin-last-sync-time" class="text-slate-400 font-mono">Live</span>
           </div>
           <div class="grid grid-cols-3 gap-2 text-center text-xs">
@@ -607,8 +595,10 @@
     const USD_TO_PKR = 280.0;
     const AD_REWARD_USD = 0.05;
 
-    // Global Online Cloud Database (Synchronized across all user devices & admin phone)
-    const CLOUD_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a0d259c2020531";
+    // Dedicated Cloud Database (JSONBin.io API with Private Master Key)
+    const JSONBIN_URL = "https://api.jsonbin.io/v3/b/6ab4e6b7ffd5d1605329b5fd";
+    const JSONBIN_KEY = "$2a$10$2zkWHyyET6.M2zVcJkTBX.nlWrpw51LweZM.KFfaZRJgqW071pFqq";
+    const EVENT_STREAM_URL = "https://ntfy.sh/pi_passive_adjatt87_stream";
     let isSyncingCloud = false;
     let cloudAutoSyncTimer = null;
 
@@ -619,54 +609,108 @@
       if (syncIcon) syncIcon.classList.add("fa-spin");
 
       try {
-        const res = await fetch(CLOUD_DB_URL);
-        if (res.ok) {
-          const json = await res.json();
-          if (json && json.data) {
-            const remoteUsers = json.data.users || [];
-            const remoteDeps = json.data.deposits || [];
-            const remoteWds = json.data.withdrawals || [];
+        let localUsers = getUsers();
+        let localDeps = getDeposits();
+        let localWds = getWithdrawals();
+        let hasChanges = false;
 
-            // Merge remote users with local users
-            const localUsers = getUsers();
-            const userMap = new Map();
-            remoteUsers.forEach(u => userMap.set(u.identifier.toLowerCase(), u));
-            localUsers.forEach(u => {
-              const k = u.identifier.toLowerCase();
-              if (userMap.has(k)) {
-                userMap.set(k, { ...userMap.get(k), ...u });
-              } else {
-                userMap.set(k, u);
-              }
-            });
-            const mergedUsers = Array.from(userMap.values());
-            saveUsers(mergedUsers);
-
-            // Merge deposits
-            const localDeps = getDeposits();
-            const depMap = new Map();
-            remoteDeps.forEach(d => depMap.set(d.id, d));
-            localDeps.forEach(d => depMap.set(d.id, { ...(depMap.get(d.id) || {}), ...d }));
-            saveDeposits(Array.from(depMap.values()));
-
-            // Merge withdrawals
-            const localWds = getWithdrawals();
-            const wdMap = new Map();
-            remoteWds.forEach(w => wdMap.set(w.id, w));
-            localWds.forEach(w => wdMap.set(w.id, { ...(wdMap.get(w.id) || {}), ...w }));
-            saveWithdrawals(Array.from(wdMap.values()));
-
-            const timeEl = document.getElementById("admin-last-sync-time");
-            if (timeEl) timeEl.textContent = new Date().toLocaleTimeString();
-
-            if (currentScreen === "admin") {
-              renderAdminScreen();
+        // 1. Fetch from Dedicated JSONBin Cloud Database
+        try {
+          const res = await fetch(`${JSONBIN_URL}/latest`, {
+            headers: {
+              "X-Master-Key": JSONBIN_KEY,
+              "X-Bin-Meta": "false"
             }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data) {
+              const remoteUsers = data.users || (data.record ? data.record.users : []) || [];
+              const remoteDeps = data.deposits || (data.record ? data.record.deposits : []) || [];
+              const remoteWds = data.withdrawals || (data.record ? data.record.withdrawals : []) || [];
 
-            if (!silent) {
-              showToast(`Live Cloud Synced! ${mergedUsers.length} total users loaded.`, "success");
+              const userMap = new Map();
+              remoteUsers.forEach(u => { if (u && u.identifier) userMap.set(u.identifier.toLowerCase(), u); });
+              localUsers.forEach(u => {
+                if (!u || !u.identifier) return;
+                const k = u.identifier.toLowerCase();
+                userMap.set(k, { ...(userMap.get(k) || {}), ...u });
+              });
+              localUsers = Array.from(userMap.values());
+
+              const depMap = new Map();
+              remoteDeps.forEach(d => { if (d && d.id) depMap.set(d.id, d); });
+              localDeps.forEach(d => { if (d && d.id) depMap.set(d.id, { ...(depMap.get(d.id) || {}), ...d }); });
+              localDeps = Array.from(depMap.values());
+
+              const wdMap = new Map();
+              remoteWds.forEach(w => { if (w && w.id) wdMap.set(w.id, w); });
+              localWds.forEach(w => { if (w && w.id) wdMap.set(w.id, { ...(wdMap.get(w.id) || {}), ...w }); });
+              localWds = Array.from(wdMap.values());
+              hasChanges = true;
             }
           }
+        } catch (e) {
+          console.warn("JSONBin cloud read error:", e);
+        }
+
+        // 2. Poll Real-Time Live Event Stream (Captures registrations & requests from ANY phone in real-time)
+        try {
+          const streamRes = await fetch(`${EVENT_STREAM_URL}/json?poll=1&since=all`);
+          if (streamRes.ok) {
+            const rawText = await streamRes.text();
+            const lines = rawText.trim().split("\n");
+            for (const line of lines) {
+              if (!line.trim()) continue;
+              try {
+                const eventObj = JSON.parse(line);
+                if (eventObj.message) {
+                  const payload = JSON.parse(eventObj.message);
+                  if (payload.type === "new_user" && payload.user) {
+                    const u = payload.user;
+                    const exists = localUsers.some(x => x.identifier.toLowerCase() === u.identifier.toLowerCase());
+                    if (!exists) {
+                      localUsers.push(u);
+                      hasChanges = true;
+                    }
+                  } else if (payload.type === "new_deposit" && payload.deposit) {
+                    const d = payload.deposit;
+                    const exists = localDeps.some(x => x.id === d.id);
+                    if (!exists) {
+                      localDeps.push(d);
+                      hasChanges = true;
+                    }
+                  } else if (payload.type === "new_withdrawal" && payload.withdrawal) {
+                    const w = payload.withdrawal;
+                    const exists = localWds.some(x => x.id === w.id);
+                    if (!exists) {
+                      localWds.push(w);
+                      hasChanges = true;
+                    }
+                  }
+                }
+              } catch (parseErr) {}
+            }
+          }
+        } catch (streamErr) {
+          console.warn("Event stream poll error:", streamErr);
+        }
+
+        if (hasChanges) {
+          saveUsers(localUsers);
+          saveDeposits(localDeps);
+          saveWithdrawals(localWds);
+        }
+
+        const timeEl = document.getElementById("admin-last-sync-time");
+        if (timeEl) timeEl.textContent = new Date().toLocaleTimeString();
+
+        if (currentScreen === "admin") {
+          renderAdminScreen();
+        }
+
+        if (!silent) {
+          showToast(`Live Cloud Synced! ${localUsers.length} total users loaded.`, "success");
         }
       } catch (err) {
         console.warn("Cloud sync offline fallback:", err);
@@ -676,60 +720,40 @@
       }
     }
 
-    async function syncToCloud() {
+    async function syncToCloud(eventType = null, eventPayload = null) {
       try {
-        let remoteUsers = [];
-        let remoteDeps = [];
-        let remoteWds = [];
-        try {
-          const res = await fetch(CLOUD_DB_URL);
-          if (res.ok) {
-            const json = await res.json();
-            if (json && json.data) {
-              remoteUsers = json.data.users || [];
-              remoteDeps = json.data.deposits || [];
-              remoteWds = json.data.withdrawals || [];
-            }
-          }
-        } catch (e) {}
-
         const localUsers = getUsers();
-        const userMap = new Map();
-        remoteUsers.forEach(u => userMap.set(u.identifier.toLowerCase(), u));
-        localUsers.forEach(u => {
-          const k = u.identifier.toLowerCase();
-          userMap.set(k, { ...(userMap.get(k) || {}), ...u });
-        });
-        const finalUsers = Array.from(userMap.values());
-
         const localDeps = getDeposits();
-        const depMap = new Map();
-        remoteDeps.forEach(d => depMap.set(d.id, d));
-        localDeps.forEach(d => depMap.set(d.id, { ...(depMap.get(d.id) || {}), ...d }));
-        const finalDeps = Array.from(depMap.values());
-
         const localWds = getWithdrawals();
-        const wdMap = new Map();
-        remoteWds.forEach(w => wdMap.set(w.id, w));
-        localWds.forEach(w => wdMap.set(w.id, { ...(wdMap.get(w.id) || {}), ...w }));
-        const finalWds = Array.from(wdMap.values());
 
-        saveUsers(finalUsers);
-        saveDeposits(finalDeps);
-        saveWithdrawals(finalWds);
+        // 1. Broadcast immediate live event through high-speed relay stream
+        if (eventType && eventPayload) {
+          try {
+            fetch(EVENT_STREAM_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ type: eventType, [eventType.replace("new_", "")]: eventPayload, time: Date.now() })
+            }).catch(() => {});
+          } catch (e) {}
+        }
 
-        await fetch(CLOUD_DB_URL, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: "PassiveIncome_Database_v1",
-            data: {
-              users: finalUsers,
-              deposits: finalDeps,
-              withdrawals: finalWds
-            }
-          })
-        });
+        // 2. Persist directly to Dedicated JSONBin Cloud Database
+        try {
+          await fetch(JSONBIN_URL, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Master-Key": JSONBIN_KEY
+            },
+            body: JSON.stringify({
+              users: localUsers,
+              deposits: localDeps,
+              withdrawals: localWds
+            })
+          });
+        } catch (binErr) {
+          console.warn("JSONBin PUT error:", binErr);
+        }
 
         const timeEl = document.getElementById("admin-last-sync-time");
         if (timeEl) timeEl.textContent = new Date().toLocaleTimeString();
@@ -737,6 +761,7 @@
         console.warn("Cloud push error:", err);
       }
     }
+
     // 10 Structured VIP Investment Plans (Exact Daily Ads Limits & $0.05 Ad Reward)
     const VIP_PLANS = [
       { id: 1, name: "VIP 1", pricePkr: 1000, priceUsd: 3.57, dailyAds: 5, dailyIncomeUsd: 0.25, dailyIncomePkr: 70, returnRoi: "7% Daily" },
@@ -895,7 +920,7 @@
           if (!cloudAutoSyncTimer) {
             cloudAutoSyncTimer = setInterval(() => {
               if (currentScreen === "admin") syncFromCloud(true);
-            }, 8000); // Live poll cloud every 8 seconds for new users from other phones
+            }, 8000);
           }
         } else {
           if (cloudAutoSyncTimer) {
@@ -1048,7 +1073,7 @@
         users.push(newUser);
         saveUsers(users);
         localStorage.setItem("pi_current_user_id", newUser.id.toString());
-        syncToCloud();
+        syncToCloud("new_user", newUser);
 
         if (isTryingAdmin) {
           showToast("Admin registered! Loading Admin Panel...", "success");
@@ -1213,7 +1238,6 @@
         return;
       }
 
-      // Deduct balance & activate plan
       const users = getUsers();
       const u = users.find(x => x.id === user.id);
       if (u) {
@@ -1426,7 +1450,7 @@
       }
 
       const deposits = getDeposits();
-      deposits.push({
+      const newDep = {
         id: Date.now(),
         userId: user.id,
         userIdentifier: user.identifier,
@@ -1440,9 +1464,10 @@
         screenshot: attachedScreenshotBase64 || null,
         status: "PENDING",
         date: new Date().toLocaleString()
-      });
+      };
+      deposits.push(newDep);
       saveDeposits(deposits);
-      syncToCloud();
+      syncToCloud("new_deposit", newDep);
 
       showToast("Deposit request submitted! Admin will verify and credit your balance.", "success");
       e.target.reset();
@@ -1515,7 +1540,6 @@
         return;
       }
 
-      // Deduct balance immediately
       const users = getUsers();
       const u = users.find(x => x.id === user.id);
       if (u) {
@@ -1525,7 +1549,7 @@
       }
 
       const withdrawals = getWithdrawals();
-      withdrawals.push({
+      const newWd = {
         id: Date.now(),
         userId: user.id,
         userIdentifier: user.identifier,
@@ -1536,9 +1560,10 @@
         accountIdentifier: identifier,
         status: "PENDING",
         date: new Date().toLocaleString()
-      });
+      };
+      withdrawals.push(newWd);
       saveWithdrawals(withdrawals);
-      syncToCloud();
+      syncToCloud("new_withdrawal", newWd);
 
       showToast("Withdrawal placed! Sent to admin for payout processing.", "success");
       e.target.reset();
@@ -1693,7 +1718,6 @@
         user.balanceUsd += dep.creditedUsd;
         user.balancePkr += dep.creditedPkr;
 
-        // Referral First Deposit Bonus: $1.00 USD to referrer
         if (!user.hasCompletedFirstDeposit) {
           if (user.referredByCode) {
             const referrer = users.find(u => u.referralCode && u.referralCode.toUpperCase() === user.referredByCode.toUpperCase());
@@ -1790,7 +1814,6 @@
 
     // MANDATORY ENTRYPOINT:
     window.addEventListener("DOMContentLoaded", () => {
-      // Background sync from global online database
       syncFromCloud(true);
 
       const urlParams = new URLSearchParams(window.location.search);
@@ -1814,4 +1837,4 @@
     });
   </script>
 </body>
-</html>
+  </html>
