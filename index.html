@@ -300,7 +300,7 @@
             <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold"><i class="fa-solid fa-tv text-lg"></i></div>
             <div>
               <div class="text-xs font-bold text-slate-800">Watch Ads</div>
-              <div class="text-[10px] text-slate-400">$0.05 / 15s Timer</div>
+              <div class="text-[10px] text-slate-400">5 to 35 Daily Limit</div>
             </div>
           </div>
           <div onclick="switchScreen('deposit')" class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm hover:border-orange-200 transition cursor-pointer flex items-center space-x-3">
@@ -314,7 +314,7 @@
             <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold"><i class="fa-solid fa-arrow-up-right-from-square text-lg"></i></div>
             <div>
               <div class="text-xs font-bold text-slate-800">Withdraw</div>
-              <div class="text-[10px] text-slate-400">Instant Processing</div>
+              <div class="text-[10px] text-slate-400">Min $12 / 3,360 PKR</div>
             </div>
           </div>
         </div>
@@ -598,18 +598,18 @@
     const USD_TO_PKR = 280.0;
     const AD_REWARD_USD = 0.05;
 
-    // 10 Structured VIP Investment Plans
+    // 10 Structured VIP Investment Plans (Exact Daily Ads Limits & $0.05 Ad Reward)
     const VIP_PLANS = [
-      { id: 1, name: "VIP 1", pricePkr: 1000, priceUsd: 3.57, dailyAds: 20, dailyIncomeUsd: 1.00, dailyIncomePkr: 280, returnRoi: "28% Daily" },
-      { id: 2, name: "VIP 2", pricePkr: 2000, priceUsd: 7.14, dailyAds: 40, dailyIncomeUsd: 2.00, dailyIncomePkr: 560, returnRoi: "28% Daily" },
-      { id: 3, name: "VIP 3", pricePkr: 3000, priceUsd: 10.71, dailyAds: 60, dailyIncomeUsd: 3.00, dailyIncomePkr: 840, returnRoi: "28% Daily" },
-      { id: 4, name: "VIP 4", pricePkr: 4000, priceUsd: 14.29, dailyAds: 80, dailyIncomeUsd: 4.00, dailyIncomePkr: 1120, returnRoi: "28% Daily" },
-      { id: 5, name: "VIP 5", pricePkr: 5000, priceUsd: 17.86, dailyAds: 100, dailyIncomeUsd: 5.00, dailyIncomePkr: 1400, returnRoi: "28% Daily" },
-      { id: 6, name: "VIP 6", pricePkr: 6000, priceUsd: 21.43, dailyAds: 120, dailyIncomeUsd: 6.00, dailyIncomePkr: 1680, returnRoi: "28% Daily" },
-      { id: 7, name: "VIP 7", pricePkr: 7000, priceUsd: 25.00, dailyAds: 140, dailyIncomeUsd: 7.00, dailyIncomePkr: 1960, returnRoi: "28% Daily" },
-      { id: 8, name: "VIP 8", pricePkr: 8000, priceUsd: 28.57, dailyAds: 160, dailyIncomeUsd: 8.00, dailyIncomePkr: 2240, returnRoi: "28% Daily" },
-      { id: 9, name: "VIP 9", pricePkr: 9000, priceUsd: 32.14, dailyAds: 180, dailyIncomeUsd: 9.00, dailyIncomePkr: 2520, returnRoi: "28% Daily" },
-      { id: 10, name: "VIP 10", pricePkr: 10000, priceUsd: 35.71, dailyAds: 200, dailyIncomeUsd: 10.00, dailyIncomePkr: 2800, returnRoi: "28% Daily" }
+      { id: 1, name: "VIP 1", pricePkr: 1000, priceUsd: 3.57, dailyAds: 5, dailyIncomeUsd: 0.25, dailyIncomePkr: 70, returnRoi: "7% Daily" },
+      { id: 2, name: "VIP 2", pricePkr: 2000, priceUsd: 7.14, dailyAds: 7, dailyIncomeUsd: 0.35, dailyIncomePkr: 98, returnRoi: "4.9% Daily" },
+      { id: 3, name: "VIP 3", pricePkr: 3000, priceUsd: 10.71, dailyAds: 10, dailyIncomeUsd: 0.50, dailyIncomePkr: 140, returnRoi: "4.7% Daily" },
+      { id: 4, name: "VIP 4", pricePkr: 4000, priceUsd: 14.29, dailyAds: 12, dailyIncomeUsd: 0.60, dailyIncomePkr: 168, returnRoi: "4.2% Daily" },
+      { id: 5, name: "VIP 5", pricePkr: 5000, priceUsd: 17.86, dailyAds: 15, dailyIncomeUsd: 0.75, dailyIncomePkr: 210, returnRoi: "4.2% Daily" },
+      { id: 6, name: "VIP 6", pricePkr: 6000, priceUsd: 21.43, dailyAds: 18, dailyIncomeUsd: 0.90, dailyIncomePkr: 252, returnRoi: "4.2% Daily" },
+      { id: 7, name: "VIP 7", pricePkr: 7000, priceUsd: 25.00, dailyAds: 20, dailyIncomeUsd: 1.00, dailyIncomePkr: 280, returnRoi: "4.0% Daily" },
+      { id: 8, name: "VIP 8", pricePkr: 8000, priceUsd: 28.57, dailyAds: 25, dailyIncomeUsd: 1.25, dailyIncomePkr: 350, returnRoi: "4.4% Daily" },
+      { id: 9, name: "VIP 9", pricePkr: 9000, priceUsd: 32.14, dailyAds: 30, dailyIncomeUsd: 1.50, dailyIncomePkr: 420, returnRoi: "4.7% Daily" },
+      { id: 10, name: "VIP 10", pricePkr: 10000, priceUsd: 35.71, dailyAds: 35, dailyIncomeUsd: 1.75, dailyIncomePkr: 490, returnRoi: "4.9% Daily (Max VIP)" }
     ];
 
     // Official Deposit Payment Accounts
@@ -997,7 +997,7 @@
               <span class="text-xs font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100">${plan.returnRoi}</span>
             </div>
             <div class="grid grid-cols-2 gap-2 my-3 p-2.5 bg-slate-50 rounded-xl text-xs border border-slate-100">
-              <div><span class="text-[10px] text-slate-400 block">Daily Ads</span><span class="font-bold text-slate-800">${plan.dailyAds} Ads</span></div>
+              <div><span class="text-[10px] text-slate-400 block">Daily Ads Limit</span><span class="font-bold text-slate-800">${plan.dailyAds} Ads</span></div>
               <div><span class="text-[10px] text-slate-400 block">Daily Earnings</span><span class="font-bold text-emerald-600">${plan.dailyIncomePkr} PKR ($${plan.dailyIncomeUsd.toFixed(2)})</span></div>
             </div>
             <button onclick="handlePurchasePlan(${plan.id})" ${isCurrent ? 'disabled' : ''} class="w-full py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 ${
@@ -1208,7 +1208,7 @@
 
     function renderDepositScreen(user) { selectDepositMethod(selectedDepMethod); }
 
-    // Withdrawal System
+    // Withdrawal System (USDT Min $12 USD, JazzCash & EasyPaisa Min 3,360 PKR)
     function selectWithdrawMethod(method) {
       selectedWdMethod = method;
       ["usdt", "jazzcash", "easypaisa"].forEach(m => {
@@ -1217,7 +1217,7 @@
       });
       const currency = method === "usdt" ? "USD" : "PKR";
       document.getElementById("wd-form-currency-label").textContent = currency;
-      document.getElementById("wd-amount").placeholder = method === "usdt" ? "Min $12 USD" : "Min 4,000 PKR";
+      document.getElementById("wd-amount").placeholder = method === "usdt" ? "Min $12 USD" : "Min 3,360 PKR (=$12 USD)";
     }
 
     function handleWithdrawSubmit(e) {
@@ -1232,12 +1232,14 @@
       if (!amount || amount <= 0) return showToast("Enter valid withdrawal amount", "error");
       if (!title || !iden) return showToast("Account title and number required", "error");
 
+      const minPkrLimit = 12.0 * USD_TO_PKR; // Exactly 3,360 PKR matched to $12 USD
+
       if (selectedWdMethod === "usdt") {
         if (amount < 12.0) return showToast("Minimum USDT withdrawal is $12 USD", "error");
         if (user.balanceUsd < amount) return showToast(`Insufficient USD balance! You have $${user.balanceUsd.toFixed(2)}`, "error");
         updateCurrentUser({ balanceUsd: user.balanceUsd - amount, balancePkr: Math.max(0, user.balancePkr - (amount * USD_TO_PKR)) });
       } else {
-        if (amount < 4000.0) return showToast("Minimum withdrawal is 4,000 PKR", "error");
+        if (amount < minPkrLimit) return showToast(`Minimum withdrawal is ${minPkrLimit.toLocaleString()} PKR (equivalent to $12 USD)`, "error");
         if (user.balancePkr < amount) return showToast(`Insufficient PKR balance! You have ${Math.round(user.balancePkr)} PKR`, "error");
         updateCurrentUser({ balancePkr: user.balancePkr - amount, balanceUsd: Math.max(0, user.balanceUsd - (amount / USD_TO_PKR)) });
       }
@@ -1544,4 +1546,4 @@
     });
   </script>
 </body>
-  </html>
+</html>
