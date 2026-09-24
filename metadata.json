@@ -1,0 +1,6 @@
+{
+  "name": "Passive Income",
+  "description": "Earn passive income through 10 VIP investment plans, micro-task ad earnings, multi-method deposits, and verified withdrawals.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

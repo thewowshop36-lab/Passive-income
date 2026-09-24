@@ -1,0 +1,20 @@
+{
+  "name": "passive-income-web",
+  "version": "1.0.0",
+  "description": "Mobile-First Passive Income Platform with 10 VIP Investment Plans, Daily Ads Earnings, Deposits & Withdrawals",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve -s .",
+    "dev": "npx serve -s .",
+    "build": "echo 'Static web application ready for deployment'"
+  },
+  "keywords": [
+    "passive-income",
+    "mobile-first",
+    "tailwind",
+    "vip-plans",
+    "ads-earning"
+  ],
+  "author": "",
+  "license": "MIT"
+}

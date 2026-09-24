@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Passive Income - Smart Earning Platform</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fff7ed',
+              100: '#ffedd5',
+              200: '#fed7aa',
+              300: '#fdba74',
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+              800: '#9a3412',
+              900: '#7c2d12',
+              DEFAULT: '#FF6B00',
+              dark: '#E05500',
+              light: '#FF8833'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Smooth mobile experience */
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .glow-orange {
+      box-shadow: 0 10px 25px -5px rgba(255, 107, 0, 0.25), 0 8px 10px -6px rgba(255, 107, 0, 0.2);
+    }
+    .bottom-nav-shadow {
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
+    }
+    @keyframes pulse-slow {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .animate-pulse-slow {
+      animation: pulse-slow 2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex justify-center">
+
+  <!-- Mobile Container Wrapper -->
+  <div id="app-container" class="w-full max-w-md bg-white min-h-screen shadow-2xl relative flex flex-col overflow-x-hidden pb-20">
+
+    <!-- Global Header -->
+    <header id="global-header" class="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-5 pt-4 pb-4 sticky top-0 z-40 shadow-md">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-black text-lg border border-white/30 shadow-inner">
+            <i class="fa-solid fa-coins text-amber-200"></i>
+          </div>
+          <div>
+            <h1 class="text-base font-bold tracking-tight leading-tight">Passive Income</h1>
+            <p id="header-user-status" class="text-xs text-orange-100 flex items-center gap-1 font-medium">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-ping"></span>
+              VIP Earning Platform
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Admin Panel Shortcut Button -->
+          <button onclick="openAdminModal()" class="px-2.5 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-xs font-semibold backdrop-blur-sm border border-white/20 transition flex items-center gap-1.5" title="Admin Control">
+            <i class="fa-solid fa-shield-halved text-amber-200 text-xs"></i>
+            <span class="hidden xs:inline">Admin</span>
+          </button>
+          
+          <!-- Profile / Logout Dropdown -->
+          <button onclick="toggleUserMenu()" class="w-9 h-9 rounded-full bg-white text-orange-600 flex items-center justify-center font-bold text-sm shadow hover:bg-orange-50 transition border border-white/50">
+            <i class="fa-solid fa-user text-orange-600"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- User Menu Dropdown -->
+      <div id="user-menu-dropdown" class="hidden absolute right-4 top-16 bg-white text-slate-800 rounded-2xl shadow-2xl border border-slate-100 p-2 w-56 z-50 transition-all">
+        <div class="p-2 border-b border-slate-100">
+          <p id="menu-user-name" class="font-bold text-sm text-slate-900 truncate">User</p>
+          <p id="menu-user-id" class="text-xs text-slate-500 truncate">demo@passiveincome.com</p>
+        </div>
+        <div class="py-1">
+          <button onclick="switchScreen('plans'); closeUserMenu();" class="w-full text-left px-3 py-2 text-xs font-medium hover:bg-orange-50 rounded-lg flex items-center gap-2 text-slate-700">
+            <i class="fa-solid fa-crown text-orange-500 w-4"></i> My VIP Plans
+          </button>
+          <button onclick="switchScreen('watch'); closeUserMenu();" class="w-full text-left px-3 py-2 text-xs font-medium hover:bg-orange-50 rounded-lg flex items-center gap-2 text-slate-700">
+            <i class="fa-solid fa-play text-orange-500 w-4"></i> Watch Ads Today
+          </button>
+          <button onclick="openAdminModal(); closeUserMenu();" class="w-full text-left px-3 py-2 text-xs font-medium hover:bg-orange-50 rounded-lg flex items-center gap-2 text-slate-700">
+            <i class="fa-solid fa-sliders text-orange-500 w-4"></i> Admin Backoffice
+          </button>
+        </div>
+        <div class="pt-1 border-t border-slate-100">
+          <button onclick="handleLogout()" class="w-full text-left px-3 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 rounded-lg flex items-center gap-2">
+            <i class="fa-solid fa-arrow-right-from-bracket w-4"></i> Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Screens Viewport -->
+    <main class="flex-1 overflow-y-auto">
+
+      <!-- ================= 1. AUTH SCREEN ================= -->
+      <section id="screen-auth" class="hidden p-6 flex flex-col justify-center min-h-[85vh]">
+        <div class="text-center mb-6">
+          <div class="w-16 h-16 bg-gradient-to-tr from-orange-500 to-amber-400 rounded-2xl mx-auto flex items-center justify-center text-white text-2xl shadow-lg shadow-orange-500/30 mb-3">
+            <i class="fa-solid fa-wallet"></i>
+          </div>
+          <h2 class="text-2xl font-black text-slate-900 tracking-tight">Passive Income</h2>
+          <p class="text-xs text-slate-500 mt-1">Earn Daily Rewards & Fixed $0.05 Ad Returns</p>
+        </div>
+
+        <!-- Auth Toggle -->
+        <div class="flex bg-slate-100 p-1 rounded-xl mb-6 border border-slate-200">
+          <button id="auth-tab-login" onclick="setAuthMode('login')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white text-orange-600 shadow-sm transition">Sign In</button>
+          <button id="auth-tab-register" onclick="setAuthMode('register')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition">Create Account</button>
+        </div>
+
+        <!-- Auth Form -->
+        <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+          <div id="auth-fullname-field" class="hidden">
+            <label class="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                <i class="fa-regular fa-user text-sm"></i>
+              </span>
+              <input type="text" id="auth-fullname" placeholder="e.g. John Doe" class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Email or Mobile Number</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                <i class="fa-regular fa-envelope text-sm"></i>
+              </span>
+              <input type="text" id="auth-identifier" required placeholder="user@example.com or 03001234567" class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                <i class="fa-solid fa-lock text-sm"></i>
+              </span>
+              <input type="password" id="auth-password" required placeholder="••••••••" class="w-full pl-10 pr-10 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+              <button type="button" onclick="togglePasswordVisibility('auth-password')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
+                <i class="fa-regular fa-eye text-sm"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" id="auth-submit-btn" class="w-full py-3 px-4 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-xl shadow-lg shadow-orange-500/25 transition flex items-center justify-center gap-2 text-sm mt-2">
+            <span>Sign In</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
+        </form>
+
+        <!-- Quick Demo Switcher -->
+        <div class="mt-8 pt-6 border-t border-slate-200">
+          <p class="text-xs text-center text-slate-400 uppercase font-semibold tracking-wider mb-3">Quick One-Click Test Accounts</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="fillAndLogin('demo@passiveincome.com', 'demo123')" class="p-2.5 text-xs bg-orange-50 border border-orange-200 hover:bg-orange-100 text-orange-800 rounded-xl font-bold flex flex-col items-center transition">
+              <span class="flex items-center gap-1"><i class="fa-solid fa-user-check"></i> Demo Investor</span>
+              <span class="text-[10px] text-orange-600 font-normal mt-0.5">VIP Plan 1 Active ($15.00)</span>
+            </button>
+            <button onclick="fillAndLogin('admin@passiveincome.com', 'admin123')" class="p-2.5 text-xs bg-slate-100 border border-slate-300 hover:bg-slate-200 text-slate-800 rounded-xl font-bold flex flex-col items-center transition">
+              <span class="flex items-center gap-1"><i class="fa-solid fa-user-shield"></i> Admin Portal</span>
+              <span class="text-[10px] text-slate-500 font-normal mt-0.5">Full Backoffice Power</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. HOME SCREEN ================= -->
+      <section id="screen-home" class="p-4 space-y-4">
+        
+        <!-- Wallet Balance Card -->
+        <div class="bg-gradient-to-br from-orange-500 via-orange-600 to-amber-600 text-white rounded-3xl p-5 shadow-xl glow-orange relative overflow-hidden">
+          <!-- Decorative circles -->
+          <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+          <div class="absolute right-6 top-3 w-16 h-16 bg-amber-400/20 rounded-full blur-md pointer-events-none"></div>
+
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs uppercase tracking-wider font-bold text-orange-100 flex items-center gap-1.5">
+              <i class="fa-solid fa-wallet text-amber-200"></i> Total Available Balance
+            </span>
+            <span id="home-badge-plan" class="bg-white/20 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white border border-white/30">
+              No Plan
+            </span>
+          </div>
+
+          <div class="my-2">
+            <div class="text-3xl font-black tracking-tight" id="home-balance-usd">$0.00 USD</div>
+            <div class="text-sm font-semibold text-orange-100" id="home-balance-pkr">≈ 0 PKR (Rate: 280)</div>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div class="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-white/20">
+            <button onclick="switchScreen('deposit')" class="py-2.5 px-3 bg-white text-orange-600 hover:bg-orange-50 rounded-xl font-bold text-xs shadow transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-circle-plus text-orange-500"></i> Deposit Funds
+            </button>
+            <button onclick="switchScreen('withdraw')" class="py-2.5 px-3 bg-orange-700/60 hover:bg-orange-700/80 text-white rounded-xl font-bold text-xs backdrop-blur-sm border border-white/20 transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-money-bill-transfer text-amber-300"></i> Withdraw
+            </button>
+          </div>
+        </div>
+
+        <!-- VIP Active Plan & Daily Ads Progress Widget -->
+        <div id="home-vip-card" class="bg-white rounded-2xl p-4 border border-orange-100 shadow-sm relative overflow-hidden">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 id="home-plan-title" class="font-bold text-sm text-slate-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-gem text-orange-500"></i> Active Plan: None
+              </h3>
+              <p id="home-plan-subtitle" class="text-xs text-slate-500 mt-0.5">Activate a VIP plan to unlock daily ads earning</p>
+            </div>
+            <button onclick="switchScreen('plans')" class="text-xs font-bold text-orange-600 hover:text-orange-700 bg-orange-50 px-3 py-1.5 rounded-lg border border-orange-200 transition">
+              Upgrade
+            </button>
+          </div>
+
+          <!-- Ads Daily Counter Bar -->
+          <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="font-semibold text-slate-600">Daily Ads Watched Today:</span>
+              <span id="home-ads-progress-text" class="font-black text-orange-600">0 / 0 Ads</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+              <div id="home-ads-progress-bar" class="bg-gradient-to-r from-orange-500 to-amber-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <div class="flex justify-between items-center text-[11px] text-slate-400 mt-2">
+              <span id="home-reward-rate"><i class="fa-solid fa-coins text-amber-500"></i> $0.05 USD / Ad</span>
+              <span id="home-reset-timer"><i class="fa-regular fa-clock"></i> Resets in: <span id="home-timer-countdown">24h 00m</span></span>
+            </div>
+          </div>
+
+          <!-- Watch ads quick CTA -->
+          <button onclick="switchScreen('watch')" class="w-full mt-3 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl font-bold text-xs shadow-md shadow-orange-500/20 hover:from-orange-600 hover:to-amber-600 transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-play"></i>
+            <span>Watch Ads & Earn $0.05 Each</span>
+          </button>
+        </div>
+
+        <!-- 4 Quick Feature Nav Cards -->
+        <div class="grid grid-cols-2 gap-3">
+          <div onclick="switchScreen('plans')" class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm hover:border-orange-200 transition cursor-pointer flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-bold">
+              <i class="fa-solid fa-layer-group text-lg"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-slate-800">10 VIP Plans</div>
+              <div class="text-[10px] text-slate-400">1,000 to 10,000 PKR</div>
+            </div>
+          </div>
+
+          <div onclick="switchScreen('watch')" class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm hover:border-orange-200 transition cursor-pointer flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold">
+              <i class="fa-solid fa-tv text-lg"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-slate-800">Micro Tasks</div>
+              <div class="text-[10px] text-slate-400">5s Fast Video Ads</div>
+            </div>
+          </div>
+
+          <div onclick="switchScreen('deposit')" class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm hover:border-orange-200 transition cursor-pointer flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">
+              <i class="fa-solid fa-arrow-down-long text-lg"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-slate-800">3 Deposits</div>
+              <div class="text-[10px] text-slate-400">USDT / Jazz / Easy</div>
+            </div>
+          </div>
+
+          <div onclick="switchScreen('withdraw')" class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm hover:border-orange-200 transition cursor-pointer flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
+              <i class="fa-solid fa-arrow-up-long text-lg"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-slate-800">Withdrawals</div>
+              <div class="text-[10px] text-slate-400">Min $12 / 4,000 PKR</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity Feed -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700">Recent Transactions & Ads</h3>
+            <span class="text-[11px] text-orange-600 font-semibold cursor-pointer" onclick="switchScreen('deposit')">History</span>
+          </div>
+          <div id="home-recent-list" class="space-y-2">
+            <!-- Dynamically populated -->
+            <div class="text-center py-4 text-xs text-slate-400">No activity yet. Watch ads or deposit to start!</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 3. PLANS SCREEN (10 Investment Plans) ================= -->
+      <section id="screen-plans" class="hidden p-4 space-y-4">
+        <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-4 text-white shadow-md">
+          <h2 class="text-lg font-black tracking-tight">10 VIP Investment Plans</h2>
+          <p class="text-xs text-orange-100 mt-1">Upgrade your tier to unlock higher daily ad limits. Fixed $0.05 USD reward on every single ad!</p>
+        </div>
+
+        <!-- 10 Plans Grid -->
+        <div id="plans-container" class="space-y-3">
+          <!-- Populated by JavaScript -->
+        </div>
+      </section>
+
+      <!-- ================= 4. WATCH ADS SCREEN ================= -->
+      <section id="screen-watch" class="hidden p-4 space-y-4">
+        <!-- Daily Ads Counter Banner -->
+        <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-4 shadow-lg border border-slate-700">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Today's Ad Quota</span>
+              <div class="text-2xl font-black text-amber-400 mt-0.5" id="watch-counter-text">0 / 0 Ads</div>
+            </div>
+            <div class="text-right">
+              <span class="text-[11px] text-slate-400 block font-medium">Reward Per Ad</span>
+              <span class="inline-block bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 font-black text-xs px-2.5 py-1 rounded-lg">
+                +$0.05 USD
+              </span>
+            </div>
+          </div>
+
+          <div class="w-full bg-slate-700 rounded-full h-2 mt-3 overflow-hidden">
+            <div id="watch-counter-bar" class="bg-gradient-to-r from-orange-400 to-amber-400 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+
+          <div class="flex items-center justify-between text-[11px] text-slate-300 mt-2.5 pt-2 border-t border-slate-700/60">
+            <span><i class="fa-regular fa-clock text-amber-400 mr-1"></i> 24h Auto-Reset:</span>
+            <span id="watch-timer-clock" class="font-mono font-bold text-white">23h 59m 59s</span>
+          </div>
+        </div>
+
+        <!-- Video Ad Interactive Player Area -->
+        <div id="ad-player-card" class="bg-white rounded-2xl p-4 border border-orange-100 shadow-sm text-center">
+          <!-- Ad Video Mock Screen -->
+          <div id="ad-video-box" class="relative w-full h-48 bg-slate-900 rounded-xl overflow-hidden flex flex-col items-center justify-center text-white mb-4 border border-slate-800">
+            <!-- Idle State -->
+            <div id="ad-state-idle" class="flex flex-col items-center">
+              <div class="w-14 h-14 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center text-2xl mb-2 border border-orange-500/40">
+                <i class="fa-solid fa-play ml-1"></i>
+              </div>
+              <p class="text-xs font-semibold text-slate-200">Tap Below to Start Sponsored Task</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">5 Seconds Duration • Instant Crediting</p>
+            </div>
+
+            <!-- Watching Countdown State -->
+            <div id="ad-state-watching" class="hidden flex flex-col items-center z-10">
+              <div class="relative w-16 h-16 mb-2">
+                <svg class="w-16 h-16 transform -rotate-90">
+                  <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="4" class="text-slate-700" fill="transparent" />
+                  <circle id="ad-countdown-circle" cx="32" cy="32" r="28" stroke="currentColor" stroke-width="4" class="text-orange-500 transition-all duration-1000" fill="transparent" stroke-dasharray="175.9" stroke-dashoffset="0" />
+                </svg>
+                <span id="ad-countdown-num" class="absolute inset-0 flex items-center justify-center text-xl font-black text-white">5</span>
+              </div>
+              <p class="text-xs font-bold text-amber-300">Watching Sponsor Video...</p>
+              <p class="text-[10px] text-slate-400">Do not close this page</p>
+            </div>
+
+            <!-- Completed State -->
+            <div id="ad-state-completed" class="hidden flex flex-col items-center text-emerald-400">
+              <div class="w-14 h-14 rounded-full bg-emerald-500/20 flex items-center justify-center text-2xl mb-2 border border-emerald-500/40">
+                <i class="fa-solid fa-check"></i>
+              </div>
+              <p class="text-xs font-bold text-white">+$0.05 Credited to Wallet!</p>
+              <p class="text-[10px] text-emerald-300">Task completed successfully</p>
+            </div>
+          </div>
+
+          <!-- Watch Action Button -->
+          <button id="btn-watch-ad" onclick="startWatchingAd()" class="w-full py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-xl shadow-lg shadow-orange-500/25 transition flex items-center justify-center gap-2 text-sm">
+            <i class="fa-solid fa-play"></i>
+            <span id="btn-watch-ad-text">Watch Ad & Claim $0.05</span>
+          </button>
+        </div>
+
+        <!-- Available Ad Tasks List -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+          <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700 mb-3">Daily Ad Campaign Queue</h3>
+          <div id="ads-task-list" class="space-y-2">
+            <!-- Dynamically generated list -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 5. DEPOSIT SCREEN (3 Methods) ================= -->
+      <section id="screen-deposit" class="hidden p-4 space-y-4">
+        <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-4 text-white shadow-md">
+          <h2 class="text-lg font-black tracking-tight">Manual Deposit</h2>
+          <p class="text-xs text-orange-100 mt-1">Select your preferred payment channel, transfer funds, and upload receipt screenshot.</p>
+        </div>
+
+        <!-- 3 Payment Method Tabs -->
+        <div class="grid grid-cols-3 gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+          <button onclick="selectDepositMethod('usdt')" id="dep-tab-usdt" class="py-2 px-1 text-center rounded-xl text-xs font-bold bg-white text-orange-600 shadow-sm transition">
+            USDT (TRC20)
+          </button>
+          <button onclick="selectDepositMethod('jazzcash')" id="dep-tab-jazzcash" class="py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition">
+            JazzCash
+          </button>
+          <button onclick="selectDepositMethod('easypaisa')" id="dep-tab-easypaisa" class="py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition">
+            EasyPaisa
+          </button>
+        </div>
+
+        <!-- Channel Details Card -->
+        <div id="deposit-channel-details" class="bg-white rounded-2xl p-4 border border-orange-200 shadow-sm space-y-3">
+          <!-- Populated by JS based on selection -->
+        </div>
+
+        <!-- Deposit Submission Form -->
+        <form onsubmit="handleDepositSubmit(event)" class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-3.5">
+          <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700">Submit Payment Proof</h3>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Deposit Amount (<span id="dep-form-currency-label">USDT</span>)</label>
+            <input type="number" id="dep-amount" step="any" min="1" required placeholder="e.g. 1000" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Transaction ID / Reference Number</label>
+            <input type="text" id="dep-txnid" required placeholder="e.g. TXN9872365412" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Sender Name / Phone / Wallet</label>
+            <input type="text" id="dep-sender" required placeholder="e.g. Muhammad Ali or 0300-1234567" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+          </div>
+
+          <!-- Screenshot Upload Field -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Upload Payment Receipt Screenshot</label>
+            <div class="border-2 border-dashed border-orange-200 rounded-xl p-3 text-center bg-orange-50/40 hover:bg-orange-50/70 transition cursor-pointer relative" onclick="document.getElementById('dep-screenshot-input').click()">
+              <input type="file" id="dep-screenshot-input" accept="image/*" class="hidden" onchange="handleScreenshotSelected(event)">
+              <div id="dep-screenshot-placeholder" class="py-2">
+                <i class="fa-solid fa-cloud-arrow-up text-2xl text-orange-500 mb-1"></i>
+                <p class="text-xs font-semibold text-slate-700">Click to choose image</p>
+                <p class="text-[10px] text-slate-400">PNG, JPG, or JPEG screenshot receipt</p>
+              </div>
+              <div id="dep-screenshot-preview-box" class="hidden">
+                <img id="dep-screenshot-preview" src="" alt="Receipt Preview" class="max-h-36 mx-auto rounded-lg shadow-sm border border-slate-200">
+                <p class="text-[10px] text-emerald-600 font-bold mt-1">Receipt Selected (Click to change)</p>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-xl shadow-lg shadow-orange-500/25 transition text-sm">
+            Submit Deposit for Verification
+          </button>
+        </form>
+
+        <!-- User Deposit History -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+          <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700 mb-2.5">Your Deposit History</h3>
+          <div id="user-deposit-history" class="space-y-2">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 6. WITHDRAWAL SCREEN (3 Methods & Limits) ================= -->
+      <section id="screen-withdraw" class="hidden p-4 space-y-4">
+        <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-4 text-white shadow-md">
+          <h2 class="text-lg font-black tracking-tight">Withdraw Funds</h2>
+          <p class="text-xs text-orange-100 mt-1">Fast processing to your USDT TRC20, JazzCash, or EasyPaisa account.</p>
+        </div>
+
+        <!-- 3 Withdrawal Methods Selector -->
+        <div class="grid grid-cols-3 gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+          <button onclick="selectWithdrawMethod('usdt')" id="wd-tab-usdt" class="py-2 px-1 text-center rounded-xl text-xs font-bold bg-white text-orange-600 shadow-sm transition">
+            USDT TRC20
+          </button>
+          <button onclick="selectWithdrawMethod('jazzcash')" id="wd-tab-jazzcash" class="py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition">
+            JazzCash
+          </button>
+          <button onclick="selectWithdrawMethod('easypaisa')" id="wd-tab-easypaisa" class="py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition">
+            EasyPaisa
+          </button>
+        </div>
+
+        <!-- Withdrawal Limit Warning Card -->
+        <div id="wd-limit-badge" class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-700 flex items-center justify-center text-lg font-bold">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div>
+            <h4 id="wd-limit-title" class="text-xs font-bold text-amber-900">Minimum Limit: $12 USD</h4>
+            <p id="wd-limit-desc" class="text-[11px] text-amber-700">Withdrawals below minimum threshold cannot be processed.</p>
+          </div>
+        </div>
+
+        <!-- Withdrawal Form -->
+        <form onsubmit="handleWithdrawSubmit(event)" class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-3.5">
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-slate-500">Available to Withdraw:</span>
+            <span id="wd-current-balance" class="font-bold text-orange-600">$0.00 USD</span>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Withdraw Amount (<span id="wd-form-currency-label">USD</span>)</label>
+            <input type="number" id="wd-amount" step="any" required placeholder="Amount" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Account Holder Full Name / Title</label>
+            <input type="text" id="wd-account-title" required placeholder="Name on account" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1" id="wd-account-num-label">TRC20 Wallet Address</label>
+            <input type="text" id="wd-account-identifier" required placeholder="Enter destination wallet/number" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+          </div>
+
+          <button type="submit" class="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-xl shadow-lg shadow-orange-500/25 transition text-sm">
+            Request Payout
+          </button>
+        </form>
+
+        <!-- User Withdrawal History -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+          <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700 mb-2.5">Withdrawal Requests</h3>
+          <div id="user-withdrawal-history" class="space-y-2">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ================= BOTTOM NAVIGATION BAR ================= -->
+    <nav id="bottom-nav-bar" class="fixed bottom-0 w-full max-w-md bg-white border-t border-slate-200 flex justify-around items-center py-2 px-1 z-40 bottom-nav-shadow">
+      <button onclick="switchScreen('home')" id="nav-btn-home" class="flex flex-col items-center flex-1 text-orange-600 transition">
+        <i class="fa-solid fa-house text-lg"></i>
+        <span class="text-[10px] font-bold mt-1">Home</span>
+      </button>
+
+      <button onclick="switchScreen('plans')" id="nav-btn-plans" class="flex flex-col items-center flex-1 text-slate-400 hover:text-orange-500 transition">
+        <i class="fa-solid fa-gem text-lg"></i>
+        <span class="text-[10px] font-medium mt-1">Plans</span>
+      </button>
+
+      <button onclick="switchScreen('watch')" id="nav-btn-watch" class="flex flex-col items-center flex-1 text-slate-400 hover:text-orange-500 transition relative">
+        <div class="w-10 h-10 -mt-5 bg-gradient-to-tr from-orange-500 to-amber-400 text-white rounded-full flex items-center justify-center shadow-lg shadow-orange-500/30">
+          <i class="fa-solid fa-play text-sm ml-0.5"></i>
+        </div>
+        <span class="text-[10px] font-bold mt-0.5 text-orange-600">Watch Ads</span>
+      </button>
+
+      <button onclick="switchScreen('deposit')" id="nav-btn-deposit" class="flex flex-col items-center flex-1 text-slate-400 hover:text-orange-500 transition">
+        <i class="fa-solid fa-circle-arrow-down text-lg"></i>
+        <span class="text-[10px] font-medium mt-1">Deposit</span>
+      </button>
+
+      <button onclick="switchScreen('withdraw')" id="nav-btn-withdraw" class="flex flex-col items-center flex-1 text-slate-400 hover:text-orange-500 transition">
+        <i class="fa-solid fa-money-bill-transfer text-lg"></i>
+        <span class="text-[10px] font-medium mt-1">Withdraw</span>
+      </button>
+    </nav>
+
+    <!-- ================= ADMIN CONTROL MODAL ================= -->
+    <div id="admin-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3">
+      <div class="bg-white rounded-3xl w-full max-w-md max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+        <!-- Admin Header -->
+        <div class="bg-slate-900 text-white p-4 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-shield-halved text-orange-400 text-lg"></i>
+            <div>
+              <h3 class="font-bold text-sm">Admin Control Panel</h3>
+              <p class="text-[10px] text-slate-400">Review Deposits & Process Withdrawals</p>
+            </div>
+          </div>
+          <button onclick="closeAdminModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Admin Tabs -->
+        <div class="flex border-b border-slate-200 bg-slate-50 text-xs font-bold">
+          <button onclick="setAdminTab('deposits')" id="admin-tab-dep" class="flex-1 py-3 text-center border-b-2 border-orange-500 text-orange-600">
+            Pending Deposits (<span id="admin-count-dep">0</span>)
+          </button>
+          <button onclick="setAdminTab('withdrawals')" id="admin-tab-wd" class="flex-1 py-3 text-center text-slate-500 border-b-2 border-transparent hover:text-slate-800">
+            Pending Payouts (<span id="admin-count-wd">0</span>)
+          </button>
+          <button onclick="setAdminTab('users')" id="admin-tab-users" class="flex-1 py-3 text-center text-slate-500 border-b-2 border-transparent hover:text-slate-800">
+            Users (<span id="admin-count-users">0</span>)
+          </button>
+        </div>
+
+        <!-- Admin Content Area -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-3">
+          <!-- Pending Deposits Tab -->
+          <div id="admin-view-deposits" class="space-y-3"></div>
+
+          <!-- Pending Withdrawals Tab -->
+          <div id="admin-view-withdrawals" class="hidden space-y-3"></div>
+
+          <!-- Users Tab -->
+          <div id="admin-view-users" class="hidden space-y-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Receipt Preview Modal -->
+    <div id="receipt-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4" onclick="closeReceiptModal()">
+      <div class="max-w-md w-full text-center" onclick="event.stopPropagation()">
+        <img id="receipt-modal-img" src="" alt="Deposit Proof" class="max-h-[75vh] w-auto mx-auto rounded-2xl shadow-2xl border border-white/20">
+        <button onclick="closeReceiptModal()" class="mt-4 px-6 py-2 bg-white/20 hover:bg-white/30 text-white font-bold rounded-xl text-xs backdrop-blur-sm">
+          Close Preview
+        </button>
+      </div>
+    </div>
+
+    <!-- Toast Notification Element -->
+    <div id="toast" class="hidden fixed top-5 left-1/2 transform -translate-x-1/2 z-50 bg-slate-900/90 text-white px-4 py-2.5 rounded-2xl shadow-xl backdrop-blur-md text-xs font-semibold flex items-center gap-2 border border-slate-700/50 transition-all max-w-xs text-center">
+      <span id="toast-icon"></span>
+      <span id="toast-message">Message</span>
+    </div>
+
+  </div>
+
+  <!-- Application Logic & State Controller -->
+  <script>
+    // ================= CONSTANTS & 10 INVESTMENT PLANS =================
+    const USD_TO_PKR = 280.0;
+    const AD_REWARD_USD = 0.05;
+
+    const INVESTMENT_PLANS = [
+      { id: 1, name: "VIP Plan 1", pricePkr: 1000, dailyAdsLimit: 5, badge: "Starter Tier" },
+      { id: 2, name: "VIP Plan 2", pricePkr: 2000, dailyAdsLimit: 7, badge: null },
+      { id: 3, name: "VIP Plan 3", pricePkr: 3000, dailyAdsLimit: 10, badge: "Popular", popular: true },
+      { id: 4, name: "VIP Plan 4", pricePkr: 4000, dailyAdsLimit: 12, badge: null },
+      { id: 5, name: "VIP Plan 5", pricePkr: 5000, dailyAdsLimit: 15, badge: "High Value", popular: true },
+      { id: 6, name: "VIP Plan 6", pricePkr: 6000, dailyAdsLimit: 18, badge: null },
+      { id: 7, name: "VIP Plan 7", pricePkr: 7000, dailyAdsLimit: 20, badge: null },
+      { id: 8, name: "VIP Plan 8", pricePkr: 8000, dailyAdsLimit: 25, badge: "Super Earner" },
+      { id: 9, name: "VIP Plan 9", pricePkr: 9000, dailyAdsLimit: 30, badge: null },
+      { id: 10, name: "VIP Plan 10", pricePkr: 10000, dailyAdsLimit: 35, badge: "Max VIP Plan", popular: true }
+    ];
+
+    const PAYMENT_CHANNELS = {
+      usdt: {
+        name: "USDT (TRC20)",
+        address: "TYDzp1Ks9z8Qx7LpW2M4kNuBTFz1p",
+        title: "Official USDT TRC20 Wallet",
+        currency: "USDT",
+        note: "Send TRC20 USDT only. Min deposit: $5 USD"
+      },
+      jazzcash: {
+        name: "JazzCash",
+        address: "0301-2345678",
+        title: "Passive Income Official",
+        currency: "PKR",
+        note: "Send via JazzCash mobile app or retail agent."
+      },
+      easypaisa: {
+        name: "EasyPaisa",
+        address: "0345-9876543",
+        title: "Passive Income Official",
+        currency: "PKR",
+        note: "Send via EasyPaisa mobile app or retail agent."
+      }
+    };
+
+    // ================= LOCAL STORAGE DATABASE =================
+    function initDatabase() {
+      if (!localStorage.getItem("pi_users")) {
+        const initialUsers = [
+          {
+            id: 1,
+            identifier: "admin@passiveincome.com",
+            fullName: "System Administrator",
+            password: "admin123",
+            balanceUsd: 500.0,
+            balancePkr: 140000.0,
+            activePlanId: null,
+            activePlanName: null,
+            planDailyAdLimit: 0,
+            adsWatchedToday: 0,
+            lastAdWatchTimestamp: 0,
+            isAdmin: true
+          },
+          {
+            id: 2,
+            identifier: "demo@passiveincome.com",
+            fullName: "Demo Investor",
+            password: "demo123",
+            balanceUsd: 15.0,
+            balancePkr: 4200.0,
+            activePlanId: 1,
+            activePlanName: "VIP Plan 1",
+            planDailyAdLimit: 5,
+            adsWatchedToday: 2,
+            lastAdWatchTimestamp: Date.now() - 3600000,
+            isAdmin: false
+          }
+        ];
+        localStorage.setItem("pi_users", JSON.stringify(initialUsers));
+      }
+
+      if (!localStorage.getItem("pi_deposits")) {
+        const initialDeposits = [
+          {
+            id: 101,
+            userId: 2,
+            userIdentifier: "demo@passiveincome.com",
+            method: "USDT (TRC20)",
+            amount: 15.0,
+            currency: "USDT",
+            creditedUsd: 15.0,
+            creditedPkr: 4200.0,
+            txnId: "TXN7829104",
+            sender: "0x7a3...c91e",
+            screenshot: null,
+            status: "APPROVED",
+            date: new Date(Date.now() - 86400000).toLocaleString()
+          }
+        ];
+        localStorage.setItem("pi_deposits", JSON.stringify(initialDeposits));
+      }
+
+      if (!localStorage.getItem("pi_withdrawals")) {
+        localStorage.setItem("pi_withdrawals", JSON.stringify([]));
+      }
+
+      if (!localStorage.getItem("pi_ad_logs")) {
+        localStorage.setItem("pi_ad_logs", JSON.stringify([]));
+      }
+
+      // Default current session
+      if (!localStorage.getItem("pi_current_user_id")) {
+        localStorage.setItem("pi_current_user_id", "2"); // Demo user
+      }
+    }
+
+    initDatabase();
+
+    // ================= STATE HELPERS =================
+    function getUsers() { return JSON.parse(localStorage.getItem("pi_users") || "[]"); }
+    function saveUsers(users) { localStorage.setItem("pi_users", JSON.stringify(users)); }
+
+    function getDeposits() { return JSON.parse(localStorage.getItem("pi_deposits") || "[]"); }
+    function saveDeposits(deps) { localStorage.setItem("pi_deposits", JSON.stringify(deps)); }
+
+    function getWithdrawals() { return JSON.parse(localStorage.getItem("pi_withdrawals") || "[]"); }
+    function saveWithdrawals(wds) { localStorage.setItem("pi_withdrawals", JSON.stringify(wds)); }
+
+    function getCurrentUser() {
+      const id = parseInt(localStorage.getItem("pi_current_user_id") || "0");
+      if (!id) return null;
+      const user = getUsers().find(u => u.id === id);
+      if (!user) return null;
+      return checkAndResetDailyAds(user);
+    }
+
+    function updateCurrentUser(updatedFields) {
+      const current = getCurrentUser();
+      if (!current) return;
+      const users = getUsers();
+      const idx = users.findIndex(u => u.id === current.id);
+      if (idx !== -1) {
+        users[idx] = { ...users[idx], ...updatedFields };
+        saveUsers(users);
+      }
+    }
+
+    // Daily 24h reset logic
+    function checkAndResetDailyAds(user) {
+      if (!user) return null;
+      const now = Date.now();
+      const elapsed = now - (user.lastAdWatchTimestamp || 0);
+
+      // Reset if 24 hours have passed since last watch batch or day changed
+      if (user.lastAdWatchTimestamp > 0 && elapsed >= 86400000) {
+        user.adsWatchedToday = 0;
+        updateCurrentUser({ adsWatchedToday: 0 });
+      }
+      return user;
+    }
+
+    // ================= NAVIGATION & VIEW SWITCHER =================
+    let currentScreen = "home";
+    let authMode = "login";
+    let selectedDepMethod = "usdt";
+    let selectedWdMethod = "usdt";
+    let selectedScreenshotBase64 = null;
+
+    function switchScreen(screen) {
+      const user = getCurrentUser();
+      if (!user) {
+        screen = "auth";
+      }
+
+      currentScreen = screen;
+
+      // Hide all screens
+      ["auth", "home", "plans", "watch", "deposit", "withdraw"].forEach(s => {
+        const el = document.getElementById(`screen-${s}`);
+        if (el) el.classList.add("hidden");
+      });
+
+      // Show requested
+      const target = document.getElementById(`screen-${screen}`);
+      if (target) target.classList.remove("hidden");
+
+      // Header and Bottom Nav visibility
+      const header = document.getElementById("global-header");
+      const bottomNav = document.getElementById("bottom-nav-bar");
+
+      if (screen === "auth") {
+        header.classList.add("hidden");
+        bottomNav.classList.add("hidden");
+      } else {
+        header.classList.remove("hidden");
+        bottomNav.classList.remove("hidden");
+        updateNavIcons(screen);
+        refreshCurrentScreen(screen);
+      }
+
+      window.scrollTo(0, 0);
+    }
+
+    function updateNavIcons(activeScreen) {
+      const navItems = ["home", "plans", "watch", "deposit", "withdraw"];
+      navItems.forEach(item => {
+        const btn = document.getElementById(`nav-btn-${item}`);
+        if (!btn) return;
+        if (item === activeScreen) {
+          btn.classList.add("text-orange-600");
+          btn.classList.remove("text-slate-400");
+        } else {
+          btn.classList.remove("text-orange-600");
+          btn.classList.add("text-slate-400");
+        }
+      });
+    }
+
+    // ================= AUTHENTICATION LOGIC =================
+    function setAuthMode(mode) {
+      authMode = mode;
+      const tabLogin = document.getElementById("auth-tab-login");
+      const tabRegister = document.getElementById("auth-tab-register");
+      const fullNameField = document.getElementById("auth-fullname-field");
+      const submitBtn = document.getElementById("auth-submit-btn");
+
+      if (mode === "login") {
+        tabLogin.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white text-orange-600 shadow-sm transition";
+        tabRegister.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition";
+        fullNameField.classList.add("hidden");
+        submitBtn.innerHTML = `<span>Sign In</span><i class="fa-solid fa-arrow-right text-xs"></i>`;
+      } else {
+        tabRegister.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white text-orange-600 shadow-sm transition";
+        tabLogin.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition";
+        fullNameField.classList.remove("hidden");
+        submitBtn.innerHTML = `<span>Create Free Account</span><i class="fa-solid fa-user-plus text-xs"></i>`;
+      }
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const identifier = document.getElementById("auth-identifier").value.trim();
+      const password = document.getElementById("auth-password").value.trim();
+      const fullName = document.getElementById("auth-fullname").value.trim();
+
+      const users = getUsers();
+
+      if (authMode === "login") {
+        const user = users.find(u => u.identifier.toLowerCase() === identifier.toLowerCase());
+        if (!user) {
+          showToast("No account found with this email/phone", "error");
+          return;
+        }
+        if (user.password !== password) {
+          showToast("Incorrect password. Try demo123", "error");
+          return;
+        }
+        localStorage.setItem("pi_current_user_id", user.id.toString());
+        showToast(`Welcome back, ${user.fullName}!`, "success");
+        switchScreen("home");
+      } else {
+        if (!fullName) {
+          showToast("Please enter your full name", "error");
+          return;
+        }
+        const exists = users.find(u => u.identifier.toLowerCase() === identifier.toLowerCase());
+        if (exists) {
+          showToast("Account already exists. Please sign in.", "error");
+          return;
+        }
+
+        const newUser = {
+          id: Date.now(),
+          identifier,
+          fullName,
+          password,
+          balanceUsd: 0.0,
+          balancePkr: 0.0,
+          activePlanId: null,
+          activePlanName: null,
+          planDailyAdLimit: 0,
+          adsWatchedToday: 0,
+          lastAdWatchTimestamp: 0,
+          isAdmin: identifier.toLowerCase().includes("admin")
+        };
+
+        users.push(newUser);
+        saveUsers(users);
+        localStorage.setItem("pi_current_user_id", newUser.id.toString());
+        showToast("Account created successfully!", "success");
+        switchScreen("home");
+      }
+    }
+
+    function fillAndLogin(id, pass) {
+      document.getElementById("auth-identifier").value = id;
+      document.getElementById("auth-password").value = pass;
+      setAuthMode("login");
+      document.getElementById("auth-form").dispatchEvent(new Event("submit"));
+    }
+
+    function handleLogout() {
+      localStorage.removeItem("pi_current_user_id");
+      closeUserMenu();
+      showToast("Logged out successfully");
+      switchScreen("auth");
+    }
+
+    function toggleUserMenu() {
+      const menu = document.getElementById("user-menu-dropdown");
+      menu.classList.toggle("hidden");
+    }
+
+    function closeUserMenu() {
+      const menu = document.getElementById("user-menu-dropdown");
+      if (menu) menu.classList.add("hidden");
+    }
+
+    function togglePasswordVisibility(fieldId) {
+      const input = document.getElementById(fieldId);
+      if (input.type === "password") {
+        input.type = "text";
+      } else {
+        input.type = "password";
+      }
+    }
+
+    // ================= RENDER LOGIC =================
+    function refreshCurrentScreen(screen) {
+      const user = getCurrentUser();
+      if (!user) return;
+
+      // Update header
+      document.getElementById("menu-user-name").textContent = user.fullName;
+      document.getElementById("menu-user-id").textContent = user.identifier;
+
+      if (screen === "home") renderHomeScreen(user);
+      if (screen === "plans") renderPlansScreen(user);
+      if (screen === "watch") renderWatchScreen(user);
+      if (screen === "deposit") renderDepositScreen(user);
+      if (screen === "withdraw") renderWithdrawScreen(user);
+    }
+
+    function renderHomeScreen(user) {
+      document.getElementById("home-balance-usd").textContent = `$${user.balanceUsd.toFixed(2)} USD`;
+      document.getElementById("home-balance-pkr").textContent = `≈ ${Math.round(user.balancePkr).toLocaleString()} PKR`;
+      document.getElementById("home-badge-plan").textContent = user.activePlanName || "No Plan";
+
+      const limit = user.planDailyAdLimit || 0;
+      const watched = user.adsWatchedToday || 0;
+      const pct = limit > 0 ? Math.min(100, Math.round((watched / limit) * 100)) : 0;
+
+      document.getElementById("home-ads-progress-text").textContent = `${watched} / ${limit} Ads`;
+      document.getElementById("home-ads-progress-bar").style.width = `${pct}%`;
+
+      if (user.activePlanName) {
+        document.getElementById("home-plan-title").innerHTML = `<i class="fa-solid fa-gem text-orange-500"></i> ${user.activePlanName} Active`;
+        document.getElementById("home-plan-subtitle").textContent = `${limit} Daily Ads unlocked • $${(limit * AD_REWARD_USD).toFixed(2)} Daily Max`;
+      } else {
+        document.getElementById("home-plan-title").innerHTML = `<i class="fa-solid fa-gem text-slate-400"></i> No Active VIP Plan`;
+        document.getElementById("home-plan-subtitle").textContent = "Purchase any of the 10 VIP plans to unlock daily ad earnings";
+      }
+
+      // Populate recent activity
+      const deposits = getDeposits().filter(d => d.userId === user.id).slice(-3).reverse();
+      const container = document.getElementById("home-recent-list");
+      if (deposits.length === 0) {
+        container.innerHTML = `<div class="text-center py-4 text-xs text-slate-400">No activity yet. Watch ads or deposit to start!</div>`;
+      } else {
+        container.innerHTML = deposits.map(d => `
+          <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100 text-xs">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-lg ${d.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'} flex items-center justify-center font-bold">
+                <i class="fa-solid fa-arrow-down"></i>
+              </div>
+              <div>
+                <p class="font-bold text-slate-800">${d.method}</p>
+                <p class="text-[10px] text-slate-400">${d.date}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="font-black text-slate-800">+${d.amount} ${d.currency}</p>
+              <span class="text-[10px] font-bold ${d.status === 'APPROVED' ? 'text-emerald-600' : 'text-amber-600'}">${d.status}</span>
+            </div>
+          </div>
+        `).join("");
+      }
+    }
+
+    // ================= 10 INVESTMENT PLANS RENDERING & BUY LOGIC =================
+    function renderPlansScreen(user) {
+      const container = document.getElementById("plans-container");
+      container.innerHTML = INVESTMENT_PLANS.map(plan => {
+        const isCurrent = user.activePlanId === plan.id;
+        const dailyUsd = (plan.dailyAdsLimit * AD_REWARD_USD).toFixed(2);
+        const monthlyPkr = Math.round(plan.dailyAdsLimit * AD_REWARD_USD * 30 * USD_TO_PKR).toLocaleString();
+
+        return `
+          <div class="bg-white rounded-2xl p-4 border ${isCurrent ? 'border-2 border-orange-500 bg-orange-50/20' : 'border-slate-200'} shadow-sm relative overflow-hidden transition">
+            ${plan.badge ? `
+              <span class="absolute top-0 right-0 bg-gradient-to-l from-orange-500 to-amber-500 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl uppercase tracking-wider">
+                ${plan.badge}
+              </span>
+            ` : ''}
+
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="flex items-center gap-2">
+                  <h3 class="font-black text-base text-slate-900">${plan.name}</h3>
+                  ${isCurrent ? '<span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">Active</span>' : ''}
+                </div>
+                <div class="text-xs text-orange-600 font-bold mt-0.5">
+                  ${plan.pricePkr.toLocaleString()} PKR <span class="text-slate-400 font-normal">(≈ $${(plan.pricePkr / USD_TO_PKR).toFixed(2)} USD)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="grid grid-cols-3 gap-2 my-3 p-2.5 bg-slate-50 rounded-xl text-center border border-slate-100">
+              <div>
+                <div class="text-[10px] text-slate-400 font-medium">Daily Limit</div>
+                <div class="font-black text-xs text-slate-800">${plan.dailyAdsLimit} Ads</div>
+              </div>
+              <div>
+                <div class="text-[10px] text-slate-400 font-medium">Daily Earn</div>
+                <div class="font-black text-xs text-emerald-600">+$${dailyUsd}</div>
+              </div>
+              <div>
+                <div class="text-[10px] text-slate-400 font-medium">30 Days Return</div>
+                <div class="font-black text-xs text-orange-600">${monthlyPkr} PKR</div>
+              </div>
+            </div>
+
+            <!-- Purchase Button -->
+            <button onclick="buyPlan(${plan.id})" class="w-full py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 ${
+              isCurrent 
+                ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                : 'bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-md shadow-orange-500/20'
+            }">
+              <i class="fa-solid fa-bolt"></i>
+              <span>${isCurrent ? 'Current Activated Plan' : `Activate for ${plan.pricePkr.toLocaleString()} PKR`}</span>
+            </button>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function buyPlan(planId) {
+      const user = getCurrentUser();
+      if (!user) return;
+
+      const plan = INVESTMENT_PLANS.find(p => p.id === planId);
+      if (!plan) return;
+
+      const priceUsd = plan.pricePkr / USD_TO_PKR;
+      const hasPkr = user.balancePkr >= plan.pricePkr;
+      const hasUsd = user.balanceUsd >= priceUsd;
+
+      if (!hasPkr && !hasUsd) {
+        showToast(`Insufficient balance! Required: ${plan.pricePkr.toLocaleString()} PKR or $${priceUsd.toFixed(2)} USD. Please deposit funds first.`, "error");
+        setTimeout(() => switchScreen("deposit"), 1200);
+        return;
+      }
+
+      if (confirm(`Confirm activating ${plan.name} for ${plan.pricePkr.toLocaleString()} PKR? Your daily limit will immediately become ${plan.dailyAdsLimit} Ads.`)) {
+        let newPkr = user.balancePkr;
+        let newUsd = user.balanceUsd;
+
+        if (hasPkr) {
+          newPkr -= plan.pricePkr;
+          newUsd = Math.max(0, newUsd - (plan.pricePkr / USD_TO_PKR));
+        } else {
+          newUsd -= priceUsd;
+          newPkr = Math.max(0, newPkr - (priceUsd * USD_TO_PKR));
+        }
+
+        updateCurrentUser({
+          balancePkr: newPkr,
+          balanceUsd: newUsd,
+          activePlanId: plan.id,
+          activePlanName: plan.name,
+          planDailyAdLimit: plan.dailyAdsLimit,
+          adsWatchedToday: 0
+        });
+
+        showToast(`🎉 ${plan.name} successfully activated! Daily limit is now ${plan.dailyAdsLimit} ads.`, "success");
+        refreshCurrentScreen("plans");
+      }
+    }
+
+    // ================= WATCH ADS & $0.05 REWARD ENGINE =================
+    let isWatching = false;
+
+    function renderWatchScreen(user) {
+      const limit = user.planDailyAdLimit || 0;
+      const watched = user.adsWatchedToday || 0;
+      const pct = limit > 0 ? Math.min(100, Math.round((watched / limit) * 100)) : 0;
+
+      document.getElementById("watch-counter-text").textContent = `${watched} / ${limit} Ads`;
+      document.getElementById("watch-counter-bar").style.width = `${pct}%`;
+
+      const btn = document.getElementById("btn-watch-ad");
+      const btnText = document.getElementById("btn-watch-ad-text");
+
+      if (!user.activePlanId) {
+        btn.disabled = false;
+        btnText.textContent = "Select VIP Plan to Unlock Ads";
+        btn.onclick = () => switchScreen("plans");
+      } else if (watched >= limit) {
+        btn.disabled = true;
+        btn.className = "w-full py-3.5 bg-slate-200 text-slate-500 font-bold rounded-xl transition text-sm cursor-not-allowed";
+        btnText.textContent = "Daily Limit Reached (Reset in 24h)";
+      } else {
+        btn.disabled = false;
+        btn.className = "w-full py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-xl shadow-lg shadow-orange-500/25 transition text-sm";
+        btnText.textContent = `Watch Ad (${limit - watched} Remaining Today)`;
+        btn.onclick = startWatchingAd;
+      }
+
+      // Populate campaign tasks
+      const tasksContainer = document.getElementById("ads-task-list");
+      const sampleTasks = [
+        { title: "Crypto Finance Hub Promo", sponsor: "Bybit Pro", time: "5s" },
+        { title: "Online E-Commerce Discount Video", sponsor: "Daraz Express", time: "5s" },
+        { title: "Smart Fintech Wallet Solution", sponsor: "SadaPay", time: "5s" },
+        { title: "Global Cloud Services Preview", sponsor: "Google Cloud", time: "5s" }
+      ];
+
+      tasksContainer.innerHTML = sampleTasks.map((t, idx) => `
+        <div class="flex items-center justify-between p-2.5 rounded-xl border border-slate-100 bg-slate-50/60 text-xs">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center font-bold">
+              <i class="fa-solid fa-play text-xs"></i>
+            </div>
+            <div>
+              <p class="font-bold text-slate-800">${t.title}</p>
+              <p class="text-[10px] text-slate-400">${t.sponsor} • ${t.time}</p>
+            </div>
+          </div>
+          <span class="text-xs font-bold text-emerald-600">+$0.05</span>
+        </div>
+      `).join("");
+    }
+
+    function startWatchingAd() {
+      const user = getCurrentUser();
+      if (!user) return;
+
+      if (!user.activePlanId) {
+        showToast("Please activate a VIP plan first to start watching ads!", "error");
+        switchScreen("plans");
+        return;
+      }
+
+      if (user.adsWatchedToday >= user.planDailyAdLimit) {
+        showToast("Daily ad quota reached for today! Resets in 24 hours.", "error");
+        return;
+      }
+
+      if (isWatching) return;
+      isWatching = true;
+
+      // Switch Ad player UI
+      document.getElementById("ad-state-idle").classList.add("hidden");
+      document.getElementById("ad-state-completed").classList.add("hidden");
+      document.getElementById("ad-state-watching").classList.remove("hidden");
+
+      const btn = document.getElementById("btn-watch-ad");
+      btn.disabled = true;
+      btn.classList.add("opacity-60");
+      document.getElementById("btn-watch-ad-text").textContent = "Ad playing... Please wait 5s";
+
+      let secondsLeft = 5;
+      const countdownNum = document.getElementById("ad-countdown-num");
+      const circle = document.getElementById("ad-countdown-circle");
+      const totalDash = 175.9; // 2 * PI * 28
+
+      countdownNum.textContent = secondsLeft;
+      circle.style.strokeDashoffset = "0";
+
+      const interval = setInterval(() => {
+        secondsLeft--;
+        countdownNum.textContent = secondsLeft;
+        circle.style.strokeDashoffset = ((5 - secondsLeft) / 5) * totalDash;
+
+        if (secondsLeft <= 0) {
+          clearInterval(interval);
+
+          // Credit Reward: exactly $0.05 USD and PKR equivalent
+          const newWatched = user.adsWatchedToday + 1;
+          const newUsd = user.balanceUsd + AD_REWARD_USD;
+          const newPkr = user.balancePkr + (AD_REWARD_USD * USD_TO_PKR);
+
+          updateCurrentUser({
+            balanceUsd: newUsd,
+            balancePkr: newPkr,
+            adsWatchedToday: newWatched,
+            lastAdWatchTimestamp: Date.now()
+          });
+
+          // Show completed state
+          document.getElementById("ad-state-watching").classList.add("hidden");
+          document.getElementById("ad-state-completed").classList.remove("hidden");
+
+          showToast("🎉 Earned $0.05 USD credited directly to your balance!", "success");
+
+          setTimeout(() => {
+            document.getElementById("ad-state-completed").classList.add("hidden");
+            document.getElementById("ad-state-idle").classList.remove("hidden");
+            isWatching = false;
+            refreshCurrentScreen("watch");
+          }, 1500);
+        }
+      }, 1000);
+    }
+
+    // 24 Hour Countdown Timer Display Tick
+    setInterval(() => {
+      const now = new Date();
+      const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+      const diff = endOfDay - now;
+      if (diff > 0) {
+        const hours = Math.floor(diff / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+        const str = `${hours}h ${minutes}m ${seconds}s`;
+        const el1 = document.getElementById("home-timer-countdown");
+        const el2 = document.getElementById("watch-timer-clock");
+        if (el1) el1.textContent = `${hours}h ${minutes}m`;
+        if (el2) el2.textContent = str;
+      }
+    }, 1000);
+
+    // ================= 3 DEPOSIT METHODS & SCREENSHOT =================
+    function selectDepositMethod(method) {
+      selectedDepMethod = method;
+      ["usdt", "jazzcash", "easypaisa"].forEach(m => {
+        const tab = document.getElementById(`dep-tab-${m}`);
+        if (m === method) {
+          tab.className = "py-2 px-1 text-center rounded-xl text-xs font-bold bg-white text-orange-600 shadow-sm transition";
+        } else {
+          tab.className = "py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition";
+        }
+      });
+
+      const channel = PAYMENT_CHANNELS[method];
+      const detailsContainer = document.getElementById("deposit-channel-details");
+      detailsContainer.innerHTML = `
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-check text-orange-500"></i> ${channel.name} Official Account
+          </span>
+          <span class="text-[10px] font-bold bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">${channel.currency}</span>
+        </div>
+        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+          <div class="overflow-hidden mr-2">
+            <p class="text-[10px] text-slate-400 font-medium">Account Title / Address</p>
+            <p class="font-mono font-bold text-xs text-slate-800 truncate">${channel.address}</p>
+            <p class="text-[10px] text-slate-500">${channel.title}</p>
+          </div>
+          <button type="button" onclick="copyToClipboard('${channel.address}')" class="px-2.5 py-1.5 bg-white border border-slate-200 hover:bg-orange-50 hover:border-orange-300 text-orange-600 rounded-lg text-xs font-bold flex items-center gap-1 transition">
+            <i class="fa-regular fa-copy"></i> Copy
+          </button>
+        </div>
+        <p class="text-[11px] text-slate-500 italic"><i class="fa-solid fa-circle-info text-orange-500 mr-1"></i>${channel.note}</p>
+      `;
+
+      document.getElementById("dep-form-currency-label").textContent = channel.currency;
+    }
+
+    function handleScreenshotSelected(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        selectedScreenshotBase64 = e.target.result;
+        document.getElementById("dep-screenshot-placeholder").classList.add("hidden");
+        const previewBox = document.getElementById("dep-screenshot-preview-box");
+        previewBox.classList.remove("hidden");
+        document.getElementById("dep-screenshot-preview").src = selectedScreenshotBase64;
+        showToast("Receipt screenshot attached successfully!", "success");
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleDepositSubmit(e) {
+      e.preventDefault();
+      const user = getCurrentUser();
+      if (!user) return;
+
+      const amount = parseFloat(document.getElementById("dep-amount").value);
+      const txnId = document.getElementById("dep-txnid").value.trim();
+      const sender = document.getElementById("dep-sender").value.trim();
+
+      if (!amount || amount <= 0) {
+        showToast("Please enter a valid deposit amount", "error");
+        return;
+      }
+      if (!txnId) {
+        showToast("Transaction ID is required", "error");
+        return;
+      }
+
+      const channel = PAYMENT_CHANNELS[selectedDepMethod];
+      const creditedUsd = channel.currency === "USDT" ? amount : (amount / USD_TO_PKR);
+      const creditedPkr = channel.currency === "PKR" ? amount : (amount * USD_TO_PKR);
+
+      const deposits = getDeposits();
+      const newDeposit = {
+        id: Date.now(),
+        userId: user.id,
+        userIdentifier: user.identifier,
+        method: channel.name,
+        amount,
+        currency: channel.currency,
+        creditedUsd,
+        creditedPkr,
+        txnId,
+        sender,
+        screenshot: selectedScreenshotBase64,
+        status: "PENDING",
+        date: new Date().toLocaleString()
+      };
+
+      deposits.push(newDeposit);
+      saveDeposits(deposits);
+
+      showToast("Deposit request submitted! Admin will verify and credit your balance shortly.", "success");
+
+      // Reset form
+      e.target.reset();
+      selectedScreenshotBase64 = null;
+      document.getElementById("dep-screenshot-placeholder").classList.remove("hidden");
+      document.getElementById("dep-screenshot-preview-box").classList.add("hidden");
+
+      renderDepositScreen(user);
+    }
+
+    function renderDepositScreen(user) {
+      selectDepositMethod(selectedDepMethod);
+
+      const deposits = getDeposits().filter(d => d.userId === user.id).reverse();
+      const container = document.getElementById("user-deposit-history");
+
+      if (deposits.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 text-center py-3">No deposit requests submitted yet.</p>`;
+        return;
+      }
+
+      container.innerHTML = deposits.map(d => `
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs">
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="font-bold text-slate-800">${d.method}</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                d.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-700' :
+                d.status === 'REJECTED' ? 'bg-rose-100 text-rose-700' :
+                'bg-amber-100 text-amber-700'
+              }">${d.status}</span>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-0.5">TXN: ${d.txnId} • ${d.date}</p>
+          </div>
+          <div class="text-right">
+            <span class="font-black text-slate-800 block">+${d.amount} ${d.currency}</span>
+            ${d.screenshot ? `
+              <button onclick="previewReceipt('${d.screenshot}')" class="text-[10px] text-orange-600 font-bold hover:underline">
+                <i class="fa-solid fa-receipt"></i> View Proof
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // ================= 3 WITHDRAWAL METHODS & LIMITS =================
+    // Thresholds:
+    // USDT TRC20: Minimum $12 USD
+    // JazzCash: Minimum 4,000 PKR
+    // EasyPaisa: Minimum 4,000 PKR
+    function selectWithdrawMethod(method) {
+      selectedWdMethod = method;
+      ["usdt", "jazzcash", "easypaisa"].forEach(m => {
+        const tab = document.getElementById(`wd-tab-${m}`);
+        if (m === method) {
+          tab.className = "py-2 px-1 text-center rounded-xl text-xs font-bold bg-white text-orange-600 shadow-sm transition";
+        } else {
+          tab.className = "py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition";
+        }
+      });
+
+      const titleEl = document.getElementById("wd-limit-title");
+      const descEl = document.getElementById("wd-limit-desc");
+      const currencyLabel = document.getElementById("wd-form-currency-label");
+      const accountLabel = document.getElementById("wd-account-num-label");
+      const amountInput = document.getElementById("wd-amount");
+
+      if (method === "usdt") {
+        titleEl.textContent = "Minimum Limit: $12 USD";
+        descEl.textContent = "Withdrawals in USDT (TRC20) must be $12 USD or greater.";
+        currencyLabel.textContent = "USD";
+        accountLabel.textContent = "USDT TRC20 Destination Wallet Address";
+        amountInput.placeholder = "Min 12 USD";
+      } else if (method === "jazzcash") {
+        titleEl.textContent = "Minimum Limit: 4,000 PKR";
+        descEl.textContent = "Withdrawals via JazzCash must be at least 4,000 PKR.";
+        currencyLabel.textContent = "PKR";
+        accountLabel.textContent = "JazzCash Mobile Account Number (03xxxxxxxxx)";
+        amountInput.placeholder = "Min 4,000 PKR";
+      } else {
+        titleEl.textContent = "Minimum Limit: 4,000 PKR";
+        descEl.textContent = "Withdrawals via EasyPaisa must be at least 4,000 PKR.";
+        currencyLabel.textContent = "PKR";
+        accountLabel.textContent = "EasyPaisa Mobile Account Number (03xxxxxxxxx)";
+        amountInput.placeholder = "Min 4,000 PKR";
+      }
+    }
+
+    function handleWithdrawSubmit(e) {
+      e.preventDefault();
+      const user = getCurrentUser();
+      if (!user) return;
+
+      const amount = parseFloat(document.getElementById("wd-amount").value);
+      const title = document.getElementById("wd-account-title").value.trim();
+      const identifier = document.getElementById("wd-account-identifier").value.trim();
+
+      if (!amount || amount <= 0) {
+        showToast("Please enter a valid withdrawal amount", "error");
+        return;
+      }
+      if (!title || !identifier) {
+        showToast("Account title and account number are required", "error");
+        return;
+      }
+
+      // Check strict limits
+      if (selectedWdMethod === "usdt") {
+        if (amount < 12.0) {
+          showToast("USDT TRC20 minimum withdrawal limit is $12 USD", "error");
+          return;
+        }
+        if (user.balanceUsd < amount) {
+          showToast(`Insufficient USD balance! You have $${user.balanceUsd.toFixed(2)} USD`, "error");
+          return;
+        }
+
+        // Deduct and hold balance
+        const pkrDeduct = amount * USD_TO_PKR;
+        updateCurrentUser({
+          balanceUsd: user.balanceUsd - amount,
+          balancePkr: Math.max(0, user.balancePkr - pkrDeduct)
+        });
+
+      } else {
+        // JazzCash or EasyPaisa: min 4,000 PKR
+        if (amount < 4000.0) {
+          const methodName = selectedWdMethod === "jazzcash" ? "JazzCash" : "EasyPaisa";
+          showToast(`${methodName} minimum withdrawal limit is 4,000 PKR`, "error");
+          return;
+        }
+        if (user.balancePkr < amount) {
+          showToast(`Insufficient PKR balance! You have ${Math.round(user.balancePkr).toLocaleString()} PKR`, "error");
+          return;
+        }
+
+        // Deduct and hold balance
+        const usdDeduct = amount / USD_TO_PKR;
+        updateCurrentUser({
+          balancePkr: user.balancePkr - amount,
+          balanceUsd: Math.max(0, user.balanceUsd - usdDeduct)
+        });
+      }
+
+      const methodName = selectedWdMethod === "usdt" ? "USDT (TRC20)" : (selectedWdMethod === "jazzcash" ? "JazzCash" : "EasyPaisa");
+      const currency = selectedWdMethod === "usdt" ? "USD" : "PKR";
+
+      const withdrawals = getWithdrawals();
+      withdrawals.push({
+        id: Date.now(),
+        userId: user.id,
+        userIdentifier: user.identifier,
+        method: methodName,
+        amount,
+        currency,
+        accountTitle: title,
+        accountIdentifier: identifier,
+        status: "PENDING",
+        date: new Date().toLocaleString()
+      });
+      saveWithdrawals(withdrawals);
+
+      showToast("Withdrawal request placed successfully! Sent to admin for processing.", "success");
+      e.target.reset();
+      renderWithdrawScreen(getCurrentUser());
+    }
+
+    function renderWithdrawScreen(user) {
+      selectWithdrawMethod(selectedWdMethod);
+      document.getElementById("wd-current-balance").textContent = `$${user.balanceUsd.toFixed(2)} USD (${Math.round(user.balancePkr).toLocaleString()} PKR)`;
+
+      const withdrawals = getWithdrawals().filter(w => w.userId === user.id).reverse();
+      const container = document.getElementById("user-withdrawal-history");
+
+      if (withdrawals.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 text-center py-3">No withdrawal requests yet.</p>`;
+        return;
+      }
+
+      container.innerHTML = withdrawals.map(w => `
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs">
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="font-bold text-slate-800">${w.method}</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                w.status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-700' :
+                w.status === 'REJECTED' ? 'bg-rose-100 text-rose-700' :
+                'bg-amber-100 text-amber-700'
+              }">${w.status}</span>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-0.5">To: ${w.accountTitle} (${w.accountIdentifier})</p>
+            <p class="text-[9px] text-slate-400">${w.date}</p>
+          </div>
+          <div class="text-right">
+            <span class="font-black text-rose-600 block">-${w.amount} ${w.currency}</span>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // ================= ADMIN CONTROL PANEL =================
+    let currentAdminTab = "deposits";
+
+    function openAdminModal() {
+      document.getElementById("admin-modal").classList.remove("hidden");
+      refreshAdminData();
+    }
+
+    function closeAdminModal() {
+      document.getElementById("admin-modal").classList.add("hidden");
+    }
+
+    function setAdminTab(tab) {
+      currentAdminTab = tab;
+      ["dep", "wd", "users"].forEach(t => {
+        const btn = document.getElementById(`admin-tab-${t}`);
+        const view = document.getElementById(`admin-view-${t === 'dep' ? 'deposits' : (t === 'wd' ? 'withdrawals' : 'users')}`);
+        if (t === (tab === 'deposits' ? 'dep' : (tab === 'withdrawals' ? 'wd' : 'users'))) {
+          btn.className = "flex-1 py-3 text-center border-b-2 border-orange-500 text-orange-600 font-bold";
+          view.classList.remove("hidden");
+        } else {
+          btn.className = "flex-1 py-3 text-center text-slate-500 border-b-2 border-transparent hover:text-slate-800 font-bold";
+          view.classList.add("hidden");
+        }
+      });
+    }
+
+    function refreshAdminData() {
+      const deposits = getDeposits();
+      const withdrawals = getWithdrawals();
+      const users = getUsers();
+
+      const pendingDeps = deposits.filter(d => d.status === "PENDING");
+      const pendingWds = withdrawals.filter(w => w.status === "PENDING");
+
+      document.getElementById("admin-count-dep").textContent = pendingDeps.length;
+      document.getElementById("admin-count-wd").textContent = pendingWds.length;
+      document.getElementById("admin-count-users").textContent = users.length;
+
+      // Render Admin Deposits
+      const depView = document.getElementById("admin-view-deposits");
+      if (deposits.length === 0) {
+        depView.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">No deposit records.</p>`;
+      } else {
+        depView.innerHTML = deposits.slice().reverse().map(d => `
+          <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-2">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="font-bold text-slate-900">${d.userIdentifier}</span>
+                <p class="text-[10px] text-slate-500">${d.method} • TXN: ${d.txnId}</p>
+                <p class="text-[10px] text-slate-500">Sender: ${d.sender}</p>
+              </div>
+              <div class="text-right">
+                <span class="font-black text-sm text-slate-900">+${d.amount} ${d.currency}</span>
+                <span class="block text-[10px] font-bold ${
+                  d.status === 'APPROVED' ? 'text-emerald-600' :
+                  d.status === 'REJECTED' ? 'text-rose-600' : 'text-amber-600'
+                }">${d.status}</span>
+              </div>
+            </div>
+
+            ${d.screenshot ? `
+              <div class="pt-1">
+                <button onclick="previewReceipt('${d.screenshot}')" class="text-xs text-orange-600 font-bold hover:underline flex items-center gap-1">
+                  <i class="fa-solid fa-image"></i> View Receipt Screenshot
+                </button>
+              </div>
+            ` : ''}
+
+            ${d.status === 'PENDING' ? `
+              <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200">
+                <button onclick="adminApproveDeposit(${d.id})" class="py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition text-xs flex items-center justify-center gap-1">
+                  <i class="fa-solid fa-check"></i> Approve & Credit
+                </button>
+                <button onclick="adminRejectDeposit(${d.id})" class="py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg transition text-xs flex items-center justify-center gap-1">
+                  <i class="fa-solid fa-xmark"></i> Reject
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `).join("");
+      }
+
+      // Render Admin Withdrawals
+      const wdView = document.getElementById("admin-view-withdrawals");
+      if (withdrawals.length === 0) {
+        wdView.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">No withdrawal requests.</p>`;
+      } else {
+        wdView.innerHTML = withdrawals.slice().reverse().map(w => `
+          <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-2">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="font-bold text-slate-900">${w.userIdentifier}</span>
+                <p class="text-[10px] text-slate-500">${w.method}</p>
+                <p class="text-[10px] text-slate-700 font-semibold mt-0.5">Account: ${w.accountTitle} (${w.accountIdentifier})</p>
+              </div>
+              <div class="text-right">
+                <span class="font-black text-sm text-rose-600">-${w.amount} ${w.currency}</span>
+                <span class="block text-[10px] font-bold ${
+                  w.status === 'COMPLETED' ? 'text-emerald-600' :
+                  w.status === 'REJECTED' ? 'text-rose-600' : 'text-amber-600'
+                }">${w.status}</span>
+              </div>
+            </div>
+
+            ${w.status === 'PENDING' ? `
+              <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200">
+                <button onclick="adminCompleteWithdrawal(${w.id})" class="py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition text-xs flex items-center justify-center gap-1">
+                  <i class="fa-solid fa-check"></i> Mark Completed
+                </button>
+                <button onclick="adminRejectWithdrawal(${w.id})" class="py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg transition text-xs flex items-center justify-center gap-1">
+                  <i class="fa-solid fa-rotate-left"></i> Reject & Refund
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `).join("");
+      }
+
+      // Render Admin Users
+      const usersView = document.getElementById("admin-view-users");
+      usersView.innerHTML = users.map(u => `
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs flex items-center justify-between">
+          <div>
+            <p class="font-bold text-slate-900">${u.fullName} ${u.isAdmin ? '<span class="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-bold">Admin</span>' : ''}</p>
+            <p class="text-[10px] text-slate-500">${u.identifier}</p>
+            <p class="text-[10px] text-orange-600 font-semibold mt-0.5">Plan: ${u.activePlanName || 'None'}</p>
+          </div>
+          <div class="text-right">
+            <span class="font-black text-slate-900 block">$${u.balanceUsd.toFixed(2)} USD</span>
+            <span class="text-[10px] text-slate-500">${Math.round(u.balancePkr).toLocaleString()} PKR</span>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function adminApproveDeposit(id) {
+      const deposits = getDeposits();
+      const dep = deposits.find(d => d.id === id);
+      if (!dep || dep.status !== "PENDING") return;
+
+      dep.status = "APPROVED";
+      saveDeposits(deposits);
+
+      // Credit User Balance
+      const users = getUsers();
+      const user = users.find(u => u.id === dep.userId);
+      if (user) {
+        user.balanceUsd += dep.creditedUsd;
+        user.balancePkr += dep.creditedPkr;
+        saveUsers(users);
+      }
+
+      showToast(`Deposit #${id} approved! $${dep.creditedUsd.toFixed(2)} credited to ${dep.userIdentifier}.`, "success");
+      refreshAdminData();
+      refreshCurrentScreen(currentScreen);
+    }
+
+    function adminRejectDeposit(id) {
+      const deposits = getDeposits();
+      const dep = deposits.find(d => d.id === id);
+      if (!dep || dep.status !== "PENDING") return;
+
+      dep.status = "REJECTED";
+      saveDeposits(deposits);
+
+      showToast(`Deposit #${id} rejected.`, "error");
+      refreshAdminData();
+    }
+
+    function adminCompleteWithdrawal(id) {
+      const withdrawals = getWithdrawals();
+      const wd = withdrawals.find(w => w.id === id);
+      if (!wd || wd.status !== "PENDING") return;
+
+      wd.status = "COMPLETED";
+      saveWithdrawals(withdrawals);
+
+      showToast(`Withdrawal #${id} completed and marked paid!`, "success");
+      refreshAdminData();
+    }
+
+    function adminRejectWithdrawal(id) {
+      const withdrawals = getWithdrawals();
+      const wd = withdrawals.find(w => w.id === id);
+      if (!wd || wd.status !== "PENDING") return;
+
+      wd.status = "REJECTED";
+      saveWithdrawals(withdrawals);
+
+      // Refund balance to user
+      const users = getUsers();
+      const user = users.find(u => u.id === wd.userId);
+      if (user) {
+        if (wd.currency === "USD") {
+          user.balanceUsd += wd.amount;
+          user.balancePkr += (wd.amount * USD_TO_PKR);
+        } else {
+          user.balancePkr += wd.amount;
+          user.balanceUsd += (wd.amount / USD_TO_PKR);
+        }
+        saveUsers(users);
+      }
+
+      showToast(`Withdrawal #${id} rejected. Funds refunded to user balance.`, "success");
+      refreshAdminData();
+      refreshCurrentScreen(currentScreen);
+    }
+
+    function previewReceipt(src) {
+      document.getElementById("receipt-modal-img").src = src;
+      document.getElementById("receipt-modal").classList.remove("hidden");
+    }
+
+    function closeReceiptModal() {
+      document.getElementById("receipt-modal").classList.add("hidden");
+    }
+
+    // ================= TOAST NOTIFICATION & UTILITIES =================
+    function showToast(message, type = "info") {
+      const toast = document.getElementById("toast");
+      const msg = document.getElementById("toast-message");
+      const icon = document.getElementById("toast-icon");
+
+      msg.textContent = message;
+      if (type === "success") {
+        icon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+      } else if (type === "error") {
+        icon.innerHTML = `<i class="fa-solid fa-circle-exclamation text-rose-400"></i>`;
+      } else {
+        icon.innerHTML = `<i class="fa-solid fa-circle-info text-amber-400"></i>`;
+      }
+
+      toast.classList.remove("hidden");
+      setTimeout(() => {
+        toast.classList.add("hidden");
+      }, 3000);
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("Address copied to clipboard!", "success");
+      }).catch(() => {
+        showToast("Copied: " + text);
+      });
+    }
+
+    // Initialize application on load
+    window.addEventListener("DOMContentLoaded", () => {
+      const user = getCurrentUser();
+      if (user) {
+        switchScreen("home");
+      } else {
+        switchScreen("auth");
+      }
+    });
+  </script>
+</body>
+</html>
