@@ -1914,6 +1914,95 @@
         switchScreen("auth");
       }
     });
+    function getAdSettings() {
+      const def = {
+        directLink: "https://pl31493202.profitableratecpmnetwork.com/f4d67fd9e6924c356864fd8f8c8d3a0b/invoke.js",
+        bannerCode: '<div id="container-f4d67fd9e6924c356864fd8f8c8d3a0b"></div>',
+        socialBarScript: "https://pl31493201.profitableratecpmnetwork.com/b8/5d/b3/b85db3bf8114fc1cf6a50737b91bc62b.js"
+      };
+      try {
+        const saved = JSON.parse(localStorage.getItem("pi_ad_settings") || "{}");
+        const oldLink = localStorage.getItem("pi_ad_direct_link");
+        if (oldLink && !saved.directLink) saved.directLink = oldLink;
+        return { ...def, ...saved };
+      } catch (e) {
+        return def;
+      }
+    }
+
+    function saveAdSettings(newSettings) {
+      localStorage.setItem("pi_ad_settings", JSON.stringify(newSettings));
+      if (newSettings.directLink) {
+        localStorage.setItem("pi_ad_direct_link", newSettings.directLink);
+      }
+    }
+
+    function adminSaveAdSettings() {
+      const linkInput = document.getElementById("admin-ad-link-input");
+      const bannerInput = document.getElementById("admin-ad-banner-input");
+      const socialBarInput = document.getElementById("admin-ad-socialbar-input");
+
+      const newSettings = {
+        directLink: linkInput ? linkInput.value.trim() : "",
+        bannerCode: bannerInput ? bannerInput.value.trim() : "",
+        socialBarScript: socialBarInput ? socialBarInput.value.trim() : ""
+      };
+
+      saveAdSettings(newSettings);
+      if (typeof syncToCloud === "function") syncToCloud();
+      showToast("Adsterra Settings Saved Successfully!", "success");
+    }
+
+    function testOpenAdLink() {
+      const input = document.getElementById("admin-ad-link-input");
+      const link = input ? input.value.trim() : "";
+      if (!link || !link.startsWith("http")) {
+        showToast("Please enter a valid URL (starting with https://)", "error");
+        return;
+      }
+      window.open(link, "_blank");
+      showToast("Opening Adsterra Direct Link...", "info");
+    }
+
+    function adminQuickVipForSelf() {
+      const current = typeof getCurrentUser === "function" ? getCurrentUser() : null;
+      if (!current) return;
+      if (typeof adminAssignPlan === "function") {
+        adminAssignPlan(current.id, 10);
+      } else {
+        current.activePlanId = 10;
+        current.activePlanName = "VIP 10";
+        current.planDailyAdLimit = 35;
+        current.adsWatchedToday = 0;
+        if (typeof saveUsers === "function" && typeof getUsers === "function") {
+          const uList = getUsers();
+          const me = uList.find(x => x.id === current.id);
+          if (me) {
+            me.activePlanId = 10;
+            me.activePlanName = "VIP 10";
+            me.planDailyAdLimit = 35;
+            me.adsWatchedToday = 0;
+            saveUsers(uList);
+          }
+        }
+      }
+      showToast("Activated VIP 10 on your account (35 Ads/Day)!", "success");
+    }
+
+    function adminResetSelfAdLimit() {
+      const current = typeof getCurrentUser === "function" ? getCurrentUser() : null;
+      if (!current) return;
+      current.adsWatchedToday = 0;
+      if (typeof saveUsers === "function" && typeof getUsers === "function") {
+        const uList = getUsers();
+        const me = uList.find(x => x.id === current.id);
+        if (me) {
+          me.adsWatchedToday = 0;
+          saveUsers(uList);
+        }
+      }
+      showToast("Ad Counter Reset to 0!", "success");
+    }
   </script>
   <script async="async" data-cfasync="false" src="https://pl31493202.profitableratecpmnetwork.com/f4d67fd9e6924c356864fd8f8c8d3a0b/invoke.js"></script>
 <div id="container-f4d67fd9e6924c356864fd8f8c8d3a0b"></div>
