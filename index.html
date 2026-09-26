@@ -1473,6 +1473,18 @@ function renderWatchScreen() {
     }
   }
 }
+let adInterval = null;
+let isAdPaused = false;
+let activeWatchedSeconds = 0;
+
+// اینٹی چیٹ: اگر یوزر اسکرین چھوڑ کر جائے گا تو سیکنڈ فوراً رک جائیں گے
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    isAdPaused = true;
+  } else {
+    isAdPaused = false;
+  }
+});
 
 function startWatchingAd() {
   const user = getCurrentUser();
@@ -1484,11 +1496,16 @@ function startWatchingAd() {
   }
 
   const plan = VIP_PLANS.find(p => p.id === user.activePlanId);
-  const total = plan ? plan.dailyAds : 5;
+  const total = user.planDailyAdLimit || (plan ? plan.dailyAds : 5);
   if ((user.adsWatchedToday || 0) >= total) {
     showToast("Daily ad limit already completed! Reset tomorrow.", "error");
     return;
   }
+
+  // Open Real Sponsor Ad
+  try {
+    window.open("https://profitableratecpmnetwork.com/bmus9vwr3d?key=836464293cb77fa37dfc023c1d8701d0", "_blank");
+  } catch (e) {}
 
   const standbyView = document.getElementById("ad-standby-view");
   const runningView = document.getElementById("ad-running-view");
@@ -1498,20 +1515,38 @@ function startWatchingAd() {
   if (runningView) runningView.classList.remove("hidden");
   if (completedView) completedView.classList.add("hidden");
 
-  window.open("https://profitableratecpmnetwork.com/bmus9vwr3d?key=836464293cb77fa37dfc023c1d8701d0", "_blank");
-
   let secondsLeft = 15;
+  activeWatchedSeconds = 0;
+  isAdPaused = false;
+
   const timerNum = document.getElementById("ad-timer-num");
   if (timerNum) timerNum.textContent = `${secondsLeft}s`;
 
-  const interval = setInterval(() => {
+  if (adInterval) clearInterval(adInterval);
+
+  adInterval = setInterval(() => {
+    // اینٹی فراڈ چیک: اگر یوزر اسکرین پر موجود نہیں ہے تو سیکنڈ نہیں چلیں گے
+    if (isAdPaused) {
+      if (timerNum) timerNum.textContent = "Paused";
+      return;
+    }
+
+    activeWatchedSeconds++;
     secondsLeft--;
     if (timerNum) timerNum.textContent = `${secondsLeft}s`;
 
     if (secondsLeft <= 0) {
-      clearInterval(interval);
-      
-      finishAdAndCredit();
+      clearInterval(adInterval);
+      adInterval = null;
+
+      // سخت تصدیق: اگر پورے 15 سیکنڈ اسکرین پر دیکھا ہو تبھی پیسے ملیں گے
+      if (activeWatchedSeconds >= 15) {
+        finishAdAndCredit();
+      } else {
+        showToast("⚠️ Ad cancelled: You must stay on screen for full 15s!", "error");
+        if (runningView) runningView.classList.add("hidden");
+        if (standbyView) standbyView.classList.remove("hidden");
+      }
     }
   }, 1000);
 }
@@ -1545,6 +1580,7 @@ function finishAdAndCredit() {
     renderWatchScreen();
   }, 1500);
 }
+
 
     // Render Deposit Screen
     function selectDepositMethod(method) {
