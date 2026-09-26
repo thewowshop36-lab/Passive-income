@@ -829,48 +829,121 @@
       }
     }
 
-    async function syncToCloud(eventType = null, eventPayload = null) {
+   
+async function syncToCloud(eventType = null, eventPayload = null) {
+  try {
+    let localUsers = getUsers();
+    let localDeps = getDeposits();
+    let localWds = getWithdrawals();
+
+    if (eventType && eventPayload) {
       try {
-        const localUsers = getUsers();
-        const localDeps = getDeposits();
-        const localWds = getWithdrawals();
-
-        // 1. Broadcast immediate live event through high-speed relay stream
-        if (eventType && eventPayload) {
-          try {
-            fetch(EVENT_STREAM_URL, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ type: eventType, [eventType.replace("new_", "")]: eventPayload, time: Date.now() })
-            }).catch(() => {});
-          } catch (e) {}
+        const safePayload = { ...eventPayload };
+        if (safePayload.screenshot && safePayload.screenshot.length > 2000) {
+          safePayload.screenshot = "[Image attached]";
         }
-
-        // 2. Persist directly to Dedicated JSONBin Cloud Database
-        try {
-          await fetch(JSONBIN_URL, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              "X-Master-Key": JSONBIN_KEY
-            },
-            body: JSON.stringify({
-              users: localUsers,
-              deposits: localDeps,
-              withdrawals: localWds
-            })
-          });
-        } catch (binErr) {
-          console.warn("JSONBin PUT error:", binErr);
-        }
-
-        const timeEl = document.getElementById("admin-last-sync-time");
-        if (timeEl) timeEl.textContent = new Date().toLocaleTimeString();
-      } catch (err) {
-        console.warn("Cloud push error:", err);
-      }
+        fetch(EVENT_STREAM_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type: eventType, [eventType.replace("new_", "")]: safePayload, time: Date.now() })
+        }).catch(() => {});
+      } catch (e) {}
     }
 
+    try {
+      const getRes = await fetch(`${JSONBIN_URL}/latest`, {
+        headers: { "X-Master-Key": JSONBIN_KEY, "X-Bin-Meta": "false" }
+      });
+
+      let remoteUsers = [];
+      let remoteDeps = [];
+      let remoteWds = [];
+
+      if (getRes.ok) {
+        const cloudData = await getRes.json();
+        remoteUsers = cloudData.users || (cloudData.record ? cloudData.record.users : []) || [];
+        remoteDeps = cloudData.deposits || (cloudData.record ? cloudData.record.deposits : []) || [];
+        remoteWds = cloudData.withdrawals || (cloudData.record ? cloudData.record.withdrawals : []) || [];
+      }
+
+      const depMap = new Map();
+      remoteDeps.forEach(d => { if (d && d.id) depMap.set(String(d.id), { ...d }); });
+      localDeps.forEach(d => {
+        if (!d || !d.id) return;
+        const key = String(d.id);
+        const remote = depMap.get(key);
+        if (remote) {
+          const isApproved = (remote.status === "APPROVED" || d.status === "APPROVED");
+          depMap.set(key, { ...remote, ...d, status: isApproved ? "APPROVED" : (remote.status || d.status) });
+        } else {
+          depMap.set(key, { ...d });
+        }
+      });
+
+      if (eventType === "deposit_approved" && eventPayload && eventPayload.depositId) {
+        const targetKey = String(eventPayload.depositId);
+        const depItem = depMap.get(targetKey);
+        if (depItem) depItem.status = "APPROVED";
+      }
+
+      const userMap = new Map();
+      remoteUsers.forEach(u => { if (u && u.identifier) userMap.set(u.identifier.toLowerCase(), { ...u }); });
+      localUsers.forEach(u => {
+        if (!u || !u.identifier) return;
+        const key = u.identifier.toLowerCase();
+        const remote = userMap.get(key);
+        if (remote) {
+          let finalUsd = Math.max(Number(remote.balanceUsd) || 0, Number(u.balanceUsd) || 0);
+          let finalPkr = Math.max(Number(remote.balancePkr) || 0, Number(u.balancePkr) || 0);
+          const finalPlanId = u.activePlanId || remote.activePlanId || null;
+          const finalPlanName = u.activePlanName || remote.activePlanName || null;
+          const finalLimit = Math.max(Number(u.planDailyAdLimit) || 0, Number(remote.planDailyAdLimit) || 0);
+          const finalPlans = (u.activePlans && u.activePlans.length > 0) ? u.activePlans : (remote.activePlans || []);
+          const finalWatched = Math.max(Number(remote.adsWatchedToday) || 0, Number(u.adsWatchedToday) || 0);
+
+          userMap.set(key, {
+            ...remote,
+            ...u,
+            balanceUsd: finalUsd,
+            balancePkr: finalPkr,
+            activePlanId: finalPlanId,
+            activePlanName: finalPlanName,
+            planDailyAdLimit: finalLimit,
+            activePlans: finalPlans,
+            adsWatchedToday: finalWatched
+          });
+        } else {
+          userMap.set(key, { ...u });
+        }
+      });
+
+      const cleanDeps = Array.from(depMap.values()).map(d => {
+        if (d.screenshot && d.screenshot.length > 30000) return { ...d, screenshot: null };
+        return d;
+      });
+      const cleanUsers = Array.from(userMap.values());
+      const cleanWds = localWds;
+
+      saveUsers(cleanUsers);
+      saveDeposits(cleanDeps);
+
+      await fetch(JSONBIN_URL, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", "X-Master-Key": JSONBIN_KEY },
+        body: JSON.stringify({
+          users: cleanUsers,
+          deposits: cleanDeps,
+          withdrawals: cleanWds,
+          adSettings: getAdSettings()
+        })
+      });
+    } catch (binErr) {
+      console.warn("JSONBin error:", binErr);
+    }
+  } catch (err) {
+    console.warn("Cloud error:", err);
+  }
+}
 
     // 10 Structured VIP Investment Plans (Exact Daily Ads Limits & $0.05 Ad Reward)
     const VIP_PLANS = [
@@ -1508,112 +1581,120 @@ function renderWatchScreen() {
   box.appendChild(ifr);
     }
 let adInterval = null;
-let isAdPaused = false;
-let activeWatchedSeconds = 0;
 
-// اینٹی چیٹ: اگر یوزر اسکرین چھوڑ کر جائے گا تو سیکنڈ فوراً رک جائیں گے
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    isAdPaused = true;
-  } else {
-    isAdPaused = false;
-  }
-});
+    let secondsLeft = 15;
+    let isWatching = false;
 
-function startWatchingAd() {
-  const user = getCurrentUser();
-  if (!user) return;
-  if (!user.activePlanId) {
-    showToast("Please activate a VIP plan first!", "warning");
-    switchScreen("plans");
-    return;
-  }
-
-  const plan = VIP_PLANS.find(p => p.id === user.activePlanId);
-  const total = user.planDailyAdLimit || (plan ? plan.dailyAds : 5);
-  if ((user.adsWatchedToday || 0) >= total) {
-    showToast("Daily ad limit already completed! Reset tomorrow.", "error");
-    return;
-  }
-
-  // Open Real Sponsor Ad
-  try {
-    window.open("https://profitableratecpmnetwork.com/bmus9vwr3d?key=836464293cb77fa37dfc023c1d8701d0", "_blank");
-  } catch (e) {}
-
-  const standbyView = document.getElementById("ad-standby-view");
-  const runningView = document.getElementById("ad-running-view");
-  const completedView = document.getElementById("ad-completed-view");
-
-  if (standbyView) standbyView.classList.add("hidden");
-  if (runningView) runningView.classList.remove("hidden");
-  if (completedView) completedView.classList.add("hidden");
-loadLiveAdsterraBanner();
-  let secondsLeft = 15;
-  activeWatchedSeconds = 0;
-  isAdPaused = false;
-
-  const timerNum = document.getElementById("ad-timer-num");
-  if (timerNum) timerNum.textContent = `${secondsLeft}s`;
-
-  if (adInterval) clearInterval(adInterval);
-
-  adInterval = setInterval(() => {
-    // اینٹی فراڈ چیک: اگر یوزر اسکرین پر موجود نہیں ہے تو سیکنڈ نہیں چلیں گے
-    if (isAdPaused) {
-      if (timerNum) timerNum.textContent = "Paused";
-      return;
-    }
-
-    activeWatchedSeconds++;
-    secondsLeft--;
-    if (timerNum) timerNum.textContent = `${secondsLeft}s`;
-
-    if (secondsLeft <= 0) {
-      clearInterval(adInterval);
-      adInterval = null;
-
-      // سخت تصدیق: اگر پورے 15 سیکنڈ اسکرین پر دیکھا ہو تبھی پیسے ملیں گے
-      if (activeWatchedSeconds >= 15) {
-        finishAdAndCredit();
-      } else {
-        showToast("⚠️ Ad cancelled: You must stay on screen for full 15s!", "error");
-        if (runningView) runningView.classList.add("hidden");
-        if (standbyView) standbyView.classList.remove("hidden");
+    function startWatchingAd() {
+      const user = getCurrentUser();
+      if (!user) return;
+      if (!user.activePlanId) {
+        showToast("Please activate a VIP plan first!", "warning");
+        switchScreen("plans");
+        return;
       }
+
+      const total = user.planDailyAdLimit || 5;
+      const watched = user.adsWatchedToday || 0;
+      if (watched >= total) {
+        showToast("Daily ad limit already completed! Reset tomorrow.", "error");
+        return;
+      }
+
+      if (isWatching) return;
+      isWatching = true;
+
+      // 1. Open Real Sponsor Ad in New Tab
+      try {
+        window.open("https://profitableratecpmnetwork.com/bmus9vwr3d?key=836464293cb77fa37dfc023c1d8701d0", "_blank");
+      } catch (e) {}
+
+      const standbyView = document.getElementById("ad-standby-view");
+      const runningView = document.getElementById("ad-running-view");
+      const completedView = document.getElementById("ad-completed-view");
+
+      if (standbyView) standbyView.classList.add("hidden");
+      if (runningView) runningView.classList.remove("hidden");
+      if (completedView) completedView.classList.add("hidden");
+
+      loadLiveAdsterraBanner();
+      secondsLeft = 15;
+
+      const timerNum = document.getElementById("ad-timer-num");
+      if (timerNum) timerNum.textContent = `${secondsLeft}s`;
+
+      if (adInterval) clearInterval(adInterval);
+      adInterval = setInterval(() => {
+        secondsLeft--;
+        if (timerNum) timerNum.textContent = `${secondsLeft}s`;
+
+        // 15 seconds complete: Automatically Credit Balance & Increment Ads!
+        if (secondsLeft <= 0) {
+          clearInterval(adInterval);
+          adInterval = null;
+          finishAdAndCredit();
+        }
+      }, 1000);
     }
-  }, 1000);
-}
 
-function finishAdAndCredit() {
-  const user = getCurrentUser();
-  if (!user) return;
+    function finishAdAndCredit() {
+      const user = getCurrentUser();
+      if (!user) {
+        isWatching = false;
+        return;
+      }
 
-  const newWatched = (user.adsWatchedToday || 0) + 1;
-  const newBalUsd = user.balanceUsd + 0.05;
-  const newBalPkr = user.balancePkr + (0.05 * 280);
+      const total = user.planDailyAdLimit || 5;
+      const watched = user.adsWatchedToday || 0;
+      if (watched >= total) {
+        isWatching = false;
+        return;
+      }
 
-  updateCurrentUser({
-    adsWatchedToday: newWatched,
-    balanceUsd: newBalUsd,
-    balancePkr: newBalPkr,
-    lastAdWatchTimestamp: Date.now()
-  });
+      const newWatched = watched + 1;
+      const newBalUsd = (Number(user.balanceUsd) || 0) + 0.05;
+      const newBalPkr = (Number(user.balancePkr) || 0) + 14;
 
-  const runningView = document.getElementById("ad-running-view");
-  const completedView = document.getElementById("ad-completed-view");
-  const standbyView = document.getElementById("ad-standby-view");
+      // 1. Update user data
+      user.adsWatchedToday = newWatched;
+      user.balanceUsd = newBalUsd;
+      user.balancePkr = newBalPkr;
+      user.lastAdWatchTimestamp = Date.now();
+      updateCurrentUser(user);
 
-  if (runningView) runningView.classList.add("hidden");
-  if (completedView) completedView.classList.remove("hidden");
-  showToast("+$0.05 USD reward credited!", "success");
+      // 2. Update screen counter immediately (e.g. 1 / 5 Ads)
+      const counterEl = document.getElementById("watch-counter-text");
+      if (counterEl) counterEl.textContent = `${newWatched} / ${total} Ads`;
+      const pBar = document.getElementById("watch-ads-progress-bar");
+      if (pBar) pBar.style.width = `${Math.min(100, Math.round((newWatched / total) * 100))}%`;
 
-  setTimeout(() => {
-    if (completedView) completedView.classList.add("hidden");
-    if (standbyView) standbyView.classList.remove("hidden");
-    renderWatchScreen();
-  }, 1500);
-}
+      // 3. Show completed animation
+      const runningView = document.getElementById("ad-running-view");
+      const completedView = document.getElementById("ad-completed-view");
+      const standbyView = document.getElementById("ad-standby-view");
+
+      if (runningView) runningView.classList.add("hidden");
+      if (completedView) completedView.classList.remove("hidden");
+
+      showToast(`🎉 Ad ${newWatched}/${total} watched! +$0.05 USD (14 PKR) added!`, "success");
+
+      // 4. Sync immediately to Cloud
+      syncToCloud("ad_reward_credited", {
+        userId: user.id,
+        userIdentifier: user.identifier,
+        adsWatchedToday: newWatched,
+        balanceUsd: newBalUsd,
+        balancePkr: newBalPkr
+      });
+
+      setTimeout(() => {
+        if (completedView) completedView.classList.add("hidden");
+        if (standbyView) standbyView.classList.remove("hidden");
+        isWatching = false;
+        if (currentScreen === "watch") renderWatchScreen(getCurrentUser());
+      }, 1500);
+    }
+
 
 
     // Render Deposit Screen
