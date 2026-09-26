@@ -354,36 +354,68 @@
           </div>
           <div class="relative bg-slate-950 aspect-video flex flex-col items-center justify-center text-white p-6 text-center">
             <!-- Standby View -->
-            <div id="ad-standby-view" class="space-y-3">
-              <div class="w-14 h-14 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/40 flex items-center justify-center mx-auto shadow-inner">
-                <i class="fa-solid fa-play ml-1 text-lg"></i>
+            <div id="ad-standby-view" class="space-y-3 relative z-10 w-full max-w-xs">
+              <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-orange-500/20 to-amber-500/30 text-orange-400 border border-orange-500/40 flex items-center justify-center mx-auto text-2xl shadow-lg animate-pulse">
+                <i class="fa-solid fa-play ml-1"></i>
               </div>
               <div>
-                <h4 class="font-extrabold text-sm text-white" id="watch-sponsor-title">Global FinTech Commercial Ad</h4>
-                <p class="text-xs text-slate-400 mt-1" id="watch-sponsor-desc">Watch 15s HD video to receive your fixed $0.05 USD reward</p>
+                <span id="ad-standby-badge" class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 bg-orange-500/20 text-orange-300 rounded border border-orange-500/30">Verified Partner Stream</span>
+                <h4 id="ad-standby-title" class="font-extrabold text-sm text-white mt-1">Global FinTech & Web3 Ads</h4>
+                <p id="ad-standby-desc" class="text-xs text-slate-400 mt-1">Activate a VIP Investment Plan to unlock daily commercial ads</p>
               </div>
-              <button id="ad-start-btn" onclick="startWatchingAd()" class="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-orange-500/20 transition cursor-pointer">
-                <i class="fa-solid fa-play text-xs mr-1"></i> Start Watching Ad (+ $0.05 USD)
+              <button id="ad-start-btn" onclick="startWatchingAd()" class="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-orange-500/20 transition flex items-center justify-center gap-2 cursor-pointer">
+                <i class="fa-solid fa-play text-xs"></i> <span>Start Watching Ad (+ $0.05)</span>
               </button>
             </div>
 
-            <!-- Running Ad View with Real Video -->
+            <!-- Running Ad View -->
             <div id="ad-running-view" class="hidden space-y-2 relative z-10 w-full max-w-sm">
-              <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-lg border border-slate-700">
-                <video id="ad-video-element" class="w-full h-full object-cover" playsinline autoplay muted loop>
-                  <source id="ad-video-source" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
+              <div class="relative w-full aspect-video bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 rounded-xl overflow-hidden shadow-2xl border border-slate-700/80 flex flex-col justify-between p-3">
+                <video id="ad-video-element" class="absolute inset-0 w-full h-full object-cover z-0 opacity-80" playsinline autoplay muted loop preload="auto">
+                  <source id="ad-video-source" src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-with-charts-and-data-41613-large.mp4" type="video/mp4">
                 </video>
-                <div class="absolute top-2 left-2 flex items-center gap-1.5 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded-md text-[10px] font-bold text-white border border-white/10">
-                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  <span id="ad-playing-sponsor">Sponsor Commercial</span>
+
+                <!-- Animated Visual Backdrop -->
+                <div id="ad-visual-backdrop" class="absolute inset-0 z-0 bg-gradient-to-tr from-orange-950/80 via-slate-900/90 to-amber-950/80 flex flex-col items-center justify-center p-4 text-center pointer-events-none">
+                  <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-400 flex items-center justify-center text-white text-2xl shadow-lg mb-2 animate-bounce">
+                    <i class="fa-solid fa-chart-line"></i>
+                  </div>
+                  <h4 id="ad-backdrop-title" class="text-sm font-black text-white tracking-wide">Next-Gen FinTech Trading</h4>
+                  <p class="text-[10px] text-amber-300 font-semibold mt-0.5">Verified Sponsored Commercial Stream</p>
                 </div>
-                <div class="absolute top-2 right-2 bg-orange-600/90 backdrop-blur-md px-2.5 py-0.5 rounded-md text-xs font-black text-white shadow flex items-center gap-1">
-                  <i class="fa-solid fa-clock text-[10px]"></i> <span id="ad-timer-num">15s</span>
+
+                <!-- Video Header -->
+                <div class="relative z-10 flex items-center justify-between">
+                  <div class="flex items-center gap-1.5 bg-black/75 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-bold text-white border border-white/10 shadow">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="ad-playing-sponsor">Sponsor Commercial</span>
+                  </div>
+                  <div class="bg-gradient-to-r from-orange-600 to-amber-600 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-black text-white shadow-lg border border-orange-400/30 flex items-center gap-1.5">
+                    <i class="fa-solid fa-clock text-[10px]"></i> <span id="ad-timer-num">15s</span>
+                  </div>
                 </div>
-                <button type="button" onclick="toggleAdSound()" id="ad-sound-btn" class="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded-lg text-xs hover:bg-black/90 transition flex items-center gap-1">
-                  <i class="fa-solid fa-volume-xmark" id="ad-sound-icon"></i> <span class="text-[9px]">Sound</span>
-                  
-                </button>
+
+                <!-- Sound Button -->
+                <div class="relative z-10 flex items-center justify-between mt-auto pt-2">
+                  <span class="text-[10px] text-amber-300 font-extrabold bg-black/60 px-2 py-0.5 rounded backdrop-blur">
+                    +$0.05 USD at 0s
+                  </span>
+                  <button type="button" onclick="toggleAdSound()" id="ad-sound-btn" class="bg-black/80 hover:bg-black text-white px-2.5 py-1 rounded-lg text-xs border border-white/20 transition flex items-center gap-1.5 cursor-pointer shadow">
+                    <i class="fa-solid fa-volume-xmark" id="ad-sound-icon"></i> <span class="text-[10px] font-bold" id="ad-sound-text">Muted</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Stream Info -->
+              <div class="flex items-center justify-between text-left px-1">
+                <div class="overflow-hidden">
+                  <h5 id="ad-playing-title" class="text-xs font-extrabold text-white truncate max-w-[200px]">Next-Gen Trading Platform</h5>
+                  <p class="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
+                    <i class="fa-solid fa-circle-check"></i> Reward will auto-credit when timer ends
+                  </p>
+                </div>
+              </div>
+            </div>
                 
 
             </div>
@@ -1335,102 +1367,151 @@
       }
     }
 
-    // Render Watch Screen
-    function renderWatchScreen() {
-      const user = getCurrentUser();
-      if (!user) return;
+    // Render Watch Screen & Ad Player
+function toggleAdSound() {
+  const v = document.getElementById("ad-video-element");
+  const icon = document.getElementById("ad-sound-icon");
+  const text = document.getElementById("ad-sound-text");
+  if (!v) return;
+  v.muted = !v.muted;
+  if (icon) {
+    icon.className = v.muted ? "fa-solid fa-volume-xmark" : "fa-solid fa-volume-high text-emerald-400";
+  }
+  if (text) {
+    text.textContent = v.muted ? "Muted" : "Sound On";
+  }
+  if (!v.muted) {
+    v.play().catch(() => {});
+  }
+}
 
-      const counterText = document.getElementById("watch-counter-text");
-      const standbyView = document.getElementById("ad-standby-view");
-      const runningView = document.getElementById("ad-running-view");
-      const completedView = document.getElementById("ad-completed-view");
-      const startBtn = document.getElementById("ad-start-btn");
+function renderWatchScreen() {
+  const user = getCurrentUser();
+  if (!user) return;
 
-      standbyView.classList.remove("hidden");
-      runningView.classList.add("hidden");
-      completedView.classList.add("hidden");
+  const counterText = document.getElementById("watch-counter-text");
+  const standbyView = document.getElementById("ad-standby-view");
+  const runningView = document.getElementById("ad-running-view");
+  const completedView = document.getElementById("ad-completed-view");
+  const startBtn = document.getElementById("ad-start-btn");
 
-      if (!user.activePlanId) {
-        counterText.textContent = "0 / 0 Ads (No Plan)";
+  if (standbyView) standbyView.classList.remove("hidden");
+  if (runningView) runningView.classList.add("hidden");
+  if (completedView) completedView.classList.add("hidden");
+
+  // اگر یوزر کے پاس VIP پلان نہیں ہے تو 0 Ads شو ہوگا اور بٹن پلان خریدنے پر لے جائے گا
+  if (!user.activePlanId) {
+    if (counterText) counterText.textContent = "0 / 0 Ads (No Plan)";
+    if (startBtn) {
+      startBtn.disabled = false;
+      startBtn.className = "w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-orange-500/20 transition cursor-pointer flex items-center justify-center gap-2";
+      startBtn.innerHTML = '<i class="fa-solid fa-lock mr-1"></i> <span>Activate VIP Plan to Watch Ads</span>';
+      startBtn.onclick = () => {
+        showToast("Please activate a VIP plan to unlock daily ads!", "info");
+        switchScreen("plans");
+      };
+    }
+  } else {
+    // جب پلان ایکٹیو ہو تو اس پلان کے مطابق ایڈز ملیں گی
+    const plan = VIP_PLANS.find(p => p.id === user.activePlanId);
+    const total = plan ? plan.dailyAds : (user.planDailyAdLimit || 5);
+    const watched = user.adsWatchedToday || 0;
+    if (counterText) counterText.textContent = `${watched} / ${total} Ads`;
+
+    if (watched >= total) {
+      if (startBtn) {
         startBtn.disabled = true;
-        startBtn.className = "px-6 py-2.5 bg-slate-800 text-slate-500 rounded-xl text-xs font-bold cursor-not-allowed";
-        startBtn.innerHTML = `<span>Activate VIP Plan to Watch</span>`;
-      } else {
-        const plan = VIP_PLANS.find(p => p.id === user.activePlanId);
-        const watched = user.adsWatchedToday || 0;
-        const total = plan.dailyAds;
-        counterText.textContent = `${watched} / ${total} Ads`;
-
-        if (watched >= total) {
-          startBtn.disabled = true;
-          startBtn.className = "px-6 py-2.5 bg-slate-800 text-slate-500 rounded-xl text-xs font-bold cursor-not-allowed";
-          startBtn.innerHTML = `<span>Daily Limit Reached (Come back tomorrow)</span>`;
-        } else {
-          startBtn.disabled = false;
-          startBtn.className = "px-6 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl text-xs font-bold shadow-lg transition";
-          startBtn.innerHTML = `<span>Start Watching Ad (15s)</span>`;
-        }
+        startBtn.className = "w-full py-3 bg-slate-800 text-slate-500 rounded-xl text-xs font-bold cursor-not-allowed flex items-center justify-center gap-1.5";
+        startBtn.innerHTML = '<i class="fa-solid fa-clock mr-1"></i> <span>Daily Limit Reached (Come back tomorrow)</span>';
+        startBtn.onclick = null;
+      }
+    } else {
+      if (startBtn) {
+        startBtn.disabled = false;
+        startBtn.className = "w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-orange-500/20 transition cursor-pointer flex items-center justify-center gap-2";
+        startBtn.innerHTML = '<i class="fa-solid fa-play mr-1"></i> <span>Start Watching Ad (+ $0.05)</span>';
+        startBtn.onclick = startWatchingAd;
       }
     }
+  }
+}
 
-    function startWatchingAd() {
-      if (isWatchingAd) return;
-      const user = getCurrentUser();
-      if (!user || !user.activePlanId) return;
+function startWatchingAd() {
+  const user = getCurrentUser();
+  if (!user) return;
+  if (!user.activePlanId) {
+    showToast("Please activate a VIP plan first!", "warning");
+    switchScreen("plans");
+    return;
+  }
 
-      const plan = VIP_PLANS.find(p => p.id === user.activePlanId);
-      if (user.adsWatchedToday >= plan.dailyAds) {
-        showToast("Daily ad limit already completed! Reset in 24h.", "error");
-        return;
-      }
+  const plan = VIP_PLANS.find(p => p.id === user.activePlanId);
+  const total = plan ? plan.dailyAds : 5;
+  if ((user.adsWatchedToday || 0) >= total) {
+    showToast("Daily ad limit already completed! Reset tomorrow.", "error");
+    return;
+  }
 
-      isWatchingAd = true;
-      document.getElementById("ad-standby-view").classList.add("hidden");
-      document.getElementById("ad-running-view").classList.remove("hidden");
-      document.getElementById("ad-completed-view").classList.add("hidden");
+  const standbyView = document.getElementById("ad-standby-view");
+  const runningView = document.getElementById("ad-running-view");
+  const completedView = document.getElementById("ad-completed-view");
 
-      let secondsLeft = 15;
-      const timerNum = document.getElementById("ad-timer-num");
-      const timerPath = document.getElementById("ad-timer-svg-path");
-      timerNum.textContent = `${secondsLeft}s`;
+  if (standbyView) standbyView.classList.add("hidden");
+  if (runningView) runningView.classList.remove("hidden");
+  if (completedView) completedView.classList.add("hidden");
 
-      adCountdownInterval = setInterval(() => {
-        secondsLeft--;
-        timerNum.textContent = `${secondsLeft}s`;
-        const progress = (secondsLeft / 15) * 100;
-        timerPath.setAttribute("stroke-dasharray", `${progress}, 100`);
+  // ویڈیو پلے کریں
+  const videoEl = document.getElementById("ad-video-element");
+  if (videoEl) {
+    videoEl.muted = true;
+    videoEl.play().catch(() => {});
+  }
 
-        if (secondsLeft <= 0) {
-          clearInterval(adCountdownInterval);
-          finishAdAndCredit();
-        }
-      }, 1000);
+  let secondsLeft = 15;
+  const timerNum = document.getElementById("ad-timer-num");
+  if (timerNum) timerNum.textContent = `${secondsLeft}s`;
+
+  const interval = setInterval(() => {
+    secondsLeft--;
+    if (timerNum) timerNum.textContent = `${secondsLeft}s`;
+
+    if (secondsLeft <= 0) {
+      clearInterval(interval);
+      if (videoEl) videoEl.pause();
+      finishAdAndCredit();
     }
+  }, 1000);
+}
 
-    function finishAdAndCredit() {
-      isWatchingAd = false;
-      const user = getCurrentUser();
-      if (!user) return;
+function finishAdAndCredit() {
+  const user = getCurrentUser();
+  if (!user) return;
 
-      const users = getUsers();
-      const u = users.find(x => x.id === user.id);
-      if (u) {
-        u.balanceUsd += AD_REWARD_USD;
-        u.balancePkr += (AD_REWARD_USD * USD_TO_PKR);
-        u.adsWatchedToday = (u.adsWatchedToday || 0) + 1;
-        saveUsers(users);
-      }
+  const newWatched = (user.adsWatchedToday || 0) + 1;
+  const newBalUsd = user.balanceUsd + 0.05;
+  const newBalPkr = user.balancePkr + (0.05 * 280);
 
-      document.getElementById("ad-running-view").classList.add("hidden");
-      document.getElementById("ad-completed-view").classList.remove("hidden");
+  updateCurrentUser({
+    adsWatchedToday: newWatched,
+    balanceUsd: newBalUsd,
+    balancePkr: newBalPkr,
+    lastAdWatchTimestamp: Date.now()
+  });
 
-      showToast(`Success! +$0.05 USD (14 PKR) credited!`, "success");
+  const runningView = document.getElementById("ad-running-view");
+  const completedView = document.getElementById("ad-completed-view");
+  const standbyView = document.getElementById("ad-standby-view");
 
-      setTimeout(() => {
-        renderWatchScreen();
-        renderHomeScreen();
-      }, 2500);
-    }
+  if (runningView) runningView.classList.add("hidden");
+  if (completedView) completedView.classList.remove("hidden");
+  showToast("+$0.05 USD reward credited!", "success");
+
+  setTimeout(() => {
+    if (completedView) completedView.classList.add("hidden");
+    if (standbyView) standbyView.classList.remove("hidden");
+    renderWatchScreen();
+  }, 1500);
+}
 
     // Render Deposit Screen
     function selectDepositMethod(method) {
