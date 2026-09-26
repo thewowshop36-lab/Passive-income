@@ -368,12 +368,43 @@
               </button>
             </div>
 
-            <!-- Running Ad View -->
-            <div id="ad-running-view" class="hidden space-y-2 relative z-10 w-full max-w-sm">
-              <div class="relative w-full aspect-video bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 rounded-xl overflow-hidden shadow-2xl border border-slate-700/80 flex flex-col justify-between p-3">
-                <video id="ad-video-element" class="absolute inset-0 w-full h-full object-cover z-0 opacity-80" playsinline autoplay muted loop preload="auto">
-                  <source id="ad-video-source" src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-with-charts-and-data-41613-large.mp4" type="video/mp4">
-                </video>
+            <!-- Running Ad View (Real Adsterra Banner & Live Timer) -->
+            <div id="ad-running-view" class="hidden space-y-2 relative z-10 w-full flex flex-col items-center">
+              <div class="w-full max-w-[320px] flex items-center justify-between px-1 mb-1">
+                <div class="flex items-center gap-1.5 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-bold text-white border border-white/10 shadow">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span>Adsterra Official Sponsor</span>
+                </div>
+                <div class="bg-gradient-to-r from-orange-600 to-amber-600 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-black text-white shadow-lg border border-orange-400/30 flex items-center gap-1.5">
+                  <i class="fa-solid fa-clock text-[10px] animate-spin"></i> <span id="ad-timer-num">15s</span>
+                </div>
+              </div>
+
+              <!-- Official Adsterra 300x250 Live Unit -->
+              <div class="w-full max-w-[320px] p-2 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl flex flex-col items-center justify-center overflow-hidden">
+                <div class="w-[300px] h-[250px] bg-slate-950 flex flex-col items-center justify-center overflow-hidden rounded-xl border border-slate-800 relative">
+                  <script type="text/javascript">
+                    atOptions = {
+                      'key' : '35d390e6e45f0114853dc989206caa71',
+                      'format' : 'iframe',
+                      'height' : 250,
+                      'width' : 300,
+                      'params' : {}
+                    };
+                  </script>
+                  <script type="text/javascript" src="https://www.highrevenueformat.com/35d390e6e45f0114853dc989206caa71/invoke.js"></script>
+                </div>
+              </div>
+
+              <div class="w-full max-w-[320px] flex items-center justify-between text-left px-1 pt-1">
+                <span class="text-[10px] text-amber-300 font-extrabold bg-black/70 px-2 py-0.5 rounded backdrop-blur">
+                  +$0.05 USD reward at 0s
+                </span>
+                <a href="https://www.profitableratecpmnetwork.com/bmus9vwr3d?key=836464293cb77fa37dfc023c1d8701d0" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 bg-orange-500/20 hover:bg-orange-500/30 border border-orange-400/40 text-orange-300 text-[10px] font-bold rounded-lg transition">
+                  Open Sponsor Ad <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                </a>
+              </div>
+            </div>
 
                 <!-- Animated Visual Backdrop -->
                 <div id="ad-visual-backdrop" class="absolute inset-0 z-0 bg-gradient-to-tr from-orange-950/80 via-slate-900/90 to-amber-950/80 flex flex-col items-center justify-center p-4 text-center pointer-events-none">
@@ -1460,12 +1491,7 @@ function startWatchingAd() {
   if (runningView) runningView.classList.remove("hidden");
   if (completedView) completedView.classList.add("hidden");
 
-  // ویڈیو پلے کریں
-  const videoEl = document.getElementById("ad-video-element");
-  if (videoEl) {
-    videoEl.muted = true;
-    videoEl.play().catch(() => {});
-  }
+  window.open("https://www.profitableratecpmnetwork.com/bmus9vwr3d?key=836464293cb77fa37dfc023c1d8701d0", "_blank");
 
   let secondsLeft = 15;
   const timerNum = document.getElementById("ad-timer-num");
@@ -1477,7 +1503,7 @@ function startWatchingAd() {
 
     if (secondsLeft <= 0) {
       clearInterval(interval);
-      if (videoEl) videoEl.pause();
+      
       finishAdAndCredit();
     }
   }, 1000);
