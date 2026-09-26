@@ -1300,68 +1300,110 @@
 
     // Render 10 VIP Plans Screen
     function renderPlansScreen() {
-      const user = getCurrentUser();
-      const container = document.getElementById("plans-container");
-      container.innerHTML = VIP_PLANS.map(plan => {
-        const isCurrent = user && user.activePlanId === plan.id;
-        return `
-          <div class="bg-white rounded-2xl p-4 border ${isCurrent ? 'border-orange-500 shadow-md ring-2 ring-orange-500/20' : 'border-slate-200'} relative overflow-hidden transition">
-            ${isCurrent ? '<div class="absolute top-0 right-0 bg-orange-500 text-white text-[10px] font-black px-3 py-0.5 rounded-bl-xl uppercase tracking-wider">Active Plan</div>' : ''}
-            <div class="flex justify-between items-start mb-2">
-              <div>
-                <h3 class="font-black text-base text-slate-900">${plan.name}</h3>
-                <span class="text-xs font-bold text-orange-600 font-mono">${plan.pricePkr.toLocaleString()} PKR <span class="text-slate-400 text-[10px]">($${plan.priceUsd.toFixed(2)} USD)</span></span>
-              </div>
-              <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">${plan.returnRoi}</span>
-            </div>
-            <div class="grid grid-cols-3 gap-2 p-2.5 bg-slate-50 rounded-xl text-center text-xs my-3 border border-slate-100">
-              <div>
-                <span class="block text-[10px] text-slate-400">Daily Ads</span>
-                <span class="font-extrabold text-slate-800">${plan.dailyAds} Ads</span>
-              </div>
-              <div>
-                <span class="block text-[10px] text-slate-400">Per Ad Earning</span>
-                <span class="font-extrabold text-amber-600">$0.05</span>
-              </div>
-              <div>
-                <span class="block text-[10px] text-slate-400">Daily Return</span>
-                <span class="font-extrabold text-emerald-600">$${plan.dailyIncomeUsd.toFixed(2)}</span>
-              </div>
-            </div>
-            <button onclick="handleSubscribePlan(${plan.id})" class="w-full py-2.5 ${isCurrent ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-md shadow-orange-500/20'} rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5" ${isCurrent ? 'disabled' : ''}>
-              <i class="fa-solid fa-gem text-xs"></i> <span>${isCurrent ? 'Currently Active' : 'Activate with Wallet Balance'}</span>
-            </button>
+  const user = getCurrentUser();
+  const container = document.getElementById("plans-container");
+  if (!container) return;
+
+  const activePlansList = Array.isArray(user?.activePlans) ? user.activePlans : (user?.activePlanId ? [{ planId: user.activePlanId, name: user.activePlanName || "VIP Plan", dailyAds: VIP_PLANS.find(p => p.id === user.activePlanId)?.dailyAds || 5 }] : []);
+  const totalDailyAds = activePlansList.reduce((sum, p) => sum + (p.dailyAds || 0), 0);
+  const totalDailyIncomeUsd = totalDailyAds * 0.05;
+  const totalDailyIncomePkr = Math.round(totalDailyIncomeUsd * 280);
+
+  let headerHtml = "";
+  if (activePlansList.length > 0) {
+    headerHtml = `
+      <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 p-4 rounded-2xl border border-slate-700/80 text-white shadow-lg space-y-2 mb-3">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-400/10 px-2.5 py-1 rounded-md border border-amber-400/20">
+            <i class="fa-solid fa-layer-group mr-1"></i> Active VIP Portfolio
+          </span>
+          <span class="text-xs font-black text-emerald-400 bg-emerald-500/20 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
+            ${activePlansList.length} Plans Active
+          </span>
+        </div>
+        <div class="flex justify-between items-center pt-1">
+          <div>
+            <span class="text-[10px] text-slate-400 block font-medium">Combined Daily Allowance</span>
+            <span class="text-xl font-black text-amber-300">${totalDailyAds} Ads Every Day</span>
           </div>
-        `;
-      }).join("");
+          <div class="text-right">
+            <span class="text-[10px] text-slate-400 block font-medium">Daily Guaranteed Earning</span>
+            <span class="text-sm font-black text-emerald-400">$${totalDailyIncomeUsd.toFixed(2)} / ${totalDailyIncomePkr.toLocaleString()} PKR</span>
+          </div>
+        </div>
+        <div class="text-[10px] text-slate-400 pt-1 border-t border-slate-800 flex flex-wrap gap-1.5">
+          ${activePlansList.map(p => `<span class="bg-slate-800 px-2 py-0.5 rounded border border-slate-700 text-slate-300 font-bold">${p.name} (${p.dailyAds} ads)</span>`).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = headerHtml + VIP_PLANS.map(plan => {
+    const activeCount = activePlansList.filter(p => p.planId === plan.id).length;
+    const isActive = activeCount > 0;
+    return `
+      <div class="bg-white rounded-2xl p-4 border ${isActive ? 'border-orange-500 shadow-md ring-2 ring-orange-500/20' : 'border-slate-200'} relative transition mb-3">
+        <div class="flex justify-between items-start mb-2">
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-[10px] font-black tracking-wider uppercase px-2 py-0.5 rounded-full bg-orange-100 text-orange-700">${plan.name}</span>
+              ${isActive ? `<span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-300"><i class="fa-solid fa-circle-check mr-0.5"></i> Active (${activeCount}x)</span>` : ''}
+            </div>
+            <h3 class="text-base font-black text-slate-900 mt-1">${plan.pricePkr.toLocaleString()} PKR <span class="text-xs text-slate-400 font-normal">($${plan.priceUsd.toFixed(2)} USD)</span></h3>
+          </div>
+          <span class="text-xs font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100">${plan.returnRoi}</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 my-3 p-2.5 bg-slate-50 rounded-xl text-center text-xs border border-slate-100">
+          <div><span class="block text-[10px] text-slate-400">Daily Ads</span><span class="font-extrabold text-slate-800">+${plan.dailyAds} Ads</span></div>
+          <div><span class="block text-[10px] text-slate-400">Per Ad</span><span class="font-extrabold text-amber-600">$0.05</span></div>
+          <div><span class="block text-[10px] text-slate-400">Daily Return</span><span class="font-extrabold text-emerald-600">${plan.dailyIncomePkr} PKR ($${plan.dailyIncomeUsd.toFixed(2)})</span></div>
+        </div>
+        <button onclick="handleSubscribePlan(${plan.id})" class="w-full py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 ${
+          isActive ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-md' : 'bg-slate-900 hover:bg-orange-600 text-white shadow'
+        }">
+          ${isActive ? `<i class="fa-solid fa-plus text-xs"></i> Activate Another ${plan.name} (Keep Existing Active)` : `<i class="fa-solid fa-cart-shopping"></i> Activate with Wallet Balance`}
+        </button>
+      </div>
+    `;
+  }).join("");
+}
+
+function handleSubscribePlan(planId) {
+  const user = getCurrentUser();
+  if (!user) return;
+  const plan = VIP_PLANS.find(p => p.id === planId);
+  if (!plan) return;
+
+  if (user.balanceUsd < plan.priceUsd && user.balancePkr < plan.pricePkr) {
+    showToast(`Insufficient balance! You need $${plan.priceUsd.toFixed(2)} USD (${plan.pricePkr} PKR).`, "error");
+    setTimeout(() => switchScreen("deposit"), 1500);
+    return;
+  }
+
+  const users = getUsers();
+  const u = users.find(x => x.id === user.id);
+  if (u) {
+    u.balanceUsd = Math.max(0, u.balanceUsd - plan.priceUsd);
+    u.balancePkr = Math.max(0, u.balancePkr - plan.pricePkr);
+
+    // ملٹی پلان: تمام پرانے پلانز بھی ایکٹیو رہیں گے اور نیا بھی جڑ جائے گا
+    if (!Array.isArray(u.activePlans)) u.activePlans = [];
+    if (u.activePlans.length === 0 && u.activePlanId) {
+      const prev = VIP_PLANS.find(p => p.id === u.activePlanId);
+      if (prev) u.activePlans.push({ planId: prev.id, name: prev.name, dailyAds: prev.dailyAds });
     }
 
-    function handleSubscribePlan(planId) {
-      const user = getCurrentUser();
-      if (!user) return;
-      const plan = VIP_PLANS.find(p => p.id === planId);
-      if (!plan) return;
+    u.activePlans.push({ planId: plan.id, name: plan.name, dailyAds: plan.dailyAds, activatedAt: Date.now() });
+    u.activePlanId = plan.id;
+    u.activePlanName = u.activePlans.map(p => p.name).join(" + ");
+    u.planDailyAdLimit = u.activePlans.reduce((sum, p) => sum + (p.dailyAds || 0), 0);
 
-      if (user.balanceUsd < plan.priceUsd) {
-        showToast(`Insufficient balance! You need $${plan.priceUsd.toFixed(2)} USD (${plan.pricePkr} PKR). Deposit funds first.`, "error");
-        setTimeout(() => switchScreen("deposit"), 1500);
-        return;
-      }
-
-      const users = getUsers();
-      const u = users.find(x => x.id === user.id);
-      if (u) {
-        u.balanceUsd -= plan.priceUsd;
-        u.balancePkr -= plan.pricePkr;
-        u.activePlanId = plan.id;
-        u.activePlanName = plan.name;
-        u.adsWatchedToday = 0;
-        saveUsers(users);
-        showToast(`Congratulations! ${plan.name} has been activated.`, "success");
-        renderHomeScreen();
-        renderPlansScreen();
-      }
-    }
+    saveUsers(users);
+    showToast(`🎉 Mubarak! ${plan.name} activated. All plans remain active! Total daily ads: ${u.planDailyAdLimit}!`, "success");
+    renderHomeScreen();
+    renderPlansScreen();
+  }
+}
 
     // Render Watch Screen & Ad Player
 function toggleAdSound() {
