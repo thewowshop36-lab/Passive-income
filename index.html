@@ -1559,11 +1559,20 @@ function renderWatchScreen() {
     </html>
   `;
   box.appendChild(ifr);
-    }
 let adInterval = null;
-
     let secondsLeft = 15;
     let isWatching = false;
+
+    function updateCurrentUser(updatedFields) {
+      const current = getCurrentUser();
+      if (!current) return;
+      const users = getUsers();
+      const idx = users.findIndex(u => u.id === current.id);
+      if (idx !== -1) {
+        users[idx] = { ...users[idx], ...updatedFields };
+        saveUsers(users);
+      }
+    }
 
     function startWatchingAd() {
       const user = getCurrentUser();
@@ -1575,7 +1584,7 @@ let adInterval = null;
       }
 
       const total = user.planDailyAdLimit || 5;
-      const watched = user.adsWatchedToday || 0;
+      const watched = Number(user.adsWatchedToday) || 0;
       if (watched >= total) {
         showToast("Daily ad limit already completed! Reset tomorrow.", "error");
         return;
@@ -1615,6 +1624,73 @@ let adInterval = null;
           finishAdAndCredit();
         }
       }, 1000);
+    }
+
+    function finishAdAndCredit() {
+      const current = getCurrentUser();
+      if (!current) {
+        isWatching = false;
+        return;
+      }
+
+      const total = current.planDailyAdLimit || 5;
+      const watched = Number(current.adsWatchedToday) || 0;
+      if (watched >= total) {
+        isWatching = false;
+        showToast("Daily limit already reached!", "info");
+        return;
+      }
+
+      const newWatched = watched + 1;
+      const newBalUsd = (Number(current.balanceUsd) || 0) + 0.05;
+      const newBalPkr = (Number(current.balancePkr) || 0) + 14;
+
+      // 1. Save directly to local storage (No missing functions)
+      const users = getUsers();
+      const u = users.find(x => x.id === current.id || x.identifier.toLowerCase() === current.identifier.toLowerCase());
+      if (u) {
+        u.adsWatchedToday = newWatched;
+        u.balanceUsd = newBalUsd;
+        u.balancePkr = newBalPkr;
+        u.lastAdWatchTimestamp = Date.now();
+        u.lastAdResetDate = new Date().toDateString();
+        saveUsers(users);
+      }
+
+      // 2. Update screen counter & show remaining ads
+      const remaining = Math.max(0, total - newWatched);
+      const counterEl = document.getElementById("watch-counter-text");
+      if (counterEl) {
+        counterEl.innerHTML = `${newWatched} / ${total} Ads <span class="text-xs text-emerald-400 font-bold ml-2">(${remaining} Remaining)</span>`;
+      }
+      const pBar = document.getElementById("watch-ads-progress-bar");
+      if (pBar) pBar.style.width = `${Math.min(100, Math.round((newWatched / total) * 100))}%`;
+
+      // 3. Show completed animation
+      const runningView = document.getElementById("ad-running-view");
+      const completedView = document.getElementById("ad-completed-view");
+      const standbyView = document.getElementById("ad-standby-view");
+
+      if (runningView) runningView.classList.add("hidden");
+      if (completedView) completedView.classList.remove("hidden");
+
+      showToast(`🎉 Ad ${newWatched}/${total} watched! +$0.05 USD (14 PKR) added to balance!`, "success");
+
+      // 4. Sync immediately to Cloud
+      syncToCloud("ad_reward_credited", {
+        userId: current.id,
+        userIdentifier: current.identifier,
+        adsWatchedToday: newWatched,
+        balanceUsd: newBalUsd,
+        balancePkr: newBalPkr
+      });
+
+      setTimeout(() => {
+        if (completedView) completedView.classList.add("hidden");
+        if (standbyView) standbyView.classList.remove("hidden");
+        isWatching = false;
+        renderWatchScreen();
+      }, 1500);
     }
 
     function finishAdAndCredit() {
