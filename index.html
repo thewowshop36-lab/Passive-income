@@ -723,13 +723,9 @@
         let localWds = getWithdrawals();
         let hasChanges = false;
 
-        // 1. Fetch from Dedicated JSONBin Cloud Database
         try {
           const res = await fetch(`${JSONBIN_URL}/latest`, {
-            headers: {
-              "X-Master-Key": JSONBIN_KEY,
-              "X-Bin-Meta": "false"
-            }
+            headers: { "X-Master-Key": JSONBIN_KEY, "X-Bin-Meta": "false" }
           });
           if (res.ok) {
             const data = await res.json();
@@ -738,71 +734,59 @@
               const remoteDeps = data.deposits || (data.record ? data.record.deposits : []) || [];
               const remoteWds = data.withdrawals || (data.record ? data.record.withdrawals : []) || [];
 
+              // Merge Users: Cloud balance always takes precedence!
               const userMap = new Map();
-              remoteUsers.forEach(u => { if (u && u.identifier) userMap.set(u.identifier.toLowerCase(), u); });
+              remoteUsers.forEach(u => { if (u && u.identifier) userMap.set(u.identifier.toLowerCase(), { ...u }); });
               localUsers.forEach(u => {
                 if (!u || !u.identifier) return;
                 const k = u.identifier.toLowerCase();
-                userMap.set(k, { ...(userMap.get(k) || {}), ...u });
+                const remote = userMap.get(k);
+                if (remote) {
+                  const maxUsd = Math.max(Number(remote.balanceUsd) || 0, Number(u.balanceUsd) || 0);
+                  const maxPkr = Math.max(Number(remote.balancePkr) || 0, Number(u.balancePkr) || 0);
+                  const maxWatched = Math.max(Number(remote.adsWatchedToday) || 0, Number(u.adsWatchedToday) || 0);
+                  const finalPlanId = u.activePlanId || remote.activePlanId || null;
+                  const finalPlanName = u.activePlanName || remote.activePlanName || null;
+                  const finalLimit = Math.max(Number(u.planDailyAdLimit) || 0, Number(remote.planDailyAdLimit) || 0);
+                  const finalPlans = (u.activePlans && u.activePlans.length > 0) ? u.activePlans : (remote.activePlans || []);
+
+                  userMap.set(k, {
+                    ...u,
+                    ...remote,
+                    balanceUsd: maxUsd,
+                    balancePkr: maxPkr,
+                    adsWatchedToday: maxWatched,
+                    activePlanId: finalPlanId,
+                    activePlanName: finalPlanName,
+                    planDailyAdLimit: finalLimit,
+                    activePlans: finalPlans
+                  });
+                } else {
+                  userMap.set(k, { ...u });
+                }
               });
               localUsers = Array.from(userMap.values());
 
+              // Merge Deposits: APPROVED always wins!
               const depMap = new Map();
-              remoteDeps.forEach(d => { if (d && d.id) depMap.set(d.id, d); });
-              localDeps.forEach(d => { if (d && d.id) depMap.set(d.id, { ...(depMap.get(d.id) || {}), ...d }); });
+              remoteDeps.forEach(d => { if (d && d.id) depMap.set(String(d.id), { ...d }); });
+              localDeps.forEach(d => {
+                if (!d || !d.id) return;
+                const key = String(d.id);
+                const remote = depMap.get(key);
+                if (remote) {
+                  const isApproved = (remote.status === "APPROVED" || d.status === "APPROVED");
+                  depMap.set(key, { ...d, ...remote, status: isApproved ? "APPROVED" : (remote.status || d.status) });
+                } else {
+                  depMap.set(key, { ...d });
+                }
+              });
               localDeps = Array.from(depMap.values());
-
-              const wdMap = new Map();
-              remoteWds.forEach(w => { if (w && w.id) wdMap.set(w.id, w); });
-              localWds.forEach(w => { if (w && w.id) wdMap.set(w.id, { ...(wdMap.get(w.id) || {}), ...w }); });
-              localWds = Array.from(wdMap.values());
               hasChanges = true;
             }
           }
         } catch (e) {
           console.warn("JSONBin cloud read error:", e);
-        }
-
-        // 2. Poll Real-Time Live Event Stream (Captures registrations & requests from ANY phone in real-time)
-        try {
-          const streamRes = await fetch(`${EVENT_STREAM_URL}/json?poll=1&since=all`);
-          if (streamRes.ok) {
-            const rawText = await streamRes.text();
-            const lines = rawText.trim().split("\n");
-            for (const line of lines) {
-              if (!line.trim()) continue;
-              try {
-                const eventObj = JSON.parse(line);
-                if (eventObj.message) {
-                  const payload = JSON.parse(eventObj.message);
-                  if (payload.type === "new_user" && payload.user) {
-                    const u = payload.user;
-                    const exists = localUsers.some(x => x.identifier.toLowerCase() === u.identifier.toLowerCase());
-                    if (!exists) {
-                      localUsers.push(u);
-                      hasChanges = true;
-                    }
-                  } else if (payload.type === "new_deposit" && payload.deposit) {
-                    const d = payload.deposit;
-                    const exists = localDeps.some(x => x.id === d.id);
-                    if (!exists) {
-                      localDeps.push(d);
-                      hasChanges = true;
-                    }
-                  } else if (payload.type === "new_withdrawal" && payload.withdrawal) {
-                    const w = payload.withdrawal;
-                    const exists = localWds.some(x => x.id === w.id);
-                    if (!exists) {
-                      localWds.push(w);
-                      hasChanges = true;
-                    }
-                  }
-                }
-              } catch (parseErr) {}
-            }
-          }
-        } catch (streamErr) {
-          console.warn("Event stream poll error:", streamErr);
         }
 
         if (hasChanges) {
@@ -811,15 +795,11 @@
           saveWithdrawals(localWds);
         }
 
-        const timeEl = document.getElementById("admin-last-sync-time");
-        if (timeEl) timeEl.textContent = new Date().toLocaleTimeString();
-
+        // Live refresh whatever screen is open on user's phone!
         if (currentScreen === "admin") {
           renderAdminScreen();
-        }
-
-        if (!silent) {
-          showToast(`Live Cloud Synced! ${localUsers.length} total users loaded.`, "success");
+        } else if (currentScreen !== "auth") {
+          refreshCurrentScreen(currentScreen);
         }
       } catch (err) {
         console.warn("Cloud sync offline fallback:", err);
