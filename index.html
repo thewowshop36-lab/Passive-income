@@ -405,52 +405,17 @@
                 </a>
               </div>
             </div>
-
-                <!-- Animated Visual Backdrop -->
-                <div id="ad-visual-backdrop" class="absolute inset-0 z-0 bg-gradient-to-tr from-orange-950/80 via-slate-900/90 to-amber-950/80 flex flex-col items-center justify-center p-4 text-center pointer-events-none">
-                  <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-400 flex items-center justify-center text-white text-2xl shadow-lg mb-2 animate-bounce">
-                    <i class="fa-solid fa-chart-line"></i>
-                  </div>
-                  <h4 id="ad-backdrop-title" class="text-sm font-black text-white tracking-wide">Next-Gen FinTech Trading</h4>
-                  <p class="text-[10px] text-amber-300 font-semibold mt-0.5">Verified Sponsored Commercial Stream</p>
-                </div>
-
-                <!-- Video Header -->
-                <div class="relative z-10 flex items-center justify-between">
-                  <div class="flex items-center gap-1.5 bg-black/75 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-bold text-white border border-white/10 shadow">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span id="ad-playing-sponsor">Sponsor Commercial</span>
-                  </div>
-                  <div class="bg-gradient-to-r from-orange-600 to-amber-600 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-black text-white shadow-lg border border-orange-400/30 flex items-center gap-1.5">
-                    <i class="fa-solid fa-clock text-[10px]"></i> <span id="ad-timer-num">15s</span>
-                  </div>
-                </div>
-
-                <!-- Sound Button -->
-                <div class="relative z-10 flex items-center justify-between mt-auto pt-2">
-                  <span class="text-[10px] text-amber-300 font-extrabold bg-black/60 px-2 py-0.5 rounded backdrop-blur">
-                    +$0.05 USD at 0s
-                  </span>
-                  <button type="button" onclick="toggleAdSound()" id="ad-sound-btn" class="bg-black/80 hover:bg-black text-white px-2.5 py-1 rounded-lg text-xs border border-white/20 transition flex items-center gap-1.5 cursor-pointer shadow">
-                    <i class="fa-solid fa-volume-xmark" id="ad-sound-icon"></i> <span class="text-[10px] font-bold" id="ad-sound-text">Muted</span>
-                  </button>
-                </div>
+<!-- Completed View -->
+            <div id="ad-completed-view" class="hidden space-y-2 relative z-10 py-6">
+              <div class="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center mx-auto text-2xl shadow-lg">
+                <i class="fa-solid fa-check"></i>
               </div>
-
-              <!-- Stream Info -->
-              <div class="flex items-center justify-between text-left px-1">
-                <div class="overflow-hidden">
-                  <h5 id="ad-playing-title" class="text-xs font-extrabold text-white truncate max-w-[200px]">Next-Gen Trading Platform</h5>
-                  <p class="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
-                    <i class="fa-solid fa-circle-check"></i> Reward will auto-credit when timer ends
-                  </p>
-                </div>
-              </div>
+              <h4 class="font-extrabold text-sm text-emerald-400">+$0.05 USD Credited!</h4>
+              <p class="text-xs text-slate-300">Reward added to your account balance.</p>
             </div>
-                
-
-            </div>
+          </div>
         </div>
+                
         <!-- Adsterra Sponsored Banner Slot -->
         <div id="adsterra-banner-container" class="bg-slate-900 border border-slate-800 rounded-2xl p-3 text-center space-y-2 shadow-sm">
           <div class="flex items-center justify-between text-[10px] text-slate-400 font-bold px-1">
