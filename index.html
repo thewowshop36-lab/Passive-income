@@ -353,37 +353,47 @@
             <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Earn +$0.05 USD</span>
           </div>
           <div class="relative bg-slate-950 aspect-video flex flex-col items-center justify-center text-white p-6 text-center">
+            <!-- Standby View -->
             <div id="ad-standby-view" class="space-y-3">
-              <div class="w-14 h-14 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/40 flex items-center justify-center mx-auto text-2xl shadow-lg animate-pulse">
-                <i class="fa-solid fa-play ml-1"></i>
+              <div class="w-14 h-14 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/40 flex items-center justify-center mx-auto shadow-inner">
+                <i class="fa-solid fa-play ml-1 text-lg"></i>
               </div>
               <div>
-                <h4 class="font-bold text-sm">Crypto & FinTech Global Ad</h4>
-                <p class="text-xs text-slate-400 mt-1">Watch for 15 seconds to receive your fixed $0.05 USD reward</p>
+                <h4 class="font-extrabold text-sm text-white" id="watch-sponsor-title">Global FinTech Commercial Ad</h4>
+                <p class="text-xs text-slate-400 mt-1" id="watch-sponsor-desc">Watch 15s HD video to receive your fixed $0.05 USD reward</p>
               </div>
-              <button id="ad-start-btn" onclick="window.open('https://www.profitableratecpmnetwork.com/bmus9vwr3d?key=836464293cb77fa37dfc023c1d8701d0', '_blank'); startWatchingAd();">Start Watching Ad</button>
-
-                
+              <button id="ad-start-btn" onclick="startWatchingAd()" class="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-orange-500/20 transition cursor-pointer">
+                <i class="fa-solid fa-play text-xs mr-1"></i> Start Watching Ad (+ $0.05 USD)
               </button>
             </div>
-            <div id="ad-running-view" class="hidden space-y-3">
-              <div class="relative w-20 h-20 mx-auto flex items-center justify-center">
-                <svg class="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                  <path class="text-slate-800" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                  <path id="ad-timer-svg-path" class="text-orange-500 transition-all duration-1000" stroke-dasharray="100, 100" stroke-width="3" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                </svg>
-                <span id="ad-timer-num" class="absolute text-2xl font-black">15s</span>
+
+            <!-- Running Ad View with Real Video -->
+            <div id="ad-running-view" class="hidden space-y-2 relative z-10 w-full max-w-sm">
+              <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-lg border border-slate-700">
+                <video id="ad-video-element" class="w-full h-full object-cover" playsinline autoplay muted loop>
+                  <source id="ad-video-source" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
+                </video>
+                <div class="absolute top-2 left-2 flex items-center gap-1.5 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded-md text-[10px] font-bold text-white border border-white/10">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span id="ad-playing-sponsor">Sponsor Commercial</span>
+                </div>
+                <div class="absolute top-2 right-2 bg-orange-600/90 backdrop-blur-md px-2.5 py-0.5 rounded-md text-xs font-black text-white shadow flex items-center gap-1">
+                  <i class="fa-solid fa-clock text-[10px]"></i> <span id="ad-timer-num">15s</span>
+                </div>
+                <button type="button" onclick="toggleAdSound()" id="ad-sound-btn" class="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded-lg text-xs hover:bg-black/90 transition flex items-center gap-1">
+                  <i class="fa-solid fa-volume-xmark" id="ad-sound-icon"></i> <span class="text-[9px]">Sound</span>
+                </button>
               </div>
-              <p class="text-xs text-orange-300 font-semibold animate-pulse">Streaming verified ad sponsor...</p>
-            </div>
-            <div id="ad-completed-view" class="hidden space-y-2">
-              <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center mx-auto text-2xl">
-                <i class="fa-solid fa-check"></i>
+
+              <div class="flex items-center justify-between text-left px-1">
+                <div class="overflow-hidden">
+                  <h5 id="ad-playing-title" class="text-xs font-extrabold text-white truncate max-w-[200px]">Next-Gen Trading Platform</h5>
+                  <p class="text-[10px] text-amber-300 font-semibold flex items-center gap-1">
+                    <i class="fa-solid fa-circle-check text-emerald-400"></i> +$0.05 reward credited at 0s
+                  </p>
+                </div>
               </div>
-              <h4 class="font-bold text-sm text-emerald-400">Reward Credited!</h4>
-              <p class="text-xs text-slate-300">+$0.05 USD (14 PKR) added to your wallet balance.</p>
             </div>
-          </div>
         </div>
         <!-- Adsterra Sponsored Banner Slot -->
         <div id="adsterra-banner-container" class="bg-slate-900 border border-slate-800 rounded-2xl p-3 text-center space-y-2 shadow-sm">
