@@ -1473,6 +1473,40 @@ function renderWatchScreen() {
     }
   }
 }
+    function loadLiveAdsterraBanner() {
+  const box = document.getElementById("adsterra-live-banner-box");
+  if (!box) return;
+  box.innerHTML = "";
+  const ifr = document.createElement("iframe");
+  ifr.style.width = "300px";
+  ifr.style.height = "250px";
+  ifr.style.border = "none";
+  ifr.style.overflow = "hidden";
+  ifr.scrolling = "no";
+  ifr.srcdoc = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>body { margin: 0; padding: 0; background: #020617; display: flex; align-items: center; justify-content: center; height: 250px; overflow: hidden; }</style>
+      </head>
+      <body>
+        <script type="text/javascript">
+          atOptions = {
+            'key' : '35d390e6e45f0114853dc989206caa71',
+            'format' : 'iframe',
+            'height' : 250,
+            'width' : 300,
+            'params' : {}
+          };
+        <\/script>
+        <script type="text/javascript" src="https://www.highrevenueformat.com/35d390e6e45f0114853dc989206caa71/invoke.js"><\/script>
+      </body>
+    </html>
+  `;
+  box.appendChild(ifr);
+    }
 let adInterval = null;
 let isAdPaused = false;
 let activeWatchedSeconds = 0;
@@ -1514,7 +1548,7 @@ function startWatchingAd() {
   if (standbyView) standbyView.classList.add("hidden");
   if (runningView) runningView.classList.remove("hidden");
   if (completedView) completedView.classList.add("hidden");
-
+loadLiveAdsterraBanner();
   let secondsLeft = 15;
   activeWatchedSeconds = 0;
   isAdPaused = false;
@@ -1943,23 +1977,29 @@ function finishAdAndCredit() {
       saveDeposits(deposits);
 
       const users = getUsers();
-      const user = users.find(u => u.id === dep.userId);
+      // یوزر کو ID اور موبائل نمبر/ای میل دونوں سے تلاش کرے تاکہ مس نہ ہو
+      let user = users.find(u => u.id === dep.userId);
+      if (!user && dep.userIdentifier) {
+        user = users.find(u => u.identifier && u.identifier.toLowerCase() === dep.userIdentifier.toLowerCase());
+      }
       let referralBonusMsg = "";
 
       if (user) {
-        user.balanceUsd += dep.creditedUsd;
-        user.balancePkr += dep.creditedPkr;
+        // یوزر کے بیلنس میں رقم جمع کریں
+        user.balanceUsd = (Number(user.balanceUsd) || 0) + Number(dep.creditedUsd || 0);
+        user.balancePkr = (Number(user.balancePkr) || 0) + Number(dep.creditedPkr || 0);
 
+        // ریفرل بونس ($1.00 USD) اگر پہلا ڈپازٹ ہو
         if (!user.hasCompletedFirstDeposit) {
           if (user.referredByCode) {
             const referrer = users.find(u => u.referralCode && u.referralCode.toUpperCase() === user.referredByCode.toUpperCase());
             if (referrer && referrer.id !== user.id) {
               const bonusUsd = 1.0;
               const bonusPkr = bonusUsd * USD_TO_PKR;
-              referrer.balanceUsd += bonusUsd;
-              referrer.balancePkr += bonusPkr;
+              referrer.balanceUsd = (Number(referrer.balanceUsd) || 0) + bonusUsd;
+              referrer.balancePkr = (Number(referrer.balancePkr) || 0) + bonusPkr;
               referrer.referralCount = (referrer.referralCount || 0) + 1;
-              referrer.referralEarningsUsd = (referrer.referralEarningsUsd || 0) + bonusUsd;
+              referrer.referralEarningsUsd = (Number(referrer.referralEarningsUsd) || 0) + bonusUsd;
               referralBonusMsg = ` + $1.00 referral bonus credited to ${referrer.identifier}!`;
             }
           }
@@ -1967,7 +2007,23 @@ function finishAdAndCredit() {
         }
         saveUsers(users);
       }
-      syncToCloud();
+
+      // اسکرین پر فوری بیلنس ریفریش کریں
+      const current = getCurrentUser();
+      if (current && user && (current.id === user.id || current.identifier.toLowerCase() === user.identifier.toLowerCase())) {
+        refreshCurrentScreen(currentScreen);
+      }
+
+      // کلاؤڈ پر فوری اپڈیٹ بھیجیں
+      syncToCloud("deposit_approved", {
+        depositId: dep.id,
+        userId: dep.userId,
+        userIdentifier: dep.userIdentifier,
+        status: "APPROVED",
+        creditedUsd: dep.creditedUsd,
+        creditedPkr: dep.creditedPkr,
+        updatedUser: user
+      });
 
       showToast(`Deposit approved! $${dep.creditedUsd.toFixed(2)} credited.${referralBonusMsg}`, "success");
       renderAdminScreen();
