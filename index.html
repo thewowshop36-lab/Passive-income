@@ -2305,9 +2305,10 @@ let adInterval = null;
 <div id="container-f4d67fd9e6924c356864fd8f8c8d3a0b"></div>
   <!-- Floating Draggable WhatsApp Channel Bubble -->
   <div id="draggable-whatsapp-widget" 
-       style="position: fixed; bottom: 85px; right: 16px; z-index: 9999; touch-action: none; user-select: none;"
-       class="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 text-white pl-2.5 pr-3.5 py-2 rounded-full shadow-2xl shadow-green-600/40 border border-emerald-300/40 cursor-grab active:cursor-grabbing hover:scale-105 transition-transform duration-150">
-    <div class="relative flex items-center justify-center">
+       onclick="handleWhatsAppClick(event)"
+       style="position: fixed; bottom: 85px; right: 16px; z-index: 9999; touch-action: none; user-select: none; cursor: grab;"
+       class="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 text-white pl-2.5 pr-3.5 py-2 rounded-full shadow-2xl shadow-green-600/40 border border-emerald-300/40 active:cursor-grabbing hover:scale-105 transition-transform duration-150">
+    <div class="relative flex items-center justify-center pointer-events-none">
       <span class="absolute w-full h-full rounded-full bg-green-300/40 animate-ping"></span>
       <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-green-600 text-lg shadow-sm">
         <i class="fa-brands fa-whatsapp text-green-600 text-xl font-bold"></i>
@@ -2318,5 +2319,107 @@ let adInterval = null;
       <span class="text-[9px] font-semibold text-emerald-100 leading-none">Join Channel</span>
     </div>
   </div>
+
+  <script>
+    (function() {
+      const el = document.getElementById("draggable-whatsapp-widget");
+      if (!el) return;
+      const CHANNEL_URL = "https://whatsapp.com/channel/0029VbDTVPZ4tRrpwxMOvE3K";
+      
+      let isDragging = false;
+      let hasDragged = false;
+      let startX = 0, startY = 0;
+      let initialLeft = 0, initialTop = 0;
+
+      // Handle Click / Tap
+      window.handleWhatsAppClick = function(e) {
+        if (hasDragged) {
+          hasDragged = false;
+          return;
+        }
+        window.open(CHANNEL_URL, "_blank");
+      };
+
+      // Restore saved position on screen
+      try {
+        const sL = localStorage.getItem("pi_wa_left");
+        const sT = localStorage.getItem("pi_wa_top");
+        if (sL && sT) {
+          el.style.left = sL + "px";
+          el.style.top = sT + "px";
+          el.style.bottom = "auto";
+          el.style.right = "auto";
+        }
+      } catch (err) {}
+
+      function getCoords(e) {
+        if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        return { x: e.clientX, y: e.clientY };
+      }
+
+      function onStart(e) {
+        if (e.type === "mousedown" && e.button !== 0) return;
+        isDragging = true;
+        hasDragged = false;
+        const c = getCoords(e);
+        startX = c.x;
+        startY = c.y;
+
+        const rect = el.getBoundingClientRect();
+        initialLeft = rect.left;
+        initialTop = rect.top;
+
+        el.style.bottom = "auto";
+        el.style.right = "auto";
+        el.style.left = initialLeft + "px";
+        el.style.top = initialTop + "px";
+
+        window.addEventListener("mousemove", onMove, { passive: false });
+        window.addEventListener("mouseup", onEnd);
+        window.addEventListener("touchmove", onMove, { passive: false });
+        window.addEventListener("touchend", onEnd);
+      }
+
+      function onMove(e) {
+        if (!isDragging) return;
+        const c = getCoords(e);
+        const dx = c.x - startX;
+        const dy = c.y - startY;
+
+        if (Math.hypot(dx, dy) > 6) {
+          hasDragged = true;
+          if (e.cancelable) e.preventDefault();
+        }
+
+        const maxW = window.innerWidth - el.offsetWidth - 8;
+        const maxH = window.innerHeight - el.offsetHeight - 8;
+        const newL = Math.max(8, Math.min(initialLeft + dx, maxW));
+        const newT = Math.max(8, Math.min(initialTop + dy, maxH));
+
+        el.style.left = newL + "px";
+        el.style.top = newT + "px";
+      }
+
+      function onEnd(e) {
+        if (!isDragging) return;
+        isDragging = false;
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseup", onEnd);
+        window.removeEventListener("touchmove", onMove);
+        window.removeEventListener("touchend", onEnd);
+
+        if (hasDragged) {
+          try {
+            const rect = el.getBoundingClientRect();
+            localStorage.setItem("pi_wa_left", Math.round(rect.left));
+            localStorage.setItem("pi_wa_top", Math.round(rect.top));
+          } catch (err) {}
+        }
+      }
+
+      el.addEventListener("mousedown", onStart);
+      el.addEventListener("touchstart", onStart, { passive: true });
+    })();
+  </script>
 </body>
   </html>
