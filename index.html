@@ -1505,6 +1505,235 @@ async function syncToCloud(eventType = null, eventPayload = null) {
             const depItem = depMap.get(targetKey);
             if (depItem) depItem.status = "REJECTED";
           }
+<!-- APPLICATION LOGIC SCRIPT -->
+  <script>
+    const ADMIN_EMAIL = "adjatt87@gmail.com";
+    const USD_TO_PKR = 280.0;
+    const AD_REWARD_USD = 0.05;
+
+    // Dedicated Cloud Database (JSONBin.io API with Private Master Key)
+    const JSONBIN_URL = "https://api.jsonbin.io/v3/b/6ab4e6b7ffd5d1605329b5fd";
+    const JSONBIN_KEY = "$2a$10$2zkWHyyET6.M2zVcJkTBX.n1wrpw51LweZM.KfFaZRJgqW071pfQq";
+    const EVENT_STREAM_URL = "https://ntfy.sh/pi_passive_adjatt87_stream";
+    let isSyncingCloud = false;
+    let cloudAutoSyncTimer = null;
+
+    async function syncFromCloud(silent = true) {
+      if (isSyncingCloud) return;
+      isSyncingCloud = true;
+      const syncIcon = document.getElementById("admin-sync-icon");
+      if (syncIcon) syncIcon.classList.add("fa-spin");
+
+      try {
+        let localUsers = getUsers();
+        let localDeps = getDeposits();
+        let localWds = getWithdrawals();
+        let hasChanges = false;
+
+        try {
+          const res = await fetch(`${JSONBIN_URL}/latest`, {
+            headers: { "X-Master-Key": JSONBIN_KEY, "X-Bin-Meta": "false" }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data) {
+              const remoteUsers = data.users || (data.record ? data.record.users : []) || [];
+              const remoteDeps = data.deposits || (data.record ? data.record.deposits : []) || [];
+              const remoteWds = data.withdrawals || (data.record ? data.record.withdrawals : []) || [];
+
+              const userMap = new Map();
+              remoteUsers.forEach(u => { if (u && u.identifier) userMap.set(u.identifier.toLowerCase(), { ...u }); });
+              localUsers.forEach(u => {
+                if (!u || !u.identifier) return;
+                const k = u.identifier.toLowerCase();
+                const remote = userMap.get(k);
+                if (remote) {
+                  const localTime = Number(u.lastUpdatedAt) || 0;
+                  const remoteTime = Number(remote.lastUpdatedAt) || 0;
+                  let chosen = (localTime >= remoteTime) ? { ...remote, ...u } : { ...u, ...remote };
+
+                  const combinedPlans = [...(remote.activePlans || []), ...(u.activePlans || [])];
+                  const uniquePlansMap = new Map();
+                  combinedPlans.forEach(p => { if (p && p.planId) uniquePlansMap.set(String(p.planId), p); });
+                  const finalPlans = Array.from(uniquePlansMap.values());
+
+                  const finalPlanLimit = finalPlans.length > 0
+                    ? finalPlans.reduce((sum, p) => sum + (p.dailyAds || 0), 0)
+                    : Math.max(Number(u.planDailyAdLimit) || 0, Number(remote.planDailyAdLimit) || 0, 5);
+
+                  const finalPlanName = finalPlans.length > 0
+                    ? finalPlans.map(p => p.name).join(" + ")
+                    : (chosen.activePlanName || "FREE Starter Plan");
+
+                  userMap.set(k, {
+                    ...chosen,
+                    activePlans: finalPlans,
+                    planDailyAdLimit: finalPlanLimit,
+                    activePlanName: finalPlanName
+                  });
+                } else {
+                  userMap.set(k, { ...u });
+                }
+              });
+              localUsers = Array.from(userMap.values());
+
+              const depMap = new Map();
+              remoteDeps.forEach(d => { if (d && d.id) depMap.set(String(d.id), { ...d }); });
+              localDeps.forEach(d => {
+                if (!d || !d.id) return;
+                const key = String(d.id);
+                const remote = depMap.get(key);
+                if (remote) {
+                  let resolvedStatus = d.status || remote.status || "PENDING";
+                  if (d.status === "APPROVED" || remote.status === "APPROVED") {
+                    resolvedStatus = "APPROVED";
+                  } else if (d.status === "REJECTED" || remote.status === "REJECTED") {
+                    resolvedStatus = "REJECTED";
+                  }
+                  depMap.set(key, { ...remote, ...d, status: resolvedStatus });
+                } else {
+                  depMap.set(key, { ...d });
+                }
+              });
+              localDeps = Array.from(depMap.values());
+
+              const wdMap = new Map();
+              remoteWds.forEach(w => { if (w && w.id) wdMap.set(String(w.id), { ...w }); });
+              localWds.forEach(w => {
+                if (!w || !w.id) return;
+                const key = String(w.id);
+                const remote = wdMap.get(key);
+                if (remote) {
+                  let resolvedStatus = w.status || remote.status || "PENDING";
+                  if (w.status === "COMPLETED" || remote.status === "COMPLETED") resolvedStatus = "COMPLETED";
+                  else if (w.status === "REJECTED" || remote.status === "REJECTED") resolvedStatus = "REJECTED";
+                  wdMap.set(key, { ...remote, ...w, status: resolvedStatus });
+                } else {
+                  wdMap.set(key, { ...w });
+                }
+              });
+              localWds = Array.from(wdMap.values());
+
+              hasChanges = true;
+            }
+          }
+        } catch (e) {
+          console.warn("JSONBin cloud read error:", e);
+        }
+
+        if (hasChanges) {
+          saveUsers(localUsers);
+          saveDeposits(localDeps);
+          saveWithdrawals(localWds);
+        }
+
+        if (currentScreen === "admin") {
+          renderAdminScreen();
+        } else if (currentScreen !== "auth") {
+          refreshCurrentScreen(currentScreen);
+        }
+      } catch (err) {
+        console.warn("Cloud sync offline fallback:", err);
+      } finally {
+        isSyncingCloud = false;
+        if (syncIcon) syncIcon.classList.remove("fa-spin");
+      }
+    }
+
+    async function syncToCloud(eventType = null, eventPayload = null) {
+      try {
+        let localUsers = getUsers();
+        let localDeps = getDeposits();
+        let localWds = getWithdrawals();
+
+        if (eventType && eventPayload) {
+          try {
+            const safePayload = { ...eventPayload };
+            if (safePayload.screenshot && safePayload.screenshot.length > 2000) {
+              safePayload.screenshot = "[Image attached]";
+            }
+            fetch(EVENT_STREAM_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ type: eventType, [eventType.replace("new_", "")]: safePayload, time: Date.now() })
+            }).catch(() => {});
+          } catch (e) {}
+        }
+
+        try {
+          const getRes = await fetch(`${JSONBIN_URL}/latest`, {
+            headers: { "X-Master-Key": JSONBIN_KEY, "X-Bin-Meta": "false" }
+          });
+          let remoteUsers = [];
+          let remoteDeps = [];
+          let remoteWds = [];
+          if (getRes.ok) {
+            const cloudData = await getRes.json();
+            remoteUsers = cloudData.users || (cloudData.record ? cloudData.record.users : []) || [];
+            remoteDeps = cloudData.deposits || (cloudData.record ? cloudData.record.deposits : []) || [];
+            remoteWds = cloudData.withdrawals || (cloudData.record ? cloudData.record.withdrawals : []) || [];
+          }
+
+          const userMap = new Map();
+          remoteUsers.forEach(u => { if (u && u.identifier) userMap.set(u.identifier.toLowerCase(), { ...u }); });
+          localUsers.forEach(u => {
+            if (!u || !u.identifier) return;
+            const key = u.identifier.toLowerCase();
+            const remote = userMap.get(key);
+            if (remote) {
+              const localTime = Number(u.lastUpdatedAt) || 0;
+              const remoteTime = Number(remote.lastUpdatedAt) || 0;
+              let chosen = (localTime >= remoteTime) ? { ...remote, ...u } : { ...u, ...remote };
+
+              const combinedPlans = [...(remote.activePlans || []), ...(u.activePlans || [])];
+              const uniquePlansMap = new Map();
+              combinedPlans.forEach(p => { if (p && p.planId) uniquePlansMap.set(String(p.planId), p); });
+              const finalPlans = Array.from(uniquePlansMap.values());
+
+              const finalPlanLimit = finalPlans.length > 0
+                ? finalPlans.reduce((sum, p) => sum + (p.dailyAds || 0), 0)
+                : Math.max(Number(u.planDailyAdLimit) || 0, Number(remote.planDailyAdLimit) || 0, 5);
+
+              const finalPlanName = finalPlans.length > 0
+                ? finalPlans.map(p => p.name).join(" + ")
+                : (chosen.activePlanName || "FREE Starter Plan");
+
+              userMap.set(key, {
+                ...chosen,
+                activePlans: finalPlans,
+                planDailyAdLimit: finalPlanLimit,
+                activePlanName: finalPlanName
+              });
+            } else {
+              userMap.set(key, { ...u });
+            }
+          });
+
+          const depMap = new Map();
+          remoteDeps.forEach(d => { if (d && d.id) depMap.set(String(d.id), { ...d }); });
+          localDeps.forEach(d => {
+            if (!d || !d.id) return;
+            const key = String(d.id);
+            const remote = depMap.get(key);
+            if (remote) {
+              let resolvedStatus = d.status || remote.status || "PENDING";
+              if (d.status === "APPROVED" || remote.status === "APPROVED") resolvedStatus = "APPROVED";
+              else if (d.status === "REJECTED" || remote.status === "REJECTED") resolvedStatus = "REJECTED";
+              depMap.set(key, { ...remote, ...d, status: resolvedStatus });
+            } else {
+              depMap.set(key, { ...d });
+            }
+          });
+
+          if (eventType === "deposit_approved" && eventPayload && eventPayload.depositId) {
+            const targetKey = String(eventPayload.depositId);
+            const depItem = depMap.get(targetKey);
+            if (depItem) depItem.status = "APPROVED";
+          } else if (eventType === "deposit_rejected" && eventPayload && eventPayload.depositId) {
+            const targetKey = String(eventPayload.depositId);
+            const depItem = depMap.get(targetKey);
+            if (depItem) depItem.status = "REJECTED";
+          }
 
           const wdMap = new Map();
           remoteWds.forEach(w => { if (w && w.id) wdMap.set(String(w.id), { ...w }); });
