@@ -1443,25 +1443,36 @@ function handleSubscribePlan(planId) {
   }
 
   const users = getUsers();
-  const u = users.find(x => x.id === user.id);
+  const u = users.find(x => x.id === user.id || (x.identifier && x.identifier.toLowerCase() === user.identifier.toLowerCase()));
   if (u) {
-    u.balanceUsd = Math.max(0, u.balanceUsd - plan.priceUsd);
-    u.balancePkr = Math.max(0, u.balancePkr - plan.pricePkr);
+    u.balanceUsd = Math.max(0, (Number(u.balanceUsd) || 0) - plan.priceUsd);
+    u.balancePkr = Math.max(0, (Number(u.balancePkr) || 0) - plan.pricePkr);
+    u.lastUpdatedAt = Date.now();
 
-    // ملٹی پلان: تمام پرانے پلانز بھی ایکٹیو رہیں گے اور نیا بھی جڑ جائے گا
+    // ملٹی پلان: تمام پلانز ایکٹیو رہیں گے
     if (!Array.isArray(u.activePlans)) u.activePlans = [];
     if (u.activePlans.length === 0 && u.activePlanId) {
       const prev = VIP_PLANS.find(p => p.id === u.activePlanId);
       if (prev) u.activePlans.push({ planId: prev.id, name: prev.name, dailyAds: prev.dailyAds });
     }
-
     u.activePlans.push({ planId: plan.id, name: plan.name, dailyAds: plan.dailyAds, activatedAt: Date.now() });
     u.activePlanId = plan.id;
     u.activePlanName = u.activePlans.map(p => p.name).join(" + ");
     u.planDailyAdLimit = u.activePlans.reduce((sum, p) => sum + (p.dailyAds || 0), 0);
-
+    
     saveUsers(users);
-    showToast(`🎉 Mubarak! ${plan.name} activated. All plans remain active! Total daily ads: ${u.planDailyAdLimit}!`, "success");
+    syncToCloud("plan_purchased", {
+      userId: u.id,
+      userIdentifier: u.identifier,
+      planId: plan.id,
+      planName: plan.name,
+      balanceUsd: u.balanceUsd,
+      balancePkr: u.balancePkr,
+      activePlans: u.activePlans,
+      planDailyAdLimit: u.planDailyAdLimit
+    });
+    
+    showToast(`🎉 Mubarak! ${plan.name} activated. Total daily ads: ${u.planDailyAdLimit}!`, "success");
     renderHomeScreen();
     renderPlansScreen();
   }
@@ -1900,10 +1911,11 @@ let adInterval = null;
       }
 
       const users = getUsers();
-      const u = users.find(x => x.id === user.id);
+      const u = users.find(x => x.id === user.id || (x.identifier && x.identifier.toLowerCase() === user.identifier.toLowerCase()));
       if (u) {
-        u.balanceUsd -= requiredUsd;
-        u.balancePkr -= (requiredUsd * USD_TO_PKR);
+        u.balanceUsd = Math.max(0, (Number(u.balanceUsd) || 0) - requiredUsd);
+        u.balancePkr = Math.max(0, (Number(u.balancePkr) || 0) - (requiredUsd * USD_TO_PKR));
+        u.lastUpdatedAt = Date.now();
         saveUsers(users);
       }
 
@@ -2041,21 +2053,32 @@ let adInterval = null;
 
       // Render Users
       const usersList = document.getElementById("admin-users-list");
-      usersList.innerHTML = users.map(u => `
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs flex items-center justify-between">
-          <div>
-            <p class="font-bold text-slate-900">${u.fullName} ${u.isAdmin || u.identifier.toLowerCase() === ADMIN_EMAIL ? '<span class="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-bold">Admin</span>' : ''}</p>
-            <p class="text-[10px] text-slate-500">${u.identifier}</p>
-            <p class="text-[10px] text-orange-600 font-semibold mt-0.5">Plan: ${u.activePlanName || 'None'}</p>
+      usersList.innerHTML = `
+        <div class="flex justify-between items-center bg-slate-100 p-2.5 rounded-xl mb-2 border border-slate-200">
+          <span class="text-[11px] font-bold text-slate-700"><i class="fa-solid fa-users text-orange-600 mr-1"></i> Total ${users.length} Users</span>
+          <button onclick="adminFixAllUserBalances()" class="px-2.5 py-1 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white rounded-lg text-[10px] font-bold shadow-sm flex items-center gap-1 transition-all">
+            <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i> Fix All User Balances
+          </button>
+        </div>
+      ` + users.map(u => `
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs flex items-center justify-between gap-2">
+          <div class="min-w-0 flex-1">
+            <p class="font-bold text-slate-900 truncate">${u.fullName} ${u.isAdmin || (u.identifier && u.identifier.toLowerCase() === ADMIN_EMAIL.toLowerCase()) ? '<span class="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-bold">Admin</span>' : ''}</p>
+            <p class="text-[10px] text-slate-500 truncate">${u.identifier}</p>
+            <p class="text-[10px] text-orange-600 font-semibold mt-0.5 truncate">Plan: ${u.activePlanName || 'None'}</p>
             <p class="text-[10px] text-slate-600 font-medium mt-0.5 flex flex-wrap items-center gap-1">
               <span class="bg-orange-100 text-orange-800 font-mono font-bold px-1.5 py-0.5 rounded text-[9px]"><i class="fa-solid fa-ticket text-orange-600"></i> ${u.referralCode || 'N/A'}</span>
-              <span>Invited: <strong>${u.referralCount || 0}</strong> ($${(u.referralEarningsUsd || 0).toFixed(2)})</span>
-              ${u.referredByCode ? `<span class="text-slate-400">• Ref by: <span class="font-mono font-bold text-slate-700">${u.referredByCode}</span></span>` : ''}
+              <span>Invited: <strong>${u.referralCount || 0}</strong> ($${(Number(u.referralEarningsUsd) || 0).toFixed(2)})</span>
             </p>
           </div>
-          <div class="text-right">
-            <span class="font-black text-slate-900 block">$${u.balanceUsd.toFixed(2)} USD</span>
-            <span class="text-[10px] text-slate-500">${Math.round(u.balancePkr).toLocaleString()} PKR</span>
+          <div class="text-right flex flex-col items-end gap-1 flex-shrink-0">
+            <div>
+              <span class="font-black text-sm text-slate-900">$${(Number(u.balanceUsd) || 0).toFixed(2)} USD</span>
+              <span class="block text-[10px] text-slate-500">${Math.round(Number(u.balancePkr) || 0).toLocaleString()} PKR</span>
+            </div>
+            <button onclick="adminEditUserBalance('${u.id}')" class="px-2 py-0.5 bg-slate-200 hover:bg-orange-500 hover:text-white text-slate-700 rounded text-[10px] font-bold transition-all flex items-center gap-1">
+              <i class="fa-solid fa-pen-to-square text-[9px]"></i> Edit Balance
+            </button>
           </div>
         </div>
       `).join("");
@@ -2168,7 +2191,82 @@ let adInterval = null;
       showToast(`Withdrawal rejected. Funds refunded to balance.`, "success");
       renderAdminScreen();
     }
+function adminEditUserBalance(userId) {
+  const users = getUsers();
+  const u = users.find(x => String(x.id) === String(userId));
+  if (!u) return;
 
+  const currentUsd = (Number(u.balanceUsd) || 0).toFixed(2);
+  const input = prompt("Enter new Balance in USD for " + (u.fullName || u.identifier) + ":\n(Enter 0 to reset to zero)", currentUsd);
+  if (input === null) return;
+
+  const newUsd = parseFloat(input);
+  if (isNaN(newUsd) || newUsd < 0) {
+    showToast("Invalid balance amount entered.", "error");
+    return;
+  }
+
+  u.balanceUsd = Math.round(newUsd * 100) / 100;
+  u.balancePkr = Math.round(u.balanceUsd * USD_TO_PKR);
+  u.lastUpdatedAt = Date.now();
+
+  saveUsers(users);
+  syncToCloud();
+  showToast("Balance for " + (u.fullName || u.identifier) + " updated to $" + u.balanceUsd.toFixed(2) + " USD!", "success");
+  renderAdminScreen();
+}
+
+function adminFixAllUserBalances() {
+  if (!confirm("Are you sure you want to recalculate and fix all user balances?\nThis will deduct active plan costs from users balances while keeping all their plans active!")) {
+    return;
+  }
+
+  const users = getUsers();
+  const deposits = getDeposits();
+  const withdrawals = getWithdrawals();
+  let fixCount = 0;
+
+  users.forEach(u => {
+    if (u.isAdmin || (u.identifier && u.identifier.toLowerCase() === ADMIN_EMAIL.toLowerCase())) {
+      return;
+    }
+
+    const userDeps = deposits.filter(d => (String(d.userId) === String(u.id) || (d.userIdentifier && u.identifier && d.userIdentifier.toLowerCase() === u.identifier.toLowerCase())) && d.status === "APPROVED");
+    const totalDepositsUsd = userDeps.reduce((sum, d) => sum + (Number(d.creditedUsd) || 0), 0);
+
+    let totalPlansCostUsd = 0;
+    if (Array.isArray(u.activePlans) && u.activePlans.length > 0) {
+      u.activePlans.forEach(p => {
+        const planObj = VIP_PLANS.find(v => v.id === p.planId || v.name === p.name);
+        if (planObj) totalPlansCostUsd += planObj.priceUsd;
+      });
+    } else if (u.activePlanId) {
+      const planObj = VIP_PLANS.find(v => v.id === u.activePlanId);
+      if (planObj) totalPlansCostUsd += planObj.priceUsd;
+    }
+
+    const adEarningsUsd = (Number(u.adsWatchedToday) || 0) * AD_REWARD_USD;
+    const refEarningsUsd = Number(u.referralEarningsUsd) || 0;
+
+    const userWds = withdrawals.filter(w => (String(w.userId) === String(u.id) || (w.userIdentifier && u.identifier && w.userIdentifier.toLowerCase() === u.identifier.toLowerCase())) && w.status !== "REJECTED");
+    const totalWdsUsd = userWds.reduce((sum, w) => {
+      const amt = Number(w.amount) || 0;
+      return sum + (w.currency === "USD" ? amt : (amt / USD_TO_PKR));
+    }, 0);
+
+    const netUsd = Math.max(0, (totalDepositsUsd + adEarningsUsd + refEarningsUsd) - totalPlansCostUsd - totalWdsUsd);
+
+    u.balanceUsd = Math.round(netUsd * 100) / 100;
+    u.balancePkr = Math.round(u.balanceUsd * USD_TO_PKR);
+    u.lastUpdatedAt = Date.now();
+    fixCount++;
+  });
+
+  saveUsers(users);
+  syncToCloud();
+  showToast("Fixed balances for " + fixCount + " user accounts!", "success");
+  renderAdminScreen();
+}
     function previewReceipt(src) {
       document.getElementById("receipt-modal-img").src = src;
       document.getElementById("receipt-modal").classList.remove("hidden");
