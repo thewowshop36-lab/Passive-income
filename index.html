@@ -879,42 +879,268 @@ async function syncToCloud(eventType = null, eventPayload = null) {
       remoteUsers.forEach(u => { if (u && u.identifier) userMap.set(u.identifier.toLowerCase(), { ...u }); });
       localUsers.forEach(u => {
         if (!u || !u.identifier) return;
+async function syncFromCloud(silent = true) {
+      if (isSyncingCloud) return;
+      isSyncingCloud = true;
+      const syncIcon = document.getElementById("admin-sync-icon");
+      if (syncIcon) syncIcon.classList.add("fa-spin");
+
+      try {
+        let localUsers = getUsers();
+        let localDeps = getDeposits();
+        let localWds = getWithdrawals();
+        let hasChanges = false;
+
+        try {
+          const res = await fetch(`${JSONBIN_URL}/latest`, {
+            headers: { "X-Master-Key": JSONBIN_KEY, "X-Bin-Meta": "false" }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data) {
+              const remoteUsers = data.users || (data.record ? data.record.users : []) || [];
+              const remoteDeps = data.deposits || (data.record ? data.record.deposits : []) || [];
+              const remoteWds = data.withdrawals || (data.record ? data.record.withdrawals : []) || [];
+
+              // Merge Users: ایڈمن کا تبدیل کردہ نیا بیلنس کلاؤڈ میں لاک رہے
+              const userMap = new Map();
+              remoteUsers.forEach(u => { if (u && u.identifier) userMap.set(u.identifier.toLowerCase(), { ...u }); });
+              localUsers.forEach(u => {
+                if (!u || !u.identifier) return;
+                const k = u.identifier.toLowerCase();
+                const remote = userMap.get(k);
+                if (remote) {
+                  const localTime = Number(u.lastUpdatedAt) || 0;
+                  const remoteTime = Number(remote.lastUpdatedAt) || 0;
+                  let chosen = (localTime >= remoteTime) ? { ...remote, ...u } : { ...u, ...remote };
+
+                  const combinedPlans = [...(remote.activePlans || []), ...(u.activePlans || [])];
+                  const uniquePlansMap = new Map();
+                  combinedPlans.forEach(p => { if (p && p.planId) uniquePlansMap.set(String(p.planId), p); });
+                  const finalPlans = Array.from(uniquePlansMap.values());
+
+                  const finalPlanLimit = finalPlans.length > 0
+                    ? finalPlans.reduce((sum, p) => sum + (p.dailyAds || 0), 0)
+                    : Math.max(Number(u.planDailyAdLimit) || 0, Number(remote.planDailyAdLimit) || 0, 5);
+
+                  const finalPlanName = finalPlans.length > 0
+                    ? finalPlans.map(p => p.name).join(" + ")
+                    : (chosen.activePlanName || "FREE Starter Plan");
+
+                  userMap.set(k, {
+                    ...chosen,
+                    activePlans: finalPlans,
+                    planDailyAdLimit: finalPlanLimit,
+                    activePlanName: finalPlanName
+                  });
+                } else {
+                  userMap.set(k, { ...u });
+                }
+              });
+              localUsers = Array.from(userMap.values());
+
+              // Merge Deposits: APPROVED اور REJECTED پکا رہے
+              const depMap = new Map();
+              remoteDeps.forEach(d => { if (d && d.id) depMap.set(String(d.id), { ...d }); });
+              localDeps.forEach(d => {
+                if (!d || !d.id) return;
+                const key = String(d.id);
+                const remote = depMap.get(key);
+                if (remote) {
+                  let resolvedStatus = d.status || remote.status || "PENDING";
+                  if (d.status === "APPROVED" || remote.status === "APPROVED") {
+                    resolvedStatus = "APPROVED";
+                  } else if (d.status === "REJECTED" || remote.status === "REJECTED") {
+                    resolvedStatus = "REJECTED";
+                  }
+                  depMap.set(key, { ...remote, ...d, status: resolvedStatus });
+                } else {
+                  depMap.set(key, { ...d });
+                }
+              });
+              localDeps = Array.from(depMap.values());
+
+              // Merge Withdrawals: ایڈمن کو تمام وڈراولز ملیں
+              const wdMap = new Map();
+              remoteWds.forEach(w => { if (w && w.id) wdMap.set(String(w.id), { ...w }); });
+              localWds.forEach(w => {
+                if (!w || !w.id) return;
+                const key = String(w.id);
+                const remote = wdMap.get(key);
+                if (remote) {
+                  let resolvedStatus = w.status || remote.status || "PENDING";
+                  if (w.status === "COMPLETED" || remote.status === "COMPLETED") resolvedStatus = "COMPLETED";
+                  else if (w.status === "REJECTED" || remote.status === "REJECTED") resolvedStatus = "REJECTED";
+                  wdMap.set(key, { ...remote, ...w, status: resolvedStatus });
+                } else {
+                  wdMap.set(key, { ...w });
+                }
+              });
+              localWds = Array.from(wdMap.values());
+
+              hasChanges = true;
+            }
+          }
+        } catch (e) {
+          console.warn("JSONBin cloud read error:", e);
+        }
+
+        if (hasChanges) {
+          saveUsers(localUsers);
+          saveDeposits(localDeps);
+          saveWithdrawals(localWds);
+        }
+
+        // Live refresh whatever screen is open
+        if (currentScreen === "admin") {
+          renderAdminScreen();
+        } else if (currentScreen !== "auth") {
+          refreshCurrentScreen(currentScreen);
+        }
+      } catch (err) {
+        console.warn("Cloud sync offline fallback:", err);
+      } finally {
+        isSyncingCloud = false;
+        if (syncIcon) syncIcon.classList.remove("fa-spin");
+      }
+    }
+
+async function syncToCloud(eventType = null, eventPayload = null) {
+  try {
+    let localUsers = getUsers();
+    let localDeps = getDeposits();
+    let localWds = getWithdrawals();
+
+    if (eventType && eventPayload) {
+      try {
+        const safePayload = { ...eventPayload };
+        if (safePayload.screenshot && safePayload.screenshot.length > 2000) {
+          safePayload.screenshot = "[Image attached]";
+        }
+        fetch(EVENT_STREAM_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type: eventType, [eventType.replace("new_", "")]: safePayload, time: Date.now() })
+        }).catch(() => {});
+      } catch (e) {}
+    }
+
+    try {
+      const getRes = await fetch(`${JSONBIN_URL}/latest`, {
+        headers: { "X-Master-Key": JSONBIN_KEY, "X-Bin-Meta": "false" }
+      });
+      let remoteUsers = [];
+      let remoteDeps = [];
+      let remoteWds = [];
+      if (getRes.ok) {
+        const cloudData = await getRes.json();
+        remoteUsers = cloudData.users || (cloudData.record ? cloudData.record.users : []) || [];
+        remoteDeps = cloudData.deposits || (cloudData.record ? cloudData.record.deposits : []) || [];
+        remoteWds = cloudData.withdrawals || (cloudData.record ? cloudData.record.withdrawals : []) || [];
+      }
+
+      // Merge Users: ایڈمن کا نیا زیرو بیلنس کلاؤڈ میں سیو ہو
+      const userMap = new Map();
+      remoteUsers.forEach(u => { if (u && u.identifier) userMap.set(u.identifier.toLowerCase(), { ...u }); });
+      localUsers.forEach(u => {
+        if (!u || !u.identifier) return;
         const key = u.identifier.toLowerCase();
         const remote = userMap.get(key);
         if (remote) {
-          let finalUsd = Math.max(Number(remote.balanceUsd) || 0, Number(u.balanceUsd) || 0);
-          let finalPkr = Math.max(Number(remote.balancePkr) || 0, Number(u.balancePkr) || 0);
-          const finalPlanId = u.activePlanId || remote.activePlanId || null;
-          const finalPlanName = u.activePlanName || remote.activePlanName || null;
-          const finalLimit = Math.max(Number(u.planDailyAdLimit) || 0, Number(remote.planDailyAdLimit) || 0);
-          const finalPlans = (u.activePlans && u.activePlans.length > 0) ? u.activePlans : (remote.activePlans || []);
-          const finalWatched = Math.max(Number(remote.adsWatchedToday) || 0, Number(u.adsWatchedToday) || 0);
+          const localTime = Number(u.lastUpdatedAt) || 0;
+          const remoteTime = Number(remote.lastUpdatedAt) || 0;
+          let chosen = (localTime >= remoteTime) ? { ...remote, ...u } : { ...u, ...remote };
+
+          const combinedPlans = [...(remote.activePlans || []), ...(u.activePlans || [])];
+          const uniquePlansMap = new Map();
+          combinedPlans.forEach(p => { if (p && p.planId) uniquePlansMap.set(String(p.planId), p); });
+          const finalPlans = Array.from(uniquePlansMap.values());
+
+          const finalPlanLimit = finalPlans.length > 0
+            ? finalPlans.reduce((sum, p) => sum + (p.dailyAds || 0), 0)
+            : Math.max(Number(u.planDailyAdLimit) || 0, Number(remote.planDailyAdLimit) || 0, 5);
+
+          const finalPlanName = finalPlans.length > 0
+            ? finalPlans.map(p => p.name).join(" + ")
+            : (chosen.activePlanName || "FREE Starter Plan");
 
           userMap.set(key, {
-            ...remote,
-            ...u,
-            balanceUsd: finalUsd,
-            balancePkr: finalPkr,
-            activePlanId: finalPlanId,
-            activePlanName: finalPlanName,
-            planDailyAdLimit: finalLimit,
+            ...chosen,
             activePlans: finalPlans,
-            adsWatchedToday: finalWatched
+            planDailyAdLimit: finalPlanLimit,
+            activePlanName: finalPlanName
           });
         } else {
           userMap.set(key, { ...u });
         }
       });
 
+      // Merge Deposits
+      const depMap = new Map();
+      remoteDeps.forEach(d => { if (d && d.id) depMap.set(String(d.id), { ...d }); });
+      localDeps.forEach(d => {
+        if (!d || !d.id) return;
+        const key = String(d.id);
+        const remote = depMap.get(key);
+        if (remote) {
+          let resolvedStatus = d.status || remote.status || "PENDING";
+          if (d.status === "APPROVED" || remote.status === "APPROVED") resolvedStatus = "APPROVED";
+          else if (d.status === "REJECTED" || remote.status === "REJECTED") resolvedStatus = "REJECTED";
+          depMap.set(key, { ...remote, ...d, status: resolvedStatus });
+        } else {
+          depMap.set(key, { ...d });
+        }
+      });
+
+      if (eventType === "deposit_approved" && eventPayload && eventPayload.depositId) {
+        const targetKey = String(eventPayload.depositId);
+        const depItem = depMap.get(targetKey);
+        if (depItem) depItem.status = "APPROVED";
+      } else if (eventType === "deposit_rejected" && eventPayload && eventPayload.depositId) {
+        const targetKey = String(eventPayload.depositId);
+        const depItem = depMap.get(targetKey);
+        if (depItem) depItem.status = "REJECTED";
+      }
+
+      // Merge Withdrawals
+      const wdMap = new Map();
+      remoteWds.forEach(w => { if (w && w.id) wdMap.set(String(w.id), { ...w }); });
+      localWds.forEach(w => {
+        if (!w || !w.id) return;
+        const key = String(w.id);
+        const remote = wdMap.get(key);
+        if (remote) {
+          let resolvedStatus = w.status || remote.status || "PENDING";
+          if (w.status === "COMPLETED" || remote.status === "COMPLETED") resolvedStatus = "COMPLETED";
+          else if (w.status === "REJECTED" || remote.status === "REJECTED") resolvedStatus = "REJECTED";
+          wdMap.set(key, { ...remote, ...w, status: resolvedStatus });
+        } else {
+          wdMap.set(key, { ...w });
+        }
+      });
+
+      if (eventType === "new_withdrawal" && eventPayload && eventPayload.id) {
+        wdMap.set(String(eventPayload.id), { ...eventPayload });
+      } else if (eventType === "withdrawal_completed" && eventPayload && eventPayload.withdrawalId) {
+        const targetKey = String(eventPayload.withdrawalId);
+        const wdItem = wdMap.get(targetKey);
+        if (wdItem) wdItem.status = "COMPLETED";
+      } else if (eventType === "withdrawal_rejected" && eventPayload && eventPayload.withdrawalId) {
+        const targetKey = String(eventPayload.withdrawalId);
+        const wdItem = wdMap.get(targetKey);
+        if (wdItem) wdItem.status = "REJECTED";
+      }
+
       const cleanDeps = Array.from(depMap.values()).map(d => {
         if (d.screenshot && d.screenshot.length > 30000) return { ...d, screenshot: null };
         return d;
       });
       const cleanUsers = Array.from(userMap.values());
-      const cleanWds = localWds;
+      const cleanWds = Array.from(wdMap.values());
 
       saveUsers(cleanUsers);
       saveDeposits(cleanDeps);
+      saveWithdrawals(cleanWds);
 
       await fetch(JSONBIN_URL, {
         method: "PUT",
@@ -923,7 +1149,8 @@ async function syncToCloud(eventType = null, eventPayload = null) {
           users: cleanUsers,
           deposits: cleanDeps,
           withdrawals: cleanWds,
-          adSettings: getAdSettings()
+          adSettings: getAdSettings(),
+          announcement: (typeof getAnnouncement === "function" ? getAnnouncement() : null)
         })
       });
     } catch (binErr) {
@@ -932,7 +1159,7 @@ async function syncToCloud(eventType = null, eventPayload = null) {
   } catch (err) {
     console.warn("Cloud error:", err);
   }
-}
+    
 
     // 10 Structured VIP Investment Plans (Exact Daily Ads Limits & $0.05 Ad Reward)
     const VIP_PLANS = [
