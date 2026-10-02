@@ -771,7 +771,7 @@
               });
               localUsers = Array.from(userMap.values());
 
-              // Merge Deposits: APPROVED always wins!
+    // Merge Deposits: APPROVED and REJECTED status locked permanently
               const depMap = new Map();
               remoteDeps.forEach(d => { if (d && d.id) depMap.set(String(d.id), { ...d }); });
               localDeps.forEach(d => {
@@ -779,8 +779,13 @@
                 const key = String(d.id);
                 const remote = depMap.get(key);
                 if (remote) {
-                  const isApproved = (remote.status === "APPROVED" || d.status === "APPROVED");
-                  depMap.set(key, { ...d, ...remote, status: isApproved ? "APPROVED" : (remote.status || d.status) });
+                  let resolvedStatus = d.status || remote.status || "PENDING";
+                  if (d.status === "APPROVED" || remote.status === "APPROVED") {
+                    resolvedStatus = "APPROVED";
+                  } else if (d.status === "REJECTED" || remote.status === "REJECTED") {
+                    resolvedStatus = "REJECTED";
+                  }
+                  depMap.set(key, { ...remote, ...d, status: resolvedStatus });
                 } else {
                   depMap.set(key, { ...d });
                 }
@@ -2118,15 +2123,16 @@ let adInterval = null;
     }
 
     function adminRejectDeposit(id) {
-      const deposits = getDeposits();
-      const dep = deposits.find(d => d.id === id);
-      if (!dep || dep.status !== "PENDING") return;
-      dep.status = "REJECTED";
-      saveDeposits(deposits);
-      syncToCloud();
-      showToast(`Deposit #${id} rejected.`, "error");
-      renderAdminScreen();
+  const deposits = getDeposits();
+  const dep = deposits.find(d => String(d.id) === String(id));
+  if (!dep) return;
+  dep.status = "REJECTED";
+  saveDeposits(deposits);
+  syncToCloud("deposit_rejected", { depositId: id, status: "REJECTED" });
+  showToast(`Deposit #${id} rejected!`, "error");
+  renderAdminScreen();
     }
+    
 
     function adminCompleteWithdrawal(id) {
       const withdrawals = getWithdrawals();
