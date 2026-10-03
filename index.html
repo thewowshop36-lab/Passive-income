@@ -915,12 +915,122 @@ async function pushToSupabase(usersList, depsList, wdsList) {
     }
   } catch (err) {}
 }
+    // 🔄 Fetch Live Data from Supabase
+async function fetchFromSupabase() {
+  try {
+    const uRes = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*`, {
+      headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
+    });
+    if (uRes.ok) {
+      const sbUsers = await uRes.json();
+      if (sbUsers && sbUsers.length > 0) {
+        let localUsers = getUsers();
+        const userMap = new Map();
+        localUsers.forEach(u => userMap.set(String(u.identifier).toLowerCase(), u));
+        sbUsers.forEach(su => {
+          const key = String(su.identifier).toLowerCase();
+          const existing = userMap.get(key) || {};
+          userMap.set(key, {
+            ...existing,
+            id: su.id || existing.id,
+            identifier: su.identifier,
+            fullName: su.full_name || existing.fullName || "",
+            phone: su.phone || existing.phone || "",
+            password: su.password || existing.password || "",
+            balanceUsd: Number(su.balance_usd) || existing.balanceUsd || 0,
+            balancePkr: Number(su.balance_pkr) || existing.balancePkr || 0,
+            activePlanName: su.active_plan_name || existing.activePlanName || "Free",
+            adsWatchedToday: Number(su.ads_watched_today) || 0,
+            planDailyAdLimit: Number(su.plan_daily_ad_limit) || 2,
+            referralCode: su.referral_code || existing.referralCode || ""
+          });
+        });
+        saveUsers(Array.from(userMap.values()));
+      }
+    }
+
+    const dRes = await fetch(`${SUPABASE_URL}/rest/v1/deposits?select=*`, {
+      headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
+    });
+    if (dRes.ok) {
+      const sbDeps = await dRes.json();
+      if (sbDeps && sbDeps.length > 0) {
+        let localDeps = getDeposits();
+        const depMap = new Map();
+        localDeps.forEach(d => depMap.set(String(d.id), d));
+        sbDeps.forEach(sd => {
+          const key = String(sd.id);
+          const existing = depMap.get(key) || {};
+          depMap.set(key, {
+            ...existing,
+            id: sd.id,
+            userIdentifier: sd.user_identifier,
+            amount: Number(sd.amount) || 0,
+            method: sd.method,
+            tid: sd.tid || "",
+            screenshot: sd.screenshot || existing.screenshot || "",
+            status: sd.status || existing.status || "PENDING",
+            date: sd.created_at || existing.date || new Date().toISOString()
+          });
+        });
+        saveDeposits(Array.from(depMap.values()));
+      }
+    }
+
+    const wRes = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?select=*`, {
+      headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
+    });
+    if (wRes.ok) {
+      const sbWds = await wRes.json();
+      if (sbWds && sbWds.length > 0) {
+        let localWds = getWithdrawals();
+        const wdMap = new Map();
+        localWds.forEach(w => wdMap.set(String(w.id), w));
+        sbWds.forEach(sw => {
+          const key = String(sw.id);
+          const existing = wdMap.get(key) || {};
+          wdMap.set(key, {
+            ...existing,
+            id: sw.id,
+            userIdentifier: sw.user_identifier,
+            amount: Number(sw.amount) || 0,
+            method: sw.method,
+            accountNumber: sw.account_number || "",
+            accountTitle: sw.account_title || "",
+            status: sw.status || existing.status || "PENDING",
+            date: sw.created_at || existing.date || new Date().toISOString()
+          });
+        });
+        saveWithdrawals(Array.from(wdMap.values()));
+      }
+    }
+
+    if (currentScreen === "admin") {
+      renderAdminScreen();
+    }
+  } catch (err) {}
+}
+
+async function updateSupabaseDepositStatus(depositId, newStatus) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/deposits?id=eq.${depositId}`, {
+      method: "PATCH",
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ status: newStatus })
+    });
+  } catch(e) {}
+}
     async function syncToCloud(eventType = null, eventPayload = null) {
       try {
         let localUsers = getUsers();
         let localDeps = getDeposits();
         let localWds = getWithdrawals();
 pushToSupabase(localUsers, localDeps, localWds);
+        fetchFromSupabase();
         if (eventType && eventPayload) {
           try {
             const safePayload = { ...eventPayload };
