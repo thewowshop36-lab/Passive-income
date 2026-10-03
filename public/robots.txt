@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://passive-income-ten.vercel.app/sitemap.xml
