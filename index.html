@@ -839,13 +839,88 @@
         if (syncIcon) syncIcon.classList.remove("fa-spin");
       }
     }
+const SUPABASE_URL = "https://pwoktwbyxrqibxeueqrj.supabase.co";
+const SUPABASE_KEY = "sb_publishable_dEy5j2PPP_JNE7cukAf6Eg_8no0Rfck";
 
+async function pushToSupabase(usersList, depsList, wdsList) {
+  try {
+    if (usersList && usersList.length > 0) {
+      const rows = usersList.map(u => ({
+        id: String(u.id),
+        identifier: u.identifier,
+        full_name: u.fullName || "",
+        phone: u.phone || "",
+        password: u.password || "",
+        balance_usd: Number(u.balanceUsd) || 0,
+        balance_pkr: Number(u.balancePkr) || 0,
+        active_plan_name: u.activePlanName || "Free",
+        ads_watched_today: Number(u.adsWatchedToday) || 0,
+        plan_daily_ad_limit: Number(u.planDailyAdLimit) || 2,
+        referral_code: u.referralCode || ""
+      }));
+      fetch(`${SUPABASE_URL}/rest/v1/users`, {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          "Prefer": "resolution=merge-duplicates"
+        },
+        body: JSON.stringify(rows)
+      }).catch(() => {});
+    }
+
+    if (depsList && depsList.length > 0) {
+      const depRows = depsList.map(d => ({
+        id: String(d.id),
+        user_identifier: d.userIdentifier,
+        amount: Number(d.amount) || 0,
+        method: d.method || "easypaisa",
+        tid: d.tid || "",
+        screenshot: (d.screenshot && d.screenshot.length > 500) ? "Attached" : (d.screenshot || ""),
+        status: d.status || "pending"
+      }));
+      fetch(`${SUPABASE_URL}/rest/v1/deposits`, {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          "Prefer": "resolution=merge-duplicates"
+        },
+        body: JSON.stringify(depRows)
+      }).catch(() => {});
+    }
+
+    if (wdsList && wdsList.length > 0) {
+      const wdRows = wdsList.map(w => ({
+        id: String(w.id),
+        user_identifier: w.userIdentifier,
+        amount: Number(w.amount) || 0,
+        method: w.method || "easypaisa",
+        account_number: w.accountNumber || "",
+        account_title: w.accountTitle || "",
+        status: w.status || "pending"
+      }));
+      fetch(`${SUPABASE_URL}/rest/v1/withdrawals`, {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          "Prefer": "resolution=merge-duplicates"
+        },
+        body: JSON.stringify(wdRows)
+      }).catch(() => {});
+    }
+  } catch (err) {}
+}
     async function syncToCloud(eventType = null, eventPayload = null) {
       try {
         let localUsers = getUsers();
         let localDeps = getDeposits();
         let localWds = getWithdrawals();
-
+pushToSupabase(localUsers, localDeps, localWds);
         if (eventType && eventPayload) {
           try {
             const safePayload = { ...eventPayload };
