@@ -2230,15 +2230,13 @@ fetchFromSupabase();
               <div class="flex justify-between items-start">
                 <div>
                   <span class="font-bold text-slate-900">${d.userIdentifier}</span>
-                  <p class="text-[10px] text-slate-600 font-bold">${d.method} • Sender: ${d.sender}</p>
-                  <p class="text-[10px] text-slate-500 font-mono">TXN: ${d.txnId}</p>
-                  <p class="text-[9px] text-slate-400">${d.date}</p>
-                </div>
-                <div class="text-right">
-                  <span class="font-black text-sm text-emerald-600">+${d.amount} ${d.currency}</span>
-                  <span class="block text-[10px] text-slate-500">Credited: $${d.creditedUsd.toFixed(2)} USD</span>
-                  <span class="inline-block mt-0.5 text-[9px] font-bold px-2 py-0.5 rounded-full ${d.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-800' : (d.status === 'REJECTED' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800')}">${d.status}</span>
-                </div>
+                  <p class="text-[10px] text-slate-600 font-bold">${d.method || 'EASYPAISA'} • Sender: ${d.sender || d.userIdentifier || '-'}</p>
+                <p class="text-[10px] text-slate-500 font-mono">TXN: ${d.txnId || d.tid || 'N/A'}</p>
+                <p class="text-[9px] text-slate-400">${d.date || ''}</p>
+              </div>
+              <div class="text-right">
+                <span class="font-black text-sm text-emerald-600">+${d.amount} ${d.currency || (d.method === 'USDT' ? 'USD' : 'PKR')}</span>
+                <span class="block text-[10px] text-slate-500">Credited: $${(Number(d.creditedUsd) || (d.method === 'USDT' ? Number(d.amount) : Number(d.amount)/280) || 0).toFixed(2)} USD</span>
               </div>
 
               ${d.screenshot ? `
