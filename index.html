@@ -2328,76 +2328,75 @@ fetchFromSupabase();
     }
 
     function adminApproveDeposit(id) {
-      const deposits = getDeposits();
-      const dep = deposits.find(d => d.id === id);
-      if (!dep || dep.status !== "PENDING") return;
-
-      dep.status = "APPROVED";
-      saveDeposits(deposits);
-
-      const users = getUsers();
-      // یوزر کو ID اور موبائل نمبر/ای میل دونوں سے تلاش کرے تاکہ مس نہ ہو
-      let user = users.find(u => u.id === dep.userId);
-      if (!user && dep.userIdentifier) {
-        user = users.find(u => u.identifier && u.identifier.toLowerCase() === dep.userIdentifier.toLowerCase());
-      }
-      let referralBonusMsg = "";
-
-      if (user) {
-        // یوزر کے بیلنس میں رقم جمع کریں
-        user.balanceUsd = (Number(user.balanceUsd) || 0) + Number(dep.creditedUsd || 0);
-        user.balancePkr = (Number(user.balancePkr) || 0) + Number(dep.creditedPkr || 0);
-
-        // ریفرل بونس ($1.00 USD) اگر پہلا ڈپازٹ ہو
-        if (!user.hasCompletedFirstDeposit) {
-          if (user.referredByCode) {
-            const referrer = users.find(u => u.referralCode && u.referralCode.toUpperCase() === user.referredByCode.toUpperCase());
-            if (referrer && referrer.id !== user.id) {
-              const bonusUsd = 1.0;
-              const bonusPkr = bonusUsd * USD_TO_PKR;
-              referrer.balanceUsd = (Number(referrer.balanceUsd) || 0) + bonusUsd;
-              referrer.balancePkr = (Number(referrer.balancePkr) || 0) + bonusPkr;
-              referrer.referralCount = (referrer.referralCount || 0) + 1;
-              referrer.referralEarningsUsd = (Number(referrer.referralEarningsUsd) || 0) + bonusUsd;
-              referralBonusMsg = ` + $1.00 referral bonus credited to ${referrer.identifier}!`;
-            }
-          }
-          user.hasCompletedFirstDeposit = true;
-        }
-        saveUsers(users);
-      }
-
-      // اسکرین پر فوری بیلنس ریفریش کریں
-      const current = getCurrentUser();
-      if (current && user && (current.id === user.id || current.identifier.toLowerCase() === user.identifier.toLowerCase())) {
-        refreshCurrentScreen(currentScreen);
-      }
-
-      // کلاؤڈ پر فوری اپڈیٹ بھیجیں
-      syncToCloud("deposit_approved", {
-        depositId: dep.id,
-        userId: dep.userId,
-        userIdentifier: dep.userIdentifier,
-        status: "APPROVED",
-        creditedUsd: dep.creditedUsd,
-        creditedPkr: dep.creditedPkr,
-        updatedUser: user
-      });
-
-      showToast(`Deposit approved! $${dep.creditedUsd.toFixed(2)} credited.${referralBonusMsg}`, "success");
-      renderAdminScreen();
-    }
-
-    function adminRejectDeposit(id) {
   const deposits = getDeposits();
   const dep = deposits.find(d => String(d.id) === String(id));
   if (!dep) return;
+
+  dep.status = "APPROVED";
+  saveDeposits(deposits);
+
+  const users = getUsers();
+  let user = users.find(u => String(u.id) === String(dep.userId));
+  if (!user && dep.userIdentifier) {
+    user = users.find(u => u.identifier && u.identifier.toLowerCase() === dep.userIdentifier.toLowerCase());
+  }
+  if (!user && dep.sender) {
+    user = users.find(u => u.identifier && u.identifier.toLowerCase() === dep.sender.toLowerCase());
+  }
+
+  let referralBonusMsg = "";
+
+  if (user) {
+    const creditedAmount = Number(dep.creditedUsd) || (Number(dep.amount) / 280) || Number(dep.amount) || 0;
+    user.balanceUsd = Number(((Number(user.balanceUsd) || 0) + creditedAmount).toFixed(2));
+    user.balancePkr = Number(((Number(user.balancePkr) || 0) + Number(dep.amount)).toFixed(0));
+
+    if (!user.hasCompletedFirstDeposit && user.referredByCode) {
+      const referrer = users.find(u => u.referralCode && u.referralCode.toUpperCase() === user.referredByCode.toUpperCase());
+      if (referrer && referrer.id !== user.id) {
+        referrer.balanceUsd = (Number(referrer.balanceUsd) || 0) + 1.0;
+        referrer.balancePkr = (Number(referrer.balancePkr) || 0) + 280;
+        referrer.referralCount = (referrer.referralCount || 0) + 1;
+        referralBonusMsg = ` + $1.00 Referral Bonus credited!`;
+      }
+    }
+    user.hasCompletedFirstDeposit = true;
+    saveUsers(users);
+  }
+
+  updateSupabaseDepositStatus(dep.id, "APPROVED");
+  if (user) {
+    fetch(`${SUPABASE_URL}/rest/v1/users?identifier=eq.${user.identifier}`, {
+      method: "PATCH",
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        balance_usd: user.balanceUsd,
+        balance_pkr: user.balancePkr
+      })
+    }).catch(()=>{});
+  }
+
+  renderAdminScreen();
+  showToast(`Deposit approved successfully!${referralBonusMsg}`, "success");
+}
+
+function adminRejectDeposit(id) {
+  const deposits = getDeposits();
+  const dep = deposits.find(d => String(d.id) === String(id));
+  if (!dep) return;
+
   dep.status = "REJECTED";
   saveDeposits(deposits);
-  syncToCloud("deposit_rejected", { depositId: id, status: "REJECTED" });
-  showToast(`Deposit #${id} rejected!`, "error");
+
+  updateSupabaseDepositStatus(dep.id, "REJECTED");
+
   renderAdminScreen();
-    }
+  showToast("Deposit rejected.", "info");
+}
     
 
     function adminCompleteWithdrawal(id) {
