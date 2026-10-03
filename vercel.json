@@ -7,11 +7,27 @@
       "use": "@vercel/static"
     },
     {
+      "src": "sitemap.xml",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "robots.txt",
+      "use": "@vercel/static"
+    },
+    {
       "src": "api/cron_seo.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
+    {
+      "src": "/sitemap.xml",
+      "dest": "/sitemap.xml"
+    },
+    {
+      "src": "/robots.txt",
+      "dest": "/robots.txt"
+    },
     {
       "src": "/api/(.*)",
       "dest": "/api/$1"
