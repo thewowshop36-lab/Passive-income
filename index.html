@@ -2238,7 +2238,7 @@ fetchFromSupabase();
                 <span class="font-black text-sm text-emerald-600">+${d.amount} ${d.currency || (d.method === 'USDT' ? 'USD' : 'PKR')}</span>
                 <span class="block text-[10px] text-slate-500">Credited: $${(Number(d.creditedUsd) || (d.method === 'USDT' ? Number(d.amount) : Number(d.amount)/280) || 0).toFixed(2)} USD</span>
               </div>
-
+</div>
               ${d.screenshot ? `
                 <button type="button" onclick="previewReceipt('${d.screenshot}')" class="text-xs text-orange-600 font-bold hover:underline flex items-center gap-1.5 bg-orange-50 px-2.5 py-1 rounded-lg border border-orange-200">
                   <i class="fa-solid fa-receipt"></i> Inspect Attached Screenshot Proof
@@ -2252,8 +2252,7 @@ fetchFromSupabase();
                 </div>
               ` : ''}
 
-              ${d.status === 'PENDING' ? `
-                <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200">
+              ${(d.status || '').toUpperCase() === 'PENDING' ? `                <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200">
                   <button onclick="adminApproveDeposit(${d.id})" class="py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1 shadow-sm"><i class="fa-solid fa-check"></i> Approve & Credit</button>
                   <button onclick="adminRejectDeposit(${d.id})" class="py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1 shadow-sm"><i class="fa-solid fa-xmark"></i> Reject</button>
                 </div>
