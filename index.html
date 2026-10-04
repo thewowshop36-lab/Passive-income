@@ -1826,39 +1826,8 @@ function renderWatchScreen() {
   }
 }
     function loadLiveAdsterraBanner() {
-  const box = document.getElementById("adsterra-live-banner-box");
-  if (!box) return;
-  box.innerHTML = "";
-  const ifr = document.createElement("iframe");
-  ifr.style.width = "300px";
-  ifr.style.height = "250px";
-  ifr.style.border = "none";
-  ifr.style.overflow = "hidden";
-  ifr.scrolling = "no";
-  ifr.srcdoc = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>body { margin: 0; padding: 0; background: #020617; display: flex; align-items: center; justify-content: center; height: 250px; overflow: hidden; }</style>
-      </head>
-      <body>
-        <script type="text/javascript">
-          atOptions = {
-            'key' : '35d390e6e45f0114853dc989206caa71',
-            'format' : 'iframe',
-            'height' : 250,
-            'width' : 300,
-            'params' : {}
-          };
-        <\/script>
-        <script type="text/javascript" src="https://www.highrevenueformat.com/35d390e6e45f0114853dc989206caa71/invoke.js"><\/script>
-      </body>
-    </html>
-  `;
-  box.appendChild(ifr);
-    } 
+    // Disabled
+    }
       
 let adInterval = null;
 let secondsLeft = 15;
