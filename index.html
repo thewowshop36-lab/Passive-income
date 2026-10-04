@@ -1397,8 +1397,7 @@ pushToSupabase(localUsers, localDeps, localWds);
       switchScreen("auth");
     }
 
-    // Submit Auth
-    // Submit Auth (Login & Register with Strict Email/Phone & $1.00 Instant Referral Bonus)
+// ==================== AUTH SYSTEM (LOGIN & REGISTER) ====================
 function isValidEmail(str) {
   return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(str.trim());
 }
@@ -1408,146 +1407,163 @@ function isValidPhone(str) {
   return /^(\+92|0092|92|0)?3[0-9]{9}$/.test(cleanPhone) || /^\+?[0-9]{10,14}$/.test(cleanPhone);
 }
 
-function handleAuthSubmit(e) {
+async function handleAuthSubmit(e) {
   e.preventDefault();
-  const identifier = document.getElementById("auth-identifier").value.trim();
-  const password = document.getElementById("auth-password").value.trim();
+  const idEl = document.getElementById("auth-identifier");
+  const passEl = document.getElementById("auth-password");
+  if (!idEl || !passEl) return;
+  
+  const identifier = idEl.value.trim();
+  const password = passEl.value.trim();
   let users = getUsers();
-  const isTryingAdmin = identifier.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+  const isTryingAdmin = (identifier.toLowerCase() === ADMIN_EMAIL.toLowerCase()) || (identifier.toLowerCase() === "admin");
 
   if (currentAuthMode === "login") {
-    // ---------------- LOGIN MODE ----------------
-    let user = users.find(u => u.identifier && u.identifier.toLowerCase() === identifier.toLowerCase());
-
+    // ---------------- LOGIN ----------------
     if (isTryingAdmin) {
-      if (!user) {
-        user = {
+      let adminUser = users.find(u => u.isAdmin || u.identifier.toLowerCase() === ADMIN_EMAIL.toLowerCase());
+      if (!adminUser) {
+        adminUser = {
           id: 1,
-          identifier: "Adjatt87@gmail.com",
+          identifier: ADMIN_EMAIL,
           fullName: "System Administrator",
           password: password || "admin",
           balanceUsd: 0.0,
           balancePkr: 0.0,
-          activePlanId: null,
-          activePlanName: null,
-          adsWatchedToday: 0,
-          lastAdResetDate: new Date().toDateString(),
           isAdmin: true,
           referralCode: "ADMIN01",
           referralCount: 0,
-          referralEarningsUsd: 0.0,
-          hasCompletedFirstDeposit: false,
-          referredByCode: null
+          referralEarningsUsd: 0.0
         };
-        users.push(user);
+        users.push(adminUser);
         saveUsers(users);
       }
-      localStorage.setItem("pi_current_user_id", user.id.toString());
-      showToast("Welcome Admin! Loaded Admin Backoffice.", "success");
+      localStorage.setItem("pi_current_user_id", adminUser.id.toString());
+      showToast("Welcome Admin!", "success");
       switchScreen("admin");
       return;
     }
 
+    let user = users.find(u => u.identifier && u.identifier.toLowerCase() === identifier.toLowerCase());
+    
+    if (!user) {
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/users?identifier=eq.${encodeURIComponent(identifier)}`, {
+          headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
+        });
+        const data = await res.json();
+        if (data && data.length > 0) {
+          user = {
+            id: data[0].id,
+            identifier: data[0].identifier,
+            fullName: data[0].full_name || "User",
+            password: data[0].password,
+            balanceUsd: Number(data[0].balance_usd) || 0,
+            balancePkr: Number(data[0].balance_pkr) || 0,
+            referralCode: data[0].referral_code || "PI-1000"
+          };
+          users.push(user);
+          saveUsers(users);
+        }
+      } catch(e){}
+    }
+
     if (!user || user.password !== password) {
-      showToast("Invalid credentials! Please try again.", "error");
+      showToast("Invalid Email/Phone or Password!", "error");
       return;
     }
 
     localStorage.setItem("pi_current_user_id", user.id.toString());
     showToast(`Welcome back, ${user.fullName || user.identifier}!`, "success");
     switchScreen("home");
-  } else {
-    // ---------------- REGISTER MODE ----------------
-    const fullName = document.getElementById("auth-fullname").value.trim() || "Passive User";
-    const referralInput = document.getElementById("auth-referral-code").value.trim().toUpperCase();
 
-    // 1. ای میل یا فون نمبر کی سخت جانچ
+  } else {
+    // ---------------- REGISTER ----------------
+    const fnEl = document.getElementById("auth-fullname");
+    const refEl = document.getElementById("auth-referral-code");
+    const fullName = fnEl ? fnEl.value.trim() : "User";
+    const referralInput = refEl ? refEl.value.trim().toUpperCase() : "";
+
     const isEmail = isValidEmail(identifier);
     const isPhone = isValidPhone(identifier);
 
     if (!isEmail && !isPhone) {
-      showToast("Please enter a valid Email (e.g. name@mail.com) or Mobile Number (03001234567)!", "error");
+      showToast("Please enter a valid Email or 11-digit Mobile number (03001234567)!", "error");
       return;
     }
 
     if (!password || password.length < 6) {
-      showToast("Password must be at least 6 characters.", "error");
+      showToast("Password must be at least 6 characters!", "error");
       return;
     }
 
-    // 2. ڈپلیکیٹ چیک (پہلے سے رجسٹرڈ تو نہیں؟)
-    const exists = users.some(u => 
-      (u.identifier && u.identifier.toLowerCase() === identifier.toLowerCase()) ||
-      (u.phone && u.phone === identifier)
-    );
+    const exists = users.some(u => u.identifier && u.identifier.toLowerCase() === identifier.toLowerCase());
     if (exists) {
-      showToast("This Email or Phone Number is already registered! Please sign in.", "error");
+      showToast("This Email or Mobile number is already registered! Please Sign In.", "error");
       return;
     }
 
-    let verifiedReferralCode = null;
-    let referralBonusMsg = "";
+    let verifiedRef = null;
+    let refBonusMsg = "";
 
-    // 3. ریفرل کاؤنٹ اور $1.00 بونس فوری شامل کرنا
     if (referralInput) {
       const referrer = users.find(u => u.referralCode && u.referralCode.toUpperCase() === referralInput);
       if (referrer) {
-        verifiedReferralCode = referrer.referralCode;
+        verifiedRef = referrer.referralCode;
         referrer.referralCount = (Number(referrer.referralCount) || 0) + 1;
         referrer.balanceUsd = Number(((Number(referrer.balanceUsd) || 0) + 1.00).toFixed(2));
         referrer.balancePkr = Number(((Number(referrer.balancePkr) || 0) + 280).toFixed(0));
-        referrer.referralEarningsUsd = Number(((Number(referrer.referralEarningsUsd) || 0) + 1.00).toFixed(2));
-        referralBonusMsg = ` ($1.00 Referral Bonus credited to inviter!)`;
+        refBonusMsg = " ($1.00 Bonus credited to inviter!)";
 
-        // Supabase میں ریفرر اپڈیٹ
         fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${referrer.id}`, {
           method: "PATCH",
-          headers: {
-            "apikey": SUPABASE_KEY,
-            "Authorization": `Bearer ${SUPABASE_KEY}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            balance_usd: referrer.balanceUsd,
-            balance_pkr: referrer.balancePkr
-          })
+          headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ balance_usd: referrer.balanceUsd, balance_pkr: referrer.balancePkr })
         }).catch(()=>{});
-      } else {
-        showToast("Referral code not found, proceeding with normal registration.", "info");
       }
     }
 
     const newUser = {
       id: Date.now().toString(),
       identifier: identifier,
-      phone: isPhone ? identifier : "",
       fullName: fullName,
       password: password,
       balanceUsd: 0.0,
       balancePkr: 0.0,
-      activePlanId: null,
       activePlanName: "Free",
       planDailyAdLimit: 2,
       adsWatchedToday: 0,
-      lastAdResetDate: new Date().toDateString(),
-      isAdmin: isTryingAdmin,
       referralCode: "PI-" + Math.floor(100000 + Math.random() * 900000),
       referralCount: 0,
       referralEarningsUsd: 0.0,
-      hasCompletedFirstDeposit: false,
-      referredByCode: verifiedReferralCode
+      referredByCode: verifiedRef
     };
 
     users.push(newUser);
     saveUsers(users);
     localStorage.setItem("pi_current_user_id", newUser.id.toString());
-    syncToCloud("new_user", newUser);
 
-    showToast(`Account registered successfully!${referralBonusMsg}`, "success");
+    try {
+      fetch(`${SUPABASE_URL}/rest/v1/users`, {
+        method: "POST",
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: newUser.id,
+          identifier: newUser.identifier,
+          full_name: newUser.fullName,
+          password: newUser.password,
+          balance_usd: 0,
+          balance_pkr: 0,
+          referral_code: newUser.referralCode
+        })
+      }).catch(()=>{});
+    } catch(e){}
+
+    showToast(`Account registered successfully!${refBonusMsg}`, "success");
     switchScreen("home");
   }
 }
-    }
+    
 
     // Copy & Share Referral Link
     function copyReferralCode() {
