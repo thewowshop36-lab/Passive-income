@@ -1888,7 +1888,7 @@ function startWatchingAd() {
         return;
     }
 
-    const total = user.planDailyAdLimit || 5;
+    const total = Number(user.planDailyAdLimit) || (user.activePlans && user.activePlans.length > 0 ? user.activePlans.reduce((sum, p) => sum + (p.dailyAds || 0), 0) : 5);
     const watched = Number(user.adsWatchedToday) || 0;
     if (watched >= total) {
         showToast("Daily ad limit already completed! Reset tomorrow.", "warning");
@@ -1950,7 +1950,7 @@ function finishAdAndCredit() {
         return;
     }
 
-    const total = current.planDailyAdLimit || 5;
+    const total = Number(current.planDailyAdLimit) || (current.activePlans && current.activePlans.length > 0 ? current.activePlans.reduce((sum, p) => sum + (p.dailyAds || 0), 0) : 5);
     const watched = Number(current.adsWatchedToday) || 0;
     if (watched >= total) {
         isWatching = false;
