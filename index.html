@@ -337,104 +337,74 @@
         <div id="plans-container" class="space-y-3"></div>
       </section>
 
-      <!-- ================= 4. WATCH ADS SCREEN ================= -->
-      <section id="screen-watch" class="hidden p-4 space-y-4">
-        <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-4 shadow-lg border border-slate-700">
-          <div class="flex items-center justify-between">
-            <div>
-              <span class="text-xs text-slate-400 font-medium">Daily Limit Progress</span>
-              <h3 id="watch-counter-text" class="text-xl font-extrabold text-orange-400 mt-0.5">0 / 0 Ads</h3>
+      <!-- ================= 4. WATCH ADS SCREEN (100% REAL DIRECT AD CLICK SYSTEM) ================= -->
+<section id="screen-watch" class="hidden p-4 space-y-4">
+    <!-- Header Summary Card -->
+    <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-4 text-white shadow-lg relative overflow-hidden">
+        <div class="relative z-10">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider bg-black/20 px-2.5 py-1 rounded-full backdrop-blur-sm">VIP Sponsored Tasks</span>
+                <span id="ads-plan-badge" class="text-xs font-extrabold bg-white text-orange-600 px-2.5 py-1 rounded-full shadow-sm">Free Tier</span>
             </div>
-            <div class="text-right">
-              <span class="text-xs text-slate-400 font-medium">Daily Reset</span>
-              <p id="watch-timer-clock" class="text-xs font-mono font-bold text-amber-300 mt-0.5">24h 00m 00s</p>
+            <h2 class="text-xl font-extrabold mt-2">Daily Ad Rewards</h2>
+            <p class="text-xs text-orange-100 mt-0.5">Click real sponsor ads, keep open & claim instant USD rewards!</p>
+            
+            <div class="grid grid-cols-2 gap-2 mt-4">
+                <div class="bg-white/10 backdrop-blur-md rounded-xl p-2.5 border border-white/20">
+                    <p class="text-[10px] text-orange-100 font-semibold">Today's Progress</p>
+                    <p id="watch-counter-text" class="text-lg font-black text-white mt-0.5">0 / 2 Ads</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md rounded-xl p-2.5 border border-white/20">
+                    <p class="text-[10px] text-orange-100 font-semibold">Reward Per Ad</p>
+                    <p class="text-lg font-black text-white mt-0.5">$0.05 <span class="text-[10px] font-normal">USD</span></p>
+                </div>
             </div>
-          </div>
+        </div>
+        <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+    </div>
+
+    <!-- Real Click Ad Watch Card -->
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4 text-center">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 border border-amber-200 rounded-full text-amber-700 text-xs font-bold">
+            <i class="fa-solid fa-shield-check text-emerald-500"></i> Verified Partner Ad (Monetag & Adsterra)
         </div>
 
-        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-          <div class="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-circle-play text-orange-500"></i> Sponsored Micro-Ad Video</span>
-            <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Earn +$0.05 USD</span>
-          </div>
-          <div class="relative bg-slate-950 aspect-video flex flex-col items-center justify-center text-white p-6 text-center">
-            <!-- Standby View -->
-            <div id="ad-standby-view" class="space-y-3 relative z-10 w-full max-w-xs">
-              <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-orange-500/20 to-amber-500/30 text-orange-400 border border-orange-500/40 flex items-center justify-center mx-auto text-2xl shadow-lg animate-pulse">
-                <i class="fa-solid fa-play ml-1"></i>
-              </div>
-              <div>
-                <span id="ad-standby-badge" class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 bg-orange-500/20 text-orange-300 rounded border border-orange-500/30">Verified Partner Stream</span>
-                <h4 id="ad-standby-title" class="font-extrabold text-sm text-white mt-1">Global FinTech & Web3 Ads</h4>
-                <p id="ad-standby-desc" class="text-xs text-slate-400 mt-1">Activate a VIP Investment Plan to unlock daily commercial ads</p>
-              </div>
-              <button id="ad-start-btn" onclick="startWatchingAd()" class="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-orange-500/20 transition flex items-center justify-center gap-2 cursor-pointer">
-                <i class="fa-solid fa-play text-xs"></i> <span>Start Watching Ad (+ $0.05)</span>
-              </button>
+        <div id="ad-status-box" class="py-4 px-3 bg-slate-50 rounded-xl border border-slate-100">
+            <!-- Idle View -->
+            <div id="ad-standby-view">
+                <div class="w-16 h-16 bg-gradient-to-tr from-orange-500 to-amber-400 text-white rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-md mb-3 animate-pulse">
+                    <i class="fa-solid fa-play"></i>
+                </div>
+                <h3 class="font-extrabold text-slate-800 text-base">Click & Watch Sponsor Ad</h3>
+                <p class="text-xs text-slate-500 mt-1 max-w-xs mx-auto">Click below to open the real sponsor ad in a new tab. Keep it open while the timer runs to earn $0.05 USD.</p>
             </div>
 
-            <!-- Running Ad View (Real Adsterra Banner & Live Timer) -->
-            <div id="ad-running-view" class="hidden space-y-2 relative z-10 w-full flex flex-col items-center">
-              <div class="w-full max-w-[320px] flex items-center justify-between px-1 mb-1">
-                <div class="flex items-center gap-1.5 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-bold text-white border border-white/10 shadow">
-                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  <span>Adsterra Official Sponsor</span>
+            <!-- Active Running View -->
+            <div id="ad-running-view" class="hidden space-y-3">
+                <div class="relative w-20 h-20 mx-auto flex items-center justify-center">
+                    <div class="w-16 h-16 rounded-full border-4 border-orange-500 border-t-transparent animate-spin"></div>
+                    <span id="ad-timer-num" class="absolute font-black text-2xl text-slate-800">15</span>
                 </div>
-                <div class="bg-gradient-to-r from-orange-600 to-amber-600 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-black text-white shadow-lg border border-orange-400/30 flex items-center gap-1.5">
-                  <i class="fa-solid fa-clock text-[10px] animate-spin"></i> <span id="ad-timer-num">15s</span>
-                </div>
-              </div>
-
-              <!-- Official Adsterra 300x250 Live Unit -->
-              <div class="w-full max-w-[320px] p-2 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl flex flex-col items-center justify-center overflow-hidden">
-                <div class="w-[300px] h-[250px] bg-slate-950 flex flex-col items-center justify-center overflow-hidden rounded-xl border border-slate-800 relative">
-                  <script type="text/javascript">
-                    atOptions = {
-                      'key' : '35d390e6e45f0114853dc989206caa71',
-                      'format' : 'iframe',
-                      'height' : 250,
-                      'width' : 300,
-                      'params' : {}
-                    };
-                  </script>
-                  <script type="text/javascript" src="https://www.highrevenueformat.com/35d390e6e45f0114853dc989206caa71/invoke.js"></script>
-                </div>
-              </div>
-
-              <div class="w-full max-w-[320px] flex items-center justify-between text-left px-1 pt-1">
-                <span class="text-[10px] text-amber-300 font-extrabold bg-black/70 px-2 py-0.5 rounded backdrop-blur">
-                  +$0.05 USD reward at 0s
-                </span>
-                <a href="https://profitableratecpmnetwork.com/bmus9vwr3d?key=836464293cb77fa37dfc023c1d8701d0" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 bg-orange-500/20 hover:bg-orange-500/30 border border-orange-400/40 text-orange-300 text-[10px] font-bold rounded-lg transition">
-                  Open Sponsor Ad <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-                </a>
-              </div>
+                <p class="text-xs font-bold text-orange-600 animate-pulse">Sponsor Ad opened in new tab... Please wait while timer finishes!</p>
             </div>
-<!-- Completed View -->
-            <div id="ad-completed-view" class="hidden space-y-2 relative z-10 py-6">
-              <div class="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center mx-auto text-2xl shadow-lg">
-                <i class="fa-solid fa-check"></i>
-              </div>
-              <h4 class="font-extrabold text-sm text-emerald-400">+$0.05 USD Credited!</h4>
-              <p class="text-xs text-slate-300">Reward added to your account balance.</p>
+
+            <!-- Success View -->
+            <div id="ad-success-view" class="hidden space-y-2 py-2">
+                <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl shadow-sm">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h3 class="font-extrabold text-emerald-600 text-base">Reward Credited!</h3>
+                <p class="text-xs text-slate-600">+$0.05 USD added to your wallet balance.</p>
             </div>
-          </div>
         </div>
-                
-        <!-- Adsterra Sponsored Banner Slot -->
-        <div id="adsterra-banner-container" class="bg-slate-900 border border-slate-800 rounded-2xl p-3 text-center space-y-2 shadow-sm">
-          <div class="flex items-center justify-between text-[10px] text-slate-400 font-bold px-1">
-            <span class="flex items-center gap-1.5 text-amber-400">
-              <i class="fa-solid fa-rectangle-ad"></i> Adsterra Sponsored Network
-            </span>
-            <span class="text-[9px] bg-slate-800 text-amber-300 font-bold px-2 py-0.5 rounded">High CPM Network</span>
-          </div>
-          <div id="adsterra-banner-slot" class="min-h-[80px] flex flex-col items-center justify-center overflow-hidden rounded-xl bg-slate-950/80 border border-slate-800/80 p-2">
-            <!-- Adsterra Native Container & Script -->
-            <div id="container-f4d67fd9e6924c356864fd8f8c8d3a0b" class="w-full flex justify-center"></div>
-            <script async="async" data-cfasync="false" src="https://pl31493202.profitableratecpmnetwork.com/f4d67fd9e6924c356864fd8f8c8d3a0b/invoke.js"></script>
-          </div>
-        </div>
+
+        <!-- Direct Click Action Button -->
+        <button id="ad-start-btn" onclick="startWatchingAd()" class="w-full py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-extrabold rounded-xl shadow-lg shadow-orange-500/25 active:scale-95 transition-all flex items-center justify-center gap-2 text-sm">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            <span>Click To Open Sponsor Ad & Earn $0.05</span>
+        </button>
+    </div>
+
       </section>
 
       <!-- ================= 5. DEPOSIT SCREEN ================= -->
@@ -1905,127 +1875,138 @@ let adInterval = null;
       }
     }
 
-    function startWatchingAd() {
-      const user = getCurrentUser();
-      if (!user) return;
-      if (!user.activePlanId) {
+    let currentAdNetwork = "monetag"; // Switches between Monetag & Adsterra
+
+function startWatchingAd() {
+    const user = getCurrentUser();
+    if (!user) {
+        showToast("Please login first to watch ads", "error");
+        return;
+    }
+
+    if (!user.activePlanId) {
         showToast("Please activate a VIP plan first!", "warning");
         switchScreen("plans");
         return;
-      }
-
-      const total = user.planDailyAdLimit || 5;
-      const watched = Number(user.adsWatchedToday) || 0;
-      if (watched >= total) {
-        showToast("Daily ad limit already completed! Reset tomorrow.", "error");
-        return;
-      }
-
-      if (isWatching) return;
-      isWatching = true;
-
-      // 1. Open Real Sponsor Ad in New Tab
-      try {
-        window.open("https://profitableratecpmnetwork.com/bmus9vwr3d?key=836464293cb77fa37dfc023c1d8701d0", "_blank");
-      } catch (e) {}
-
-      const standbyView = document.getElementById("ad-standby-view");
-      const runningView = document.getElementById("ad-running-view");
-      const completedView = document.getElementById("ad-completed-view");
-
-      if (standbyView) standbyView.classList.add("hidden");
-      if (runningView) runningView.classList.remove("hidden");
-      if (completedView) completedView.classList.add("hidden");
-
-      loadLiveAdsterraBanner();
-      secondsLeft = 15;
-
-      const timerNum = document.getElementById("ad-timer-num");
-      if (timerNum) timerNum.textContent = `${secondsLeft}s`;
-
-      if (adInterval) clearInterval(adInterval);
-      adInterval = setInterval(() => {
-        secondsLeft--;
-        if (timerNum) timerNum.textContent = `${secondsLeft}s`;
-
-        // 15 seconds complete: Automatically Credit Balance & Increment Ads!
-        if (secondsLeft <= 0) {
-          clearInterval(adInterval);
-          adInterval = null;
-          finishAdAndCredit();
-        }
-      }, 1000);
     }
 
-    function finishAdAndCredit() {
-      const current = getCurrentUser();
-      if (!current) {
+    const total = user.planDailyAdLimit || 5;
+    const watched = Number(user.adsWatchedToday) || 0;
+    if (watched >= total) {
+        showToast("Daily ad limit already completed! Resets tomorrow.", "warning");
+        return;
+    }
+
+    if (isWatching) return;
+    isWatching = true;
+
+    // 1. Official Live Links (Smart Rotation between Monetag & Adsterra)
+    const monetagUrl = "https://omg10.com/4/11954657";
+    const adsterraUrl = "https://profitableratecpmnetwork.com/bmus9vwr3d?key=836464293cb77fa37dfc023c1d8701d0";
+
+    const targetAdUrl = (currentAdNetwork === "monetag") ? monetagUrl : adsterraUrl;
+    currentAdNetwork = (currentAdNetwork === "monetag") ? "adsterra" : "monetag"; // Alternates for maximum revenue
+
+    // 2. Open Real Sponsor Ad in New Tab (Guarantees 100% Real Ad Click)
+    try {
+        window.open(targetAdUrl, "_blank");
+    } catch (e) {}
+
+    // 3. UI State Handling
+    const standbyView = document.getElementById("ad-standby-view");
+    const runningView = document.getElementById("ad-running-view");
+    const successView = document.getElementById("ad-success-view");
+    const startBtn = document.getElementById("ad-start-btn");
+    const timerNum = document.getElementById("ad-timer-num");
+
+    if (standbyView) standbyView.classList.add("hidden");
+    if (runningView) runningView.classList.remove("hidden");
+    if (successView) successView.classList.add("hidden");
+    if (startBtn) {
+        startBtn.disabled = true;
+        startBtn.classList.add("opacity-50", "pointer-events-none");
+    }
+
+    secondsLeft = 15;
+    if (timerNum) timerNum.textContent = secondsLeft;
+
+    if (adInterval) clearInterval(adInterval);
+    adInterval = setInterval(() => {
+        secondsLeft--;
+        if (timerNum) timerNum.textContent = secondsLeft;
+
+        if (secondsLeft <= 0) {
+            clearInterval(adInterval);
+            adInterval = null;
+            finishAdAndCredit();
+        }
+    }, 1000);
+}
+
+function finishAdAndCredit() {
+    const current = getCurrentUser();
+    if (!current) {
         isWatching = false;
         return;
-      }
+    }
 
-      const total = current.planDailyAdLimit || 5;
-      const watched = Number(current.adsWatchedToday) || 0;
-      if (watched >= total) {
+    const total = current.planDailyAdLimit || 5;
+    const watched = Number(current.adsWatchedToday) || 0;
+    if (watched >= total) {
         isWatching = false;
         showToast("Daily limit already reached!", "info");
         return;
-      }
-
-      const newWatched = watched + 1;
-      const newBalUsd = (Number(current.balanceUsd) || 0) + 0.05;
-      const newBalPkr = (Number(current.balancePkr) || 0) + 14;
-
-      // 1. Save directly to local storage (No missing functions)
-      const users = getUsers();
-      const u = users.find(x => x.id === current.id || x.identifier.toLowerCase() === current.identifier.toLowerCase());
-      if (u) {
-        u.adsWatchedToday = newWatched;
-        u.balanceUsd = newBalUsd;
-        u.balancePkr = newBalPkr;
-        u.lastAdWatchTimestamp = Date.now();
-        u.lastAdResetDate = new Date().toDateString();
-        saveUsers(users);
-      }
-
-      // 2. Update screen counter & show remaining ads
-      const remaining = Math.max(0, total - newWatched);
-      const counterEl = document.getElementById("watch-counter-text");
-      if (counterEl) {
-        counterEl.innerHTML = `${newWatched} / ${total} Ads <span class="text-xs text-emerald-400 font-bold ml-2">(${remaining} Remaining)</span>`;
-      }
-      const pBar = document.getElementById("watch-ads-progress-bar");
-      if (pBar) pBar.style.width = `${Math.min(100, Math.round((newWatched / total) * 100))}%`;
-
-      // 3. Show completed animation
-      const runningView = document.getElementById("ad-running-view");
-      const completedView = document.getElementById("ad-completed-view");
-      const standbyView = document.getElementById("ad-standby-view");
-
-      if (runningView) runningView.classList.add("hidden");
-      if (completedView) completedView.classList.remove("hidden");
-
-      showToast(`🎉 Ad ${newWatched}/${total} watched! +$0.05 USD (14 PKR) added to balance!`, "success");
-
-      // 4. Sync immediately to Cloud
-      syncToCloud("ad_reward_credited", {
-        userId: current.id,
-        userIdentifier: current.identifier,
-        adsWatchedToday: newWatched,
-        balanceUsd: newBalUsd,
-        balancePkr: newBalPkr
-      });
-
-      setTimeout(() => {
-        if (completedView) completedView.classList.add("hidden");
-        if (standbyView) standbyView.classList.remove("hidden");
-        isWatching = false;
-        renderWatchScreen();
-      }, 1500);
     }
 
-   
-    
+    const newWatched = watched + 1;
+    const newBalUsd = (Number(current.balanceUsd) || 0) + 0.05;
+    const newBalPkr = (Number(current.balancePkr) || 0) + (0.05 * 280);
+
+    // Update Local Storage
+    current.adsWatchedToday = newWatched;
+    current.balanceUsd = newBalUsd;
+    current.balancePkr = newBalPkr;
+    current.lastAdWatchTimestamp = Date.now();
+    saveCurrentUser(current);
+
+    const users = getUsers();
+    const idx = users.findIndex(u => u.id === current.id || (u.identifier && u.identifier.toLowerCase() === current.identifier.toLowerCase()));
+    if (idx !== -1) {
+        users[idx] = { ...users[idx], adsWatchedToday: newWatched, balanceUsd: newBalUsd, balancePkr: newBalPkr };
+        saveUsers(users);
+    }
+
+    // Sync to Supabase
+    if (typeof supabaseClient !== "undefined" && supabaseClient) {
+        supabaseClient.from("users").update({
+            ads_watched_today: newWatched,
+            balance_usd: newBalUsd,
+            balance_pkr: newBalPkr
+        }).eq("id", current.id).then(() => {}).catch(err => console.error("Supabase ad sync:", err));
+    }
+
+    // UI Updates
+    const runningView = document.getElementById("ad-running-view");
+    const successView = document.getElementById("ad-success-view");
+    const standbyView = document.getElementById("ad-standby-view");
+    const startBtn = document.getElementById("ad-start-btn");
+
+    if (runningView) runningView.classList.add("hidden");
+    if (successView) successView.classList.remove("hidden");
+    showToast("🎉 Ad watched! +$0.05 USD (14 PKR) added to balance!", "success");
+
+    setTimeout(() => {
+        isWatching = false;
+        if (successView) successView.classList.add("hidden");
+        if (standbyView) standbyView.classList.remove("hidden");
+        if (startBtn) {
+            startBtn.disabled = false;
+            startBtn.classList.remove("opacity-50", "pointer-events-none");
+        }
+        if (typeof renderWatchScreen === "function") renderWatchScreen();
+        if (typeof renderHomeScreen === "function") renderHomeScreen();
+    }, 2500);
+                       }
 
 
 
