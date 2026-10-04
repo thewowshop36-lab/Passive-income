@@ -1876,7 +1876,7 @@ let adInterval = null;
     }
 
     
-let currentAdNetwork = "monetag"; // Switches between Monetag & Adsterra
+let currentAdNetwork = "monetag"; // Alternates between Monetag & Adsterra
 let isWatching = false;
 let adInterval = null;
 
@@ -1897,17 +1897,19 @@ function startWatchingAd() {
     if (isWatching) return;
     isWatching = true;
 
-    // 1. Official Direct Links (Monetag & Adsterra Smart Rotation)
+    // 1. Official Direct Links (Monetag & Adsterra Rotation)
     const monetagUrl = "https://omg10.com/4/11954657";
     const adsterraUrl = "https://profitableratecpmnetwork.com/bmus9vwr3d?key=836464293cb77fa37dfc023c1d8701d0";
 
     const targetAdUrl = (currentAdNetwork === "monetag") ? monetagUrl : adsterraUrl;
-    currentAdNetwork = (currentAdNetwork === "monetag") ? "adsterra" : "monetag"; // Switches every ad!
+    currentAdNetwork = (currentAdNetwork === "monetag") ? "adsterra" : "monetag";
 
-    // 2. Open Real Sponsor Ad in New Tab (100% Real Ad Click)
+    // 2. Open Real Sponsor Ad in New Tab
     try {
         window.open(targetAdUrl, "_blank");
-    } catch (e) {}
+    } catch (e) {
+        console.error("Popup blocked:", e);
+    }
 
     // 3. UI State Handling
     const standbyView = document.getElementById("ad-standby-view");
@@ -1953,7 +1955,7 @@ function finishAdAndCredit() {
     const newBalUsd = (Number(user.balanceUsd) || 0) + 0.05;
     const newBalPkr = (Number(user.balancePkr) || 0) + (0.05 * 280);
 
-    // Update Local User Object
+    // Update Local Data
     user.adsWatchedToday = newWatched;
     user.balanceUsd = newBalUsd;
     user.balancePkr = newBalPkr;
@@ -1974,7 +1976,7 @@ function finishAdAndCredit() {
             ads_watched_today: newWatched,
             balance_usd: newBalUsd,
             balance_pkr: newBalPkr
-        }).eq("id", user.id).then(() => {}).catch(err => console.error("Supabase sync:", err));
+        }).eq("id", user.id).then(() => {}).catch(err => console.error(err));
     }
 
     // UI Updates
