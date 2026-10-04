@@ -1875,39 +1875,36 @@ let adInterval = null;
       }
     }
 
-    let currentAdNetwork = "monetag"; // Switches between Monetag & Adsterra
+    
+let currentAdNetwork = "monetag"; // Switches between Monetag & Adsterra
+let isWatching = false;
+let adInterval = null;
 
 function startWatchingAd() {
-    const user = getCurrentUser();
+    const user = (typeof getCurrentUser === "function") ? getCurrentUser() : state.currentUser;
     if (!user) {
         showToast("Please login first to watch ads", "error");
         return;
     }
 
-    if (!user.activePlanId) {
-        showToast("Please activate a VIP plan first!", "warning");
-        switchScreen("plans");
-        return;
-    }
-
-    const total = user.planDailyAdLimit || 5;
+    const total = user.planDailyAdLimit || 50;
     const watched = Number(user.adsWatchedToday) || 0;
     if (watched >= total) {
-        showToast("Daily ad limit already completed! Resets tomorrow.", "warning");
+        showToast("Daily ad limit reached! Upgrade plan or come back tomorrow.", "warning");
         return;
     }
 
     if (isWatching) return;
     isWatching = true;
 
-    // 1. Official Live Links (Smart Rotation between Monetag & Adsterra)
+    // 1. Official Direct Links (Monetag & Adsterra Smart Rotation)
     const monetagUrl = "https://omg10.com/4/11954657";
     const adsterraUrl = "https://profitableratecpmnetwork.com/bmus9vwr3d?key=836464293cb77fa37dfc023c1d8701d0";
 
     const targetAdUrl = (currentAdNetwork === "monetag") ? monetagUrl : adsterraUrl;
-    currentAdNetwork = (currentAdNetwork === "monetag") ? "adsterra" : "monetag"; // Alternates for maximum revenue
+    currentAdNetwork = (currentAdNetwork === "monetag") ? "adsterra" : "monetag"; // Switches every ad!
 
-    // 2. Open Real Sponsor Ad in New Tab (Guarantees 100% Real Ad Click)
+    // 2. Open Real Sponsor Ad in New Tab (100% Real Ad Click)
     try {
         window.open(targetAdUrl, "_blank");
     } catch (e) {}
@@ -1927,7 +1924,7 @@ function startWatchingAd() {
         startBtn.classList.add("opacity-50", "pointer-events-none");
     }
 
-    secondsLeft = 15;
+    let secondsLeft = 15;
     if (timerNum) timerNum.textContent = secondsLeft;
 
     if (adInterval) clearInterval(adInterval);
@@ -1944,36 +1941,31 @@ function startWatchingAd() {
 }
 
 function finishAdAndCredit() {
-    const current = getCurrentUser();
-    if (!current) {
+    const user = (typeof getCurrentUser === "function") ? getCurrentUser() : state.currentUser;
+    if (!user) {
         isWatching = false;
         return;
     }
 
-    const total = current.planDailyAdLimit || 5;
-    const watched = Number(current.adsWatchedToday) || 0;
-    if (watched >= total) {
-        isWatching = false;
-        showToast("Daily limit already reached!", "info");
-        return;
-    }
-
+    const total = user.planDailyAdLimit || 50;
+    const watched = Number(user.adsWatchedToday) || 0;
     const newWatched = watched + 1;
-    const newBalUsd = (Number(current.balanceUsd) || 0) + 0.05;
-    const newBalPkr = (Number(current.balancePkr) || 0) + (0.05 * 280);
+    const newBalUsd = (Number(user.balanceUsd) || 0) + 0.05;
+    const newBalPkr = (Number(user.balancePkr) || 0) + (0.05 * 280);
 
-    // Update Local Storage
-    current.adsWatchedToday = newWatched;
-    current.balanceUsd = newBalUsd;
-    current.balancePkr = newBalPkr;
-    current.lastAdWatchTimestamp = Date.now();
-    saveCurrentUser(current);
+    // Update Local User Object
+    user.adsWatchedToday = newWatched;
+    user.balanceUsd = newBalUsd;
+    user.balancePkr = newBalPkr;
+    user.lastAdWatchTimestamp = Date.now();
 
-    const users = getUsers();
-    const idx = users.findIndex(u => u.id === current.id || (u.identifier && u.identifier.toLowerCase() === current.identifier.toLowerCase()));
+    if (typeof saveCurrentUser === "function") saveCurrentUser(user);
+
+    const users = (typeof getUsers === "function") ? getUsers() : [];
+    const idx = users.findIndex(u => u.id === user.id || (u.identifier && u.identifier.toLowerCase() === user.identifier.toLowerCase()));
     if (idx !== -1) {
         users[idx] = { ...users[idx], adsWatchedToday: newWatched, balanceUsd: newBalUsd, balancePkr: newBalPkr };
-        saveUsers(users);
+        if (typeof saveUsers === "function") saveUsers(users);
     }
 
     // Sync to Supabase
@@ -1982,7 +1974,7 @@ function finishAdAndCredit() {
             ads_watched_today: newWatched,
             balance_usd: newBalUsd,
             balance_pkr: newBalPkr
-        }).eq("id", current.id).then(() => {}).catch(err => console.error("Supabase ad sync:", err));
+        }).eq("id", user.id).then(() => {}).catch(err => console.error("Supabase sync:", err));
     }
 
     // UI Updates
@@ -1990,11 +1982,15 @@ function finishAdAndCredit() {
     const successView = document.getElementById("ad-success-view");
     const standbyView = document.getElementById("ad-standby-view");
     const startBtn = document.getElementById("ad-start-btn");
+    const watchCounter = document.getElementById("watch-counter-text");
 
     if (runningView) runningView.classList.add("hidden");
     if (successView) successView.classList.remove("hidden");
+    if (watchCounter) watchCounter.textContent = `${newWatched} / ${total} Ads`;
+
     showToast("🎉 Ad watched! +$0.05 USD (14 PKR) added to balance!", "success");
 
+    // Automatically Reset & Ready for Next Ad after 1.5 seconds!
     setTimeout(() => {
         isWatching = false;
         if (successView) successView.classList.add("hidden");
@@ -2002,11 +1998,12 @@ function finishAdAndCredit() {
         if (startBtn) {
             startBtn.disabled = false;
             startBtn.classList.remove("opacity-50", "pointer-events-none");
+            startBtn.innerHTML = '<i class="fa-solid fa-arrow-up-right-from-square"></i> <span>Watch Next Ad (+ $0.05)</span>';
         }
         if (typeof renderWatchScreen === "function") renderWatchScreen();
         if (typeof renderHomeScreen === "function") renderHomeScreen();
-    }, 2500);
-                       }
+    }, 1500);
+}
 
 
 
