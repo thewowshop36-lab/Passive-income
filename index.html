@@ -1916,13 +1916,17 @@ function startWatchingAd() {
         return;
     }
 
-    if (!user.activePlanId) {
-        showToast("Please activate a VIP plan first!", "warning");
-        switchScreen("plans");
-        return;
-    }
+    const activeList = Array.isArray(user.activePlans) && user.activePlans.length > 0
+    ? user.activePlans
+    : (user.activePlanId ? [{ planId: user.activePlanId, dailyAds: VIP_PLANS.find(p => p.id === user.activePlanId)?.dailyAds || 5 }] : []);
 
-    const total = Number(user.planDailyAdLimit) || (user.activePlans && user.activePlans.length > 0 ? user.activePlans.reduce((sum, p) => sum + (p.dailyAds || 0), 0) : 5);
+if (activeList.length === 0) {
+    showToast("Please activate a VIP plan first!", "warning");
+    switchScreen("plans");
+    return;
+}
+
+const total = activeList.reduce((sum, p) => sum + (p.dailyAds || 0), 0);
     const watched = Number(user.adsWatchedToday) || 0;
     if (watched >= total) {
         showToast("Daily ad limit already completed! Reset tomorrow.", "warning");
