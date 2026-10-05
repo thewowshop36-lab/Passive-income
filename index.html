@@ -1909,6 +1909,20 @@ function updateCurrentUser(updatedFields) {
     }
 }
 
+
+// یوزر کی اصل کل ایڈز حاصل کرنے کا درست فارمولا
+function getUserAdLimit(u) {
+  if (!u) return 0;
+  if (Array.isArray(u.activePlans) && u.activePlans.length > 0) {
+    return u.activePlans.reduce((sum, p) => sum + (Number(p.dailyAds) || 0), 0);
+  }
+  if (u.activePlanId) {
+    const p = VIP_PLANS.find(x => x.id === u.activePlanId);
+    return p ? Number(p.dailyAds) : (Number(u.planDailyAdLimit) || 5);
+  }
+  return Number(u.planDailyAdLimit) || 0;
+}
+
 function startWatchingAd() {
     const user = getCurrentUser();
     if (!user) {
@@ -1916,41 +1930,30 @@ function startWatchingAd() {
         return;
     }
 
-    const activeList = Array.isArray(user.activePlans) && user.activePlans.length > 0
-    ? user.activePlans
-    : (user.activePlanId ? [{ planId: user.activePlanId, dailyAds: VIP_PLANS.find(p => p.id === user.activePlanId)?.dailyAds || 5 }] : []);
-
-if (activeList.length === 0) {
-    showToast("Please activate a VIP plan first!", "warning");
-    switchScreen("plans");
-    return;
-}
-
-const total = activeList.reduce((sum, p) => sum + (p.dailyAds || 0), 0);
+    const total = getUserAdLimit(user);
     const watched = Number(user.adsWatchedToday) || 0;
+
+    if (total === 0) {
+        showToast("Please activate a VIP plan first!", "warning");
+        switchScreen("plans");
+        return;
+    }
+
     if (watched >= total) {
-        showToast("Daily ad limit already completed! Reset tomorrow.", "warning");
+        showToast(`Daily limit of ${total} ads completed! Reset tomorrow.`, "warning");
         return;
     }
 
     if (isWatching) return;
     isWatching = true;
 
-    // 1. Official Live Links (Smart Rotation between Monetag & Adsterra)
-    const monetagUrl = "https://omg10.com/4/11954657";
-    const adsterraUrl = "https://profitableratecpmnetwork.com/bmus9vwr3d?key=836464293cb77fa37dfc023c1d8701d0";
-
-    const targetAdUrl = (currentAdNetwork === "monetag") ? monetagUrl : adsterraUrl;
-    currentAdNetwork = (currentAdNetwork === "monetag") ? "adsterra" : "monetag"; // Alternates every ad
-
-    // 2. Open Real Sponsor Ad in New Tab
+    // Monetag محفوظ ایڈ لنک
+    const targetAdUrl = "https://omg10.com/4/11954657";
     try {
         window.open(targetAdUrl, "_blank");
-    } catch (e) {
-        console.error(e);
-    }
+    } catch (e) {}
 
-    // 3. UI State Handling
+    // UI اسٹیٹ کو ایکٹیو کریں
     const standbyView = document.getElementById("ad-standby-view");
     const runningView = document.getElementById("ad-running-view");
     const successView = document.getElementById("ad-success-view");
@@ -1984,35 +1987,30 @@ const total = activeList.reduce((sum, p) => sum + (p.dailyAds || 0), 0);
 function finishAdAndCredit() {
     const current = getCurrentUser();
     if (!current) {
-        isWatching = false;
+        resetAdUiState();
         return;
     }
 
-    const total = Number(current.planDailyAdLimit) || (current.activePlans && current.activePlans.length > 0 ? current.activePlans.reduce((sum, p) => sum + (p.dailyAds || 0), 0) : 5);
+    const total = getUserAdLimit(current);
     const watched = Number(current.adsWatchedToday) || 0;
-    if (watched >= total) {
-        isWatching = false;
-        showToast("Daily limit already reached!", "info");
-        return;
-    }
 
     const newWatched = watched + 1;
-    const newBalUsd = (Number(current.balanceUsd) || 0) + 0.05;
-    const newBalPkr = (Number(current.balancePkr) || 0) + 14;
+    const newBalUsd = Number(((Number(current.balanceUsd) || 0) + 0.05).toFixed(2));
+    const newBalPkr = Number(((Number(current.balancePkr) || 0) + 14).toFixed(0));
 
-    // 1. Save directly to local storage
+    // 1. لوکل اسٹوریج میں اپڈیٹ کریں
     const users = getUsers();
-    const u = users.find(x => x.id === current.id || (x.identifier && x.identifier.toLowerCase() === current.identifier.toLowerCase()));
+    const u = users.find(x => String(x.id) === String(current.id) || (x.identifier && x.identifier.toLowerCase() === current.identifier.toLowerCase()));
     if (u) {
         u.adsWatchedToday = newWatched;
         u.balanceUsd = newBalUsd;
         u.balancePkr = newBalPkr;
-        u.lastAdWatchTimestamp = Date.now();
         u.lastAdResetDate = new Date().toDateString();
+        u.lastUpdatedAt = Date.now();
         saveUsers(users);
     }
 
-    // 2. Sync immediately to Cloud
+    // 2. کلاؤڈ میں لائیو سنک کریں
     if (typeof syncToCloud === "function") {
         syncToCloud("ad_reward_credited", {
             userId: current.id,
@@ -2023,7 +2021,7 @@ function finishAdAndCredit() {
         });
     }
 
-    // 3. UI Updates
+    // 3. UI کو ریسیٹ اور ریوارڈ دکھائیں
     const runningView = document.getElementById("ad-running-view");
     const successView = document.getElementById("ad-success-view");
     const standbyView = document.getElementById("ad-standby-view");
@@ -2032,23 +2030,35 @@ function finishAdAndCredit() {
 
     if (runningView) runningView.classList.add("hidden");
     if (successView) successView.classList.remove("hidden");
-    if (counterEl) counterEl.textContent = `${newWatched} / ${total} Ads`;
+    if (counterEl) counterEl.textContent = newWatched + " / " + total + " Ads";
 
-    showToast(`🎉 Ad ${newWatched}/${total} watched! +$0.05 USD (14 PKR) added to balance!`, "success");
+    showToast("🎉 Mubarak! Ad " + newWatched + "/" + total + " finished. +$0.05 USD credited!", "success");
 
-    // 4. Automatically Reset & Ready for Next Ad
     setTimeout(() => {
-        isWatching = false;
-        if (successView) successView.classList.add("hidden");
-        if (standbyView) standbyView.classList.remove("hidden");
-        if (startBtn) {
-            startBtn.disabled = false;
-            startBtn.classList.remove("opacity-50", "pointer-events-none");
-            startBtn.innerHTML = '<i class="fa-solid fa-arrow-up-right-from-square"></i> <span>Watch Next Ad (+ $0.05)</span>';
-        }
+        resetAdUiState();
         if (typeof renderWatchScreen === "function") renderWatchScreen();
         if (typeof renderHomeScreen === "function") renderHomeScreen();
-    }, 1500);
+    }, 1200);
+}
+
+function resetAdUiState() {
+    isWatching = false;
+    if (adInterval) {
+        clearInterval(adInterval);
+        adInterval = null;
+    }
+    const standbyView = document.getElementById("ad-standby-view");
+    const runningView = document.getElementById("ad-running-view");
+    const successView = document.getElementById("ad-success-view");
+    const startBtn = document.getElementById("ad-start-btn");
+
+    if (runningView) runningView.classList.add("hidden");
+    if (successView) successView.classList.add("hidden");
+    if (standbyView) standbyView.classList.remove("hidden");
+    if (startBtn) {
+        startBtn.disabled = false;
+        startBtn.classList.remove("opacity-50", "pointer-events-none");
+    }
 }
 
 
