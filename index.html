@@ -198,6 +198,18 @@
 
       <!-- ================= 2. HOME SCREEN ================= -->
       <section id="screen-home" class="hidden p-4 space-y-4">
+        <!-- Live Admin Notification Box on Dashboard -->
+        <div id="user-inbox-alert-banner" class="hidden bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white p-3.5 rounded-2xl shadow-lg border border-amber-300/40 flex items-start gap-3">
+          <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-lg shrink-0">📢</div>
+          <div class="flex-1 min-w-0">
+            <h4 class="text-xs font-black tracking-wide text-amber-100 flex items-center gap-1">
+              <i class="fa-solid fa-bullhorn text-[10px]"></i> ADMIN SPECIAL NOTICE
+            </h4>
+            <p id="user-inbox-alert-text" class="text-xs font-bold mt-1 text-white leading-relaxed whitespace-pre-line"></p>
+            <span id="user-inbox-alert-date" class="text-[9px] text-white/80 mt-1 block"></span>
+          </div>
+          <button type="button" onclick="dismissUserInboxAlert()" class="text-white/80 hover:text-white text-xs font-bold px-2 py-1 rounded-lg bg-black/20 hover:bg-black/30 transition">✕</button>
+        </div>
         <!-- Balance Card -->
         <div class="bg-gradient-to-br from-orange-500 via-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-xl shadow-orange-500/25 relative overflow-hidden">
           <div class="flex justify-between items-start mb-2">
@@ -2536,29 +2548,38 @@ function adminSendUserMessage(userId) {
 
 function checkUserInboxNotifications() {
   const user = getCurrentUser();
-  if (!user || !Array.isArray(user.inbox) || user.inbox.length === 0) return;
+  const alertBanner = document.getElementById("user-inbox-alert-banner");
+  const alertText = document.getElementById("user-inbox-alert-text");
+  const alertDate = document.getElementById("user-inbox-alert-date");
 
-  const unreadMsg = user.inbox.find(m => !m.read);
-  if (unreadMsg) {
-    const titleEl = document.getElementById("modal-notif-title");
-    const dateEl = document.getElementById("modal-notif-date");
-    const bodyEl = document.getElementById("modal-notif-body");
-    const modal = document.getElementById("announcement-modal");
+  if (!user) return;
 
-    if (titleEl) titleEl.innerHTML = `<span class="text-amber-500 font-black"><i class="fa-solid fa-gift mr-1"></i> Special Admin Message</span>`;
-    if (dateEl) dateEl.textContent = unreadMsg.date || "Just now";
-    if (bodyEl) bodyEl.innerHTML = `<div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 font-bold text-xs whitespace-pre-line leading-relaxed">${unreadMsg.text}</div>`;
-    if (modal) modal.classList.remove("hidden");
-
-    unreadMsg.read = true;
-    const users = getUsers();
-    const me = users.find(x => x.id === user.id);
-    if (me && me.inbox) {
-      const target = me.inbox.find(m => m.id === unreadMsg.id);
-      if (target) target.read = true;
-      saveUsers(users);
+  // اگر ایڈمن نے یوزر کو کوئی میسج یا بونس آفر بھیجی ہو
+  if (Array.isArray(user.inbox) && user.inbox.length > 0) {
+    const lastMsg = user.inbox[user.inbox.length - 1];
+    
+    // ڈیش بورڈ پر گولڈن نوٹس باکس دکھائیں
+    if (alertBanner && alertText) {
+      alertText.textContent = lastMsg.text;
+      if (alertDate) alertDate.textContent = `Date: ${lastMsg.date || "Today"}`;
+      alertBanner.classList.remove("hidden");
     }
+
+    // پاپ اپ موڈل بھی اگر موجود ہو تو کھول دیں
+    const modal = document.getElementById("announcement-modal");
+    const bodyEl = document.getElementById("modal-notif-body");
+    if (modal && bodyEl && !lastMsg.read) {
+      bodyEl.innerHTML = `<div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 font-bold text-xs">${lastMsg.text}</div>`;
+      modal.classList.remove("hidden");
+    }
+  } else {
+    if (alertBanner) alertBanner.classList.add("hidden");
   }
+}
+
+function dismissUserInboxAlert() {
+  const banner = document.getElementById("user-inbox-alert-banner");
+  if (banner) banner.classList.add("hidden");
 }
 function adminFixAllUserBalances() {
   if (!confirm("Are you sure you want to recalculate and fix all user balances?\nThis will deduct active plan costs from users balances while keeping all their plans active!")) {
