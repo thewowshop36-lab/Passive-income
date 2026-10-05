@@ -802,6 +802,7 @@
           renderAdminScreen();
         } else if (currentScreen !== "auth") {
           refreshCurrentScreen(currentScreen);
+          checkUserInboxNotifications();
         }
       } catch (err) {
         console.warn("Cloud sync offline fallback:", err);
@@ -1318,7 +1319,10 @@ pushToSupabase(localUsers, localDeps, localWds);
         }
       }
 
-      if (screen === "home") renderHomeScreen();
+      if (screen === "home") {
+  renderHomeScreen();
+  checkUserInboxNotifications();
+      }
       if (screen === "plans") renderPlansScreen();
       if (screen === "watch") renderWatchScreen();
       if (screen === "deposit") renderDepositScreen();
