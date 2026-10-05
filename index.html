@@ -750,6 +750,7 @@
 
                   userMap.set(k, {
                     ...chosen,
+                    inbox: (remote.inbox && remote.inbox.length > 0) ? remote.inbox : (u.inbox || []),
                     activePlans: finalPlans,
                     planDailyAdLimit: finalPlanLimit,
                     activePlanName: finalPlanName
@@ -1237,8 +1238,15 @@ pushToSupabase(localUsers, localDeps, localWds);
       if (!localStorage.getItem("pi_withdrawals")) localStorage.setItem("pi_withdrawals", "[]");
     }
 
-    initDatabase();
+   
+initDatabase();
+syncFromCloud(true);
 
+setInterval(() => {
+  if (currentScreen !== "auth") {
+    syncFromCloud(true);
+  }
+}, 8000);
     function getUsers() { return JSON.parse(localStorage.getItem("pi_users") || "[]"); }
     function saveUsers(users) { localStorage.setItem("pi_users", JSON.stringify(users)); }
     function getDeposits() { return JSON.parse(localStorage.getItem("pi_deposits") || "[]"); }
