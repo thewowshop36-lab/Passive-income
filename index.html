@@ -2371,6 +2371,9 @@ fetchFromSupabase();
             <button onclick="adminEditUserBalance('${u.id}')" class="px-2 py-0.5 bg-slate-200 hover:bg-orange-500 hover:text-white text-slate-700 rounded text-[10px] font-bold transition-all flex items-center gap-1">
               <i class="fa-solid fa-pen-to-square text-[9px]"></i> Edit Balance
             </button>
+            <button onclick="adminSendUserMessage('${u.id}')" class="px-2 py-0.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-[10px] font-bold transition flex items-center gap-1 shadow-sm mt-1">
+  <i class="fa-solid fa-paper-plane text-[9px]"></i> Message
+</button>
           </div>
         </div>
       `).join("");
@@ -2506,7 +2509,53 @@ function adminEditUserBalance(userId) {
   showToast("Balance for " + (u.fullName || u.identifier) + " updated to $" + u.balanceUsd.toFixed(2) + " USD!", "success");
   renderAdminScreen();
 }
+function adminSendUserMessage(userId) {
+  const users = getUsers();
+  const u = users.find(x => String(x.id) === String(userId));
+  if (!u) return;
 
+  const msg = prompt("Enter message / bonus offer for " + (u.fullName || u.identifier) + ":\n\n(یوزر کے لیے میسج یا آفر لکھیں)");
+  if (!msg || !msg.trim()) return;
+
+  if (!Array.isArray(u.inbox)) u.inbox = [];
+  u.inbox.push({
+    id: "msg_" + Date.now(),
+    text: msg.trim(),
+    date: new Date().toLocaleString(),
+    read: false
+  });
+  u.lastUpdatedAt = Date.now();
+  saveUsers(users);
+  syncToCloud("admin_message_sent", { userId: u.id, text: msg.trim() });
+  showToast("Message sent to " + (u.fullName || u.identifier) + "!", "success");
+}
+
+function checkUserInboxNotifications() {
+  const user = getCurrentUser();
+  if (!user || !Array.isArray(user.inbox) || user.inbox.length === 0) return;
+
+  const unreadMsg = user.inbox.find(m => !m.read);
+  if (unreadMsg) {
+    const titleEl = document.getElementById("modal-notif-title");
+    const dateEl = document.getElementById("modal-notif-date");
+    const bodyEl = document.getElementById("modal-notif-body");
+    const modal = document.getElementById("announcement-modal");
+
+    if (titleEl) titleEl.innerHTML = `<span class="text-amber-500 font-black"><i class="fa-solid fa-gift mr-1"></i> Special Admin Message</span>`;
+    if (dateEl) dateEl.textContent = unreadMsg.date || "Just now";
+    if (bodyEl) bodyEl.innerHTML = `<div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 font-bold text-xs whitespace-pre-line leading-relaxed">${unreadMsg.text}</div>`;
+    if (modal) modal.classList.remove("hidden");
+
+    unreadMsg.read = true;
+    const users = getUsers();
+    const me = users.find(x => x.id === user.id);
+    if (me && me.inbox) {
+      const target = me.inbox.find(m => m.id === unreadMsg.id);
+      if (target) target.read = true;
+      saveUsers(users);
+    }
+  }
+}
 function adminFixAllUserBalances() {
   if (!confirm("Are you sure you want to recalculate and fix all user balances?\nThis will deduct active plan costs from users balances while keeping all their plans active!")) {
     return;
