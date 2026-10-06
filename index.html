@@ -915,6 +915,9 @@ async function fetchFromSupabase() {
         sbUsers.forEach(su => {
           const key = String(su.identifier).toLowerCase();
           const existing = userMap.get(key) || {};
+          const today = new Date().toDateString();
+          const isSameDay = (existing.lastAdResetDate === today);
+
           userMap.set(key, {
             ...existing,
             id: su.id || existing.id,
@@ -925,8 +928,9 @@ async function fetchFromSupabase() {
             balanceUsd: Number(su.balance_usd) || existing.balanceUsd || 0,
             balancePkr: Number(su.balance_pkr) || existing.balancePkr || 0,
             activePlanName: su.active_plan_name || existing.activePlanName || "Free",
-            adsWatchedToday: Number(su.ads_watched_today) || 0,
-            planDailyAdLimit: Number(su.plan_daily_ad_limit) || 2,
+            adsWatchedToday: isSameDay ? (Number(su.ads_watched_today) || existing.adsWatchedToday || 0) : 0,
+            lastAdResetDate: existing.lastAdResetDate || today,
+            planDailyAdLimit: Number(su.plan_daily_ad_limit) || existing.planDailyAdLimit || 0,
             referralCode: su.referral_code || existing.referralCode || ""
           });
         });
@@ -1261,15 +1265,32 @@ setInterval(() => {
       let user = users.find(u => u.id.toString() === id.toString());
       if (user) {
         const today = new Date().toDateString();
+        // رات 12 بجے خود بخود ایڈز 0 ہو جائیں اور Supabase میں بھی لائیو 0 چلا جائے
         if (user.lastAdResetDate !== today) {
           user.adsWatchedToday = 0;
           user.lastAdResetDate = today;
+          user.lastUpdatedAt = Date.now();
           saveUsers(users);
+
+          try {
+            fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${user.id}`, {
+              method: "PATCH",
+              headers: {
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${SUPABASE_KEY}`,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ ads_watched_today: 0 })
+            }).catch(() => {});
+          } catch (e) {}
+
+          if (typeof syncToCloud === "function") {
+            syncToCloud("daily_reset", { userId: user.id, adsWatchedToday: 0 });
+          }
         }
       }
       return user;
     }
-
     function generateUniqueReferralCode() {
       const randNum = Math.floor(100000 + Math.random() * 900000);
       return `PI-${randNum}`;
@@ -1782,7 +1803,19 @@ function handleSubscribePlan(planId) {
       activePlans: u.activePlans,
       planDailyAdLimit: u.planDailyAdLimit
     });
-    
+    // Supabase میں بھی نیا پلان اور اس کی ڈیلی لمٹ محفوظ کریں
+    try {
+      fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${u.id}`, {
+        method: "PATCH",
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          active_plan_name: u.activePlanName,
+          plan_daily_ad_limit: u.planDailyAdLimit,
+          balance_usd: u.balanceUsd,
+          balance_pkr: u.balancePkr
+        })
+      }).catch(() => {});
+    } catch (e) {}
     showToast(`🎉 Mubarak! ${plan.name} activated. Total daily ads: ${u.planDailyAdLimit}!`, "success");
     renderHomeScreen();
     renderPlansScreen();
