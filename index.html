@@ -2295,10 +2295,7 @@ function resetAdUiState() {
       e.preventDefault();
       const user = getCurrentUser();
       if (!user) return;
-function handleWithdrawSubmit(e) {
-      e.preventDefault();
-      const user = getCurrentUser();
-      if (!user) return;
+
 
       // 🔒 5 ریفرل کی لازمی شرط (ایڈمن کے علاوہ تمام یوزرز کے لیے)
       const isUserAdmin = user.isAdmin || (user.identifier && user.identifier.toLowerCase() === ADMIN_EMAIL.toLowerCase());
