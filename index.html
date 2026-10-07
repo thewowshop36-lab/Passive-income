@@ -1942,7 +1942,14 @@ function updateCurrentUser(updatedFields) {
     }
 }
 
-
+function getTodayAdsWatched(u) {
+  if (!u) return 0;
+  const today = new Date().toISOString().slice(0, 10);
+  const userDate = u.lastAdWatchDate || u.lastAdResetDate || "";
+  // اگر تاریخ آج کی نہیں ہے تو خود بخود 0 مانے گا
+  if (userDate !== today) return 0;
+  return Number(u.adsWatchedToday) || 0;
+}
 // یوزر کی اصل کل ایڈز حاصل کرنے کا درست فارمولا
 function getUserAdLimit(u) {
   if (!u) return 0;
@@ -1964,7 +1971,7 @@ function startWatchingAd() {
     }
 
     const total = getUserAdLimit(user);
-    const watched = Number(user.adsWatchedToday) || 0;
+    const watched = getTodayAdsWatched(user);
 
     if (total === 0) {
         showToast("Please activate a VIP plan first!", "warning");
@@ -2024,37 +2031,38 @@ function finishAdAndCredit() {
         return;
     }
 
+    const todayStr = new Date().toISOString().slice(0, 10);
     const total = getUserAdLimit(current);
-    const watched = Number(current.adsWatchedToday) || 0;
+    const watched = getTodayAdsWatched(current);
 
     const newWatched = watched + 1;
     const newBalUsd = Number(((Number(current.balanceUsd) || 0) + 0.05).toFixed(2));
     const newBalPkr = Number(((Number(current.balancePkr) || 0) + 14).toFixed(0));
 
-    // 1. لوکل اسٹوریج میں اپڈیٹ کریں
+    // لوکل اسٹوریج میں آج کی تاریخ کے ساتھ محفوظ کریں
     const users = getUsers();
     const u = users.find(x => String(x.id) === String(current.id) || (x.identifier && x.identifier.toLowerCase() === current.identifier.toLowerCase()));
     if (u) {
         u.adsWatchedToday = newWatched;
+        u.lastAdWatchDate = todayStr;
+        u.lastAdResetDate = todayStr;
         u.balanceUsd = newBalUsd;
         u.balancePkr = newBalPkr;
-        u.lastAdResetDate = new Date().toDateString();
         u.lastUpdatedAt = Date.now();
         saveUsers(users);
     }
 
-    // 2. کلاؤڈ میں لائیو سنک کریں
     if (typeof syncToCloud === "function") {
         syncToCloud("ad_reward_credited", {
             userId: current.id,
             userIdentifier: current.identifier,
             adsWatchedToday: newWatched,
+            lastAdWatchDate: todayStr,
             balanceUsd: newBalUsd,
             balancePkr: newBalPkr
         });
     }
 
-    // 3. UI کو ریسیٹ اور ریوارڈ دکھائیں
     const runningView = document.getElementById("ad-running-view");
     const successView = document.getElementById("ad-success-view");
     const standbyView = document.getElementById("ad-standby-view");
@@ -2073,7 +2081,6 @@ function finishAdAndCredit() {
         if (typeof renderHomeScreen === "function") renderHomeScreen();
     }, 1200);
 }
-
 function resetAdUiState() {
     isWatching = false;
     if (adInterval) {
