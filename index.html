@@ -1847,50 +1847,48 @@ function renderWatchScreen() {
   const counterText = document.getElementById("watch-counter-text");
   const standbyView = document.getElementById("ad-standby-view");
   const runningView = document.getElementById("ad-running-view");
-  const completedView = document.getElementById("ad-completed-view");
+  const successView = document.getElementById("ad-success-view");
   const startBtn = document.getElementById("ad-start-btn");
 
   if (standbyView) standbyView.classList.remove("hidden");
   if (runningView) runningView.classList.add("hidden");
-  if (completedView) completedView.classList.add("hidden");
-const activePlansList = Array.isArray(user.activePlans) && user.activePlans.length > 0 
-        ? user.activePlans 
-        : (user.activePlanId ? [{ planId: user.activePlanId, name: user.activePlanName || "VIP Plan", dailyAds: VIP_PLANS.find(p => p.id === user.activePlanId)?.dailyAds || 5 }] : []);
+  if (successView) successView.classList.add("hidden");
 
-      if (activePlansList.length === 0) {
-        if (counterText) counterText.textContent = "0 / 0 Ads (No Plan)";
-        if (startBtn) {
-          startBtn.disabled = false;
-          startBtn.className = "w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-orange-500/20 transition cursor-pointer flex items-center justify-center gap-2";
-          startBtn.innerHTML = '<i class="fa-solid fa-lock mr-1"></i> <span>Activate VIP Plan to Watch Ads</span>';
-          startBtn.onclick = () => {
-            showToast("Please activate a VIP plan to unlock daily ads!", "info");
-            switchScreen("plans");
-          };
-        }
-      } else {
-        // صرف اور صرف یوزر کے اپنے خریدے ہوئے پلانز کی کل ایڈز
-        const total = activePlansList.reduce((sum, p) => sum + (p.dailyAds || 0), 0);
-        const watched = Number(user.adsWatchedToday) || 0;
-        if (counterText) counterText.textContent = `${watched} / ${total} Ads`;
+  // آج کے اصل ایڈز اور پلان لمٹ لائیو لیں
+  const total = getUserAdLimit(user);
+  const watched = getTodayAdsWatched(user);
 
-        if (watched >= total) {
-          if (startBtn) {
-            startBtn.disabled = true;
-            startBtn.className = "w-full py-3 bg-slate-800 text-slate-500 rounded-xl text-xs font-bold cursor-not-allowed flex items-center justify-center gap-1.5";
-            startBtn.innerHTML = '<i class="fa-solid fa-clock mr-1"></i> <span>Daily Limit Reached (Come back tomorrow)</span>';
-            startBtn.onclick = null;
-          }
-        } else {
-          if (startBtn) {
-            startBtn.disabled = false;
-            startBtn.className = "w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-orange-500/20 transition cursor-pointer flex items-center justify-center gap-2";
-            startBtn.innerHTML = `<i class="fa-solid fa-play mr-1"></i> <span>Start Watching Ad (${watched + 1}/${total}) (+ $0.05)</span>`;
-            startBtn.onclick = startWatchingAd;
-          }
-        }
+  if (total === 0) {
+    if (counterText) counterText.textContent = "0 / 0 Ads (No Plan)";
+    if (startBtn) {
+      startBtn.disabled = false;
+      startBtn.className = "w-full py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-extrabold rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm";
+      startBtn.innerHTML = '<i class="fa-solid fa-lock mr-1"></i> <span>Activate VIP Plan to Watch Ads</span>';
+      startBtn.onclick = () => {
+        showToast("Please activate a VIP plan to unlock daily ads!", "info");
+        switchScreen("plans");
+      };
+    }
+  } else {
+    if (counterText) counterText.textContent = watched + " / " + total + " Ads";
+
+    if (watched >= total) {
+      if (startBtn) {
+        startBtn.disabled = true;
+        startBtn.className = "w-full py-3.5 bg-slate-800 text-slate-500 rounded-xl text-xs font-bold cursor-not-allowed flex items-center justify-center gap-1.5";
+        startBtn.innerHTML = '<i class="fa-solid fa-clock mr-1"></i> <span>Daily Limit Reached (Come back tomorrow)</span>';
+        startBtn.onclick = null;
       }
-} 
+    } else {
+      if (startBtn) {
+        startBtn.disabled = false;
+        startBtn.className = "w-full py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-extrabold rounded-xl shadow-lg shadow-orange-500/25 active:scale-95 transition-all flex items-center justify-center gap-2 text-sm";
+        startBtn.innerHTML = `<i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> <span>Start Watching Ad (${watched + 1}/${total}) (+ $0.05)</span>`;
+        startBtn.onclick = startWatchingAd;
+      }
+    }
+  }
+}
 
       function loadLiveAdsterraBanner() {
   const box = document.getElementById("adsterra-live-banner-box");
