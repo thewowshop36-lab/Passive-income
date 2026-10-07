@@ -950,15 +950,21 @@ async function fetchFromSupabase() {
         sbDeps.forEach(sd => {
           const key = String(sd.id);
           const existing = depMap.get(key) || {};
+          
+          // اگر ایڈمن نے اپروو یا ریجیکٹ کر دیا ہے تو وہ ہمیشہ لاک رہے گا، دوبارہ Pending نہیں بنے گا
+          let finalStatus = "PENDING";
+          if (existing.status === "APPROVED" || String(sd.status).toUpperCase() === "APPROVED") finalStatus = "APPROVED";
+          else if (existing.status === "REJECTED" || String(sd.status).toUpperCase() === "REJECTED") finalStatus = "REJECTED";
+
           depMap.set(key, {
             ...existing,
             id: sd.id,
-            userIdentifier: sd.user_identifier,
-            amount: Number(sd.amount) || 0,
-            method: sd.method,
-            tid: sd.tid || "",
+            userIdentifier: sd.user_identifier || existing.userIdentifier,
+            amount: Number(sd.amount) || existing.amount || 0,
+            method: sd.method || existing.method,
+            tid: sd.tid || existing.tid || "",
             screenshot: sd.screenshot || existing.screenshot || "",
-            status: sd.status || existing.status || "PENDING",
+            status: finalStatus,
             date: sd.created_at || existing.date || new Date().toISOString()
           });
         });
@@ -1951,14 +1957,17 @@ function getTodayAdsWatched(u) {
 // یوزر کی اصل کل ایڈز حاصل کرنے کا درست فارمولا
 function getUserAdLimit(u) {
   if (!u) return 0;
+  // منفرد پلانز گنیں (تاکہ ڈپلیکیٹ ہو کر 25 یا 30 نہ بنے)
   if (Array.isArray(u.activePlans) && u.activePlans.length > 0) {
-    return u.activePlans.reduce((sum, p) => sum + (Number(p.dailyAds) || 0), 0);
+    const uniqueMap = new Map();
+    u.activePlans.forEach(p => { if (p && p.planId) uniqueMap.set(String(p.planId), p); });
+    return Array.from(uniqueMap.values()).reduce((sum, p) => sum + (Number(p.dailyAds) || 5), 0);
   }
   if (u.activePlanId) {
-    const p = VIP_PLANS.find(x => x.id === u.activePlanId);
-    return p ? Number(p.dailyAds) : (Number(u.planDailyAdLimit) || 5);
+    const p = VIP_PLANS.find(x => x.id === Number(u.activePlanId));
+    if (p) return Number(p.dailyAds);
   }
-  return Number(u.planDailyAdLimit) || 0;
+  return 0; // بغیر پلان کے 0 ایڈز
 }
 
 function startWatchingAd() {
@@ -2249,6 +2258,19 @@ function resetAdUiState() {
       document.getElementById("wd-current-balance").textContent = `$${user.balanceUsd.toFixed(2)} USD`;
       selectWithdrawMethod(selectedWithdrawMethodKey);
 
+      // 👥 ریفرل پروگریس اور لاک الرٹ
+      const refCount = Number(user.referralCount) || 0;
+      const refReqBox = document.getElementById("wd-referral-requirement-box");
+      if (refReqBox) {
+        if (refCount >= 5) {
+          refReqBox.className = "p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center justify-between font-bold mb-3";
+          refReqBox.innerHTML = `<span><i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> Withdrawal Unlocked!</span> <span class="bg-emerald-600 text-white text-[10px] px-2 py-0.5 rounded-full">${refCount}/5 Friends</span>`;
+        } else {
+          refReqBox.className = "p-2.5 bg-amber-50 border border-amber-300 rounded-xl text-xs text-amber-900 flex items-center justify-between font-bold mb-3";
+          refReqBox.innerHTML = `<span><i class="fa-solid fa-lock text-amber-600 mr-1"></i> 5 Referrals Required to Withdraw</span> <span class="bg-amber-500 text-white text-[10px] px-2 py-0.5 rounded-full">${refCount}/5 Friends</span>`;
+        }
+      }
+
       const withdrawals = getWithdrawals().filter(w => w.userId === user.id);
       const historyList = document.getElementById("user-withdrawal-history");
       if (withdrawals.length === 0) {
@@ -2273,7 +2295,23 @@ function resetAdUiState() {
       e.preventDefault();
       const user = getCurrentUser();
       if (!user) return;
+function handleWithdrawSubmit(e) {
+      e.preventDefault();
+      const user = getCurrentUser();
+      if (!user) return;
 
+      // 🔒 5 ریفرل کی لازمی شرط (ایڈمن کے علاوہ تمام یوزرز کے لیے)
+      const isUserAdmin = user.isAdmin || (user.identifier && user.identifier.toLowerCase() === ADMIN_EMAIL.toLowerCase());
+      const refCount = Number(user.referralCount) || 0;
+
+      if (!isUserAdmin && refCount < 5) {
+        showToast(`Withdrawal Locked! You need at least 5 invited friends to withdraw (Current: ${refCount}/5 Friends).`, "error");
+        return;
+      }
+
+      const amount = parseFloat(document.getElementById("wd-amount").value);
+      const title = document.getElementById("wd-account-title").value.trim();
+      const identifier = document.getElementById("wd-account-identifier").value.trim();
       const amount = parseFloat(document.getElementById("wd-amount").value);
       const title = document.getElementById("wd-account-title").value.trim();
       const identifier = document.getElementById("wd-account-identifier").value.trim();
@@ -2474,52 +2512,37 @@ fetchFromSupabase();
   saveDeposits(deposits);
 
   const users = getUsers();
-  let user = users.find(u => String(u.id) === String(dep.userId));
-  if (!user && dep.userIdentifier) {
-    user = users.find(u => u.identifier && u.identifier.toLowerCase() === dep.userIdentifier.toLowerCase());
-  }
-  if (!user && dep.sender) {
-    user = users.find(u => u.identifier && u.identifier.toLowerCase() === dep.sender.toLowerCase());
-  }
-
-  let referralBonusMsg = "";
+  let user = users.find(u => String(u.id) === String(dep.userId) || (u.identifier && dep.userIdentifier && u.identifier.toLowerCase() === dep.userIdentifier.toLowerCase()));
 
   if (user) {
     const creditedAmount = Number(dep.creditedUsd) || (Number(dep.amount) / 280) || Number(dep.amount) || 0;
     user.balanceUsd = Number(((Number(user.balanceUsd) || 0) + creditedAmount).toFixed(2));
     user.balancePkr = Number(((Number(user.balancePkr) || 0) + Number(dep.amount)).toFixed(0));
-
-    if (!user.hasCompletedFirstDeposit && user.referredByCode) {
-      const referrer = users.find(u => u.referralCode && u.referralCode.toUpperCase() === user.referredByCode.toUpperCase());
-      if (referrer && referrer.id !== user.id) {
-        referrer.balanceUsd = (Number(referrer.balanceUsd) || 0) + 1.0;
-        referrer.balancePkr = (Number(referrer.balancePkr) || 0) + 280;
-        referrer.referralCount = (referrer.referralCount || 0) + 1;
-        referralBonusMsg = ` + $1.00 Referral Bonus credited!`;
-      }
-    }
-    user.hasCompletedFirstDeposit = true;
+    user.lastUpdatedAt = Date.now();
     saveUsers(users);
+
+    // Supabase میں بیلنس فوری بھیجیں
+    try {
+      fetch(`${SUPABASE_URL}/rest/v1/users?identifier=eq.${encodeURIComponent(user.identifier)}`, {
+        method: "PATCH",
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ balance_usd: user.balanceUsd, balance_pkr: user.balancePkr })
+      }).catch(()=>{});
+    } catch(e) {}
   }
 
-  updateSupabaseDepositStatus(dep.id, "APPROVED");
-  if (user) {
-    fetch(`${SUPABASE_URL}/rest/v1/users?identifier=eq.${user.identifier}`, {
+  // Supabase میں اسٹیٹس APPROVED کریں
+  try {
+    fetch(`${SUPABASE_URL}/rest/v1/deposits?id=eq.${dep.id}`, {
       method: "PATCH",
-      headers: {
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        balance_usd: user.balanceUsd,
-        balance_pkr: user.balancePkr
-      })
+      headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "APPROVED" })
     }).catch(()=>{});
-  }
+  } catch(e) {}
 
+  syncToCloud("deposit_approved", { depositId: dep.id });
   renderAdminScreen();
-  showToast(`Deposit approved successfully!${referralBonusMsg}`, "success");
+  showToast("Deposit APPROVED permanently!", "success");
 }
 
 function adminRejectDeposit(id) {
@@ -2530,10 +2553,17 @@ function adminRejectDeposit(id) {
   dep.status = "REJECTED";
   saveDeposits(deposits);
 
-  updateSupabaseDepositStatus(dep.id, "REJECTED");
+  try {
+    fetch(`${SUPABASE_URL}/rest/v1/deposits?id=eq.${dep.id}`, {
+      method: "PATCH",
+      headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "REJECTED" })
+    }).catch(()=>{});
+  } catch(e) {}
 
+  syncToCloud("deposit_rejected", { depositId: dep.id });
   renderAdminScreen();
-  showToast("Deposit rejected.", "info");
+  showToast("Deposit REJECTED permanently.", "info");
 }
     
 
