@@ -971,7 +971,7 @@ async function fetchFromSupabase() {
         saveDeposits(Array.from(depMap.values()));
       }
     }
-
+  
     const wRes = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?select=*`, {
       headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
     });
@@ -2236,7 +2236,7 @@ function resetAdUiState() {
       document.getElementById("dep-screenshot-preview-box").classList.add("hidden");
       renderHomeScreen();
     }
-
+     
     // Render Withdraw Screen
     function selectWithdrawMethod(method) {
       selectedWithdrawMethodKey = method;
@@ -2307,12 +2307,8 @@ function resetAdUiState() {
       }
 
       const amount = parseFloat(document.getElementById("wd-amount").value);
-      const title = document.getElementById("wd-account-title").value.trim();
-      const identifier = document.getElementById("wd-account-identifier").value.trim();
-      const amount = parseFloat(document.getElementById("wd-amount").value);
-      const title = document.getElementById("wd-account-title").value.trim();
-      const identifier = document.getElementById("wd-account-identifier").value.trim();
-
+const title = document.getElementById("wd-account-title").value.trim();
+const identifier = document.getElementById("wd-account-identifier").value.trim();
       const isUsd = selectedWithdrawMethodKey === "usdt";
       const requiredUsd = isUsd ? amount : (amount / USD_TO_PKR);
 
