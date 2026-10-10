@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Ad Network Header Script (Correctly placed in Head) -->
+    <script src="https://beastscarnival.com/b8/5d/b3/b85db3bf8114fc1cf6a50737b91bc62b.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Poppins', sans-serif; }
@@ -109,7 +111,6 @@
             <!-- 1. Dashboard Tab -->
             <div id="tab-dashboard" class="space-y-8">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
-                    <!-- Box 1 -->
                     <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
                         <div class="p-3.5 bg-indigo-600/20 text-indigo-400 rounded-xl text-xl"><i class="fa-solid fa-dollar-sign"></i></div>
                         <div>
@@ -117,7 +118,6 @@
                             <h3 class="text-xl font-bold text-white mt-0.5">$<span id="statEarnings">1.20</span></h3>
                         </div>
                     </div>
-                    <!-- Box 2 -->
                     <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
                         <div class="p-3.5 bg-green-600/20 text-green-400 rounded-xl text-xl"><i class="fa-solid fa-tv"></i></div>
                         <div>
@@ -125,7 +125,6 @@
                             <h3 class="text-xl font-bold text-white mt-0.5" id="statAdsToday">4</h3>
                         </div>
                     </div>
-                    <!-- Box 3 -->
                     <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
                         <div class="p-3.5 bg-yellow-600/20 text-yellow-400 rounded-xl text-xl"><i class="fa-solid fa-gamepad"></i></div>
                         <div>
@@ -133,7 +132,6 @@
                             <h3 class="text-xl font-bold text-white mt-0.5" id="statGamesPlayed">2</h3>
                         </div>
                     </div>
-                    <!-- Box 4 -->
                     <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
                         <div class="p-3.5 bg-purple-600/20 text-purple-400 rounded-xl text-xl"><i class="fa-solid fa-users"></i></div>
                         <div>
@@ -141,7 +139,6 @@
                             <h3 class="text-xl font-bold text-white mt-0.5">$0.00</h3>
                         </div>
                     </div>
-                    <!-- Box 5 -->
                     <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg sm:col-span-2 lg:col-span-1">
                         <div class="p-3.5 bg-pink-600/20 text-pink-400 rounded-xl text-xl"><i class="fa-solid fa-chart-line"></i></div>
                         <div>
@@ -162,20 +159,20 @@
                 </div>
             </div>
 
-            <!-- 2. Watch Ads Tab (Integrated with Your Direct Ad Links & Scripts) -->
+            <!-- 2. Watch Ads Tab (Correctly Placed Banner Container & Direct Links) -->
             <div id="tab-watchAds" class="hidden space-y-6">
                 <div class="flex items-center justify-between">
                     <h3 class="text-xl font-bold text-white">Sponsored Advertisements Zone</h3>
                     <span class="text-sm text-gray-400">Click below to open direct ads & earn rewards</span>
                 </div>
 
-                <!-- Banner Ad Container Script Provided by User -->
+                <!-- Banner Ad Container & Invoke Script -->
                 <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col items-center justify-center space-y-4 shadow-lg">
                     <h4 class="text-sm font-semibold text-gray-300">Live Banner Advertisement</h4>
                     <div id="container-f4d67fd9e6924c356864fd8f8c8d3a0b" class="flex justify-center items-center overflow-hidden min-h-[250px]"></div>
                 </div>
 
-                <!-- Direct Link Ad Trigger Buttons -->
+                <!-- Direct Link Buttons -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col justify-between shadow-lg space-y-4">
                         <div>
@@ -255,7 +252,7 @@
                 <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800 space-y-4 shadow-xl">
                     <p class="text-sm text-gray-300">Invite your friends and family to join AdEarn Pro. You will receive a lifetime commission of 10% on all their ad-watching and game earnings!</p>
                     <div class="flex space-x-3 pt-2">
-                        <input type="text" readonly value="https://beastscarnival.com/bmus9vwr3d?key=836464293cb77fa37dfc023c1d8701d0" class="flex-1 bg-gray-800 border border-gray-700 rounded-xl p-3.5 text-white focus:outline-none">
+                        <input type="text" readonly value="https://adearn-pro.app/ref/user982" class="flex-1 bg-gray-800 border border-gray-700 rounded-xl p-3.5 text-white focus:outline-none">
                         <button onclick="alert('Referral link copied to clipboard successfully!')" class="bg-indigo-600 hover:bg-indigo-500 px-6 rounded-xl font-semibold text-white transition">Copy Link</button>
                     </div>
                 </div>
@@ -264,8 +261,7 @@
         </main>
     </div>
 
-    <!-- External Ad Network Scripts (Added Here) -->
-    <script src="https://beastscarnival.com/b8/5d/b3/b85db3bf8114fc1cf6a50737b91bc62b.js"></script>
+    <!-- Banner Ad Invoke & Options Scripts (Correctly placed before closing body) -->
     <script async="async" data-cfasync="false" src="https://beastscarnival.com/f4d67fd9e6924c356864fd8f8c8d3a0b/invoke.js"></script>
     <script>
       var atOptions = {
