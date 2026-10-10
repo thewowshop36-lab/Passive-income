@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AdEarn Pro - Reward & Earning Platform</title>
+    <title>AdEarn Pro - Advanced Earning Platform</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -13,39 +13,51 @@
         body { font-family: 'Poppins', sans-serif; }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100 flex h-screen overflow-hidden">
+<body class="bg-gray-950 text-gray-100 flex h-screen overflow-hidden">
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-gray-800 border-r border-gray-700 flex flex-col justify-between hidden md:flex">
+    <!-- Sidebar (Fully Visible & Fixed) -->
+    <aside class="w-72 bg-gray-900 border-r border-gray-800 flex flex-col justify-between shadow-xl">
         <div>
-            <div class="p-5 flex items-center space-x-3 border-b border-gray-700">
-                <div class="bg-indigo-600 p-2 rounded-lg text-white font-bold text-xl"><i class="fa-solid fa-coins"></i></div>
-                <span class="text-xl font-bold tracking-wide text-indigo-400">AdEarn Pro</span>
+            <!-- Logo Header -->
+            <div class="p-6 flex items-center space-x-3 border-b border-gray-800">
+                <div class="bg-indigo-600 p-2.5 rounded-xl text-white font-bold text-xl shadow-lg shadow-indigo-600/30">
+                    <i class="fa-solid fa-coins"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-wide text-white">AdEarn Pro</h1>
+                    <span class="text-xs text-indigo-400 font-medium">Earning & Rewards App</span>
+                </div>
             </div>
+            
+            <!-- Navigation Links -->
             <nav class="p-4 space-y-2">
-                <a href="#" onclick="switchTab('dashboard')" class="sidebar-link flex items-center space-x-3 p-3 rounded-lg bg-indigo-600 text-white transition">
-                    <i class="fa-solid fa-house w-6"></i><span>Dashboard</span>
+                <a href="#" onclick="switchTab('dashboard')" id="nav-dashboard" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl bg-indigo-600 text-white font-medium shadow-md transition-all">
+                    <i class="fa-solid fa-house w-5 text-center"></i><span>Dashboard</span>
                 </a>
-                <a href="#" onclick="switchTab('watchAds')" class="sidebar-link flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 text-gray-300 transition">
-                    <i class="fa-solid fa-tv w-6"></i><span>Watch Ads</span>
+                <a href="#" onclick="switchTab('watchAds')" id="nav-watchAds" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl hover:bg-gray-800 text-gray-300 font-medium transition-all">
+                    <i class="fa-solid fa-tv w-5 text-center"></i><span>Watch Ads Zone</span>
                 </a>
-                <a href="#" onclick="switchTab('games')" class="sidebar-link flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 text-gray-300 transition">
-                    <i class="fa-solid fa-gamepad w-6"></i><span>Play & Earn</span>
+                <a href="#" onclick="switchTab('games')" id="nav-games" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl hover:bg-gray-800 text-gray-300 font-medium transition-all">
+                    <i class="fa-solid fa-gamepad w-5 text-center"></i><span>Play & Earn Games</span>
                 </a>
-                <a href="#" onclick="switchTab('withdraw')" class="sidebar-link flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 text-gray-300 transition">
-                    <i class="fa-solid fa-wallet w-6"></i><span>Withdraw</span>
+                <a href="#" onclick="switchTab('withdraw')" id="nav-withdraw" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl hover:bg-gray-800 text-gray-300 font-medium transition-all">
+                    <i class="fa-solid fa-wallet w-5 text-center"></i><span>Withdraw Funds</span>
                 </a>
-                <a href="#" onclick="switchTab('referral')" class="sidebar-link flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 text-gray-300 transition">
-                    <i class="fa-solid fa-users w-6"></i><span>Referrals</span>
+                <a href="#" onclick="switchTab('referral')" id="nav-referral" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl hover:bg-gray-800 text-gray-300 font-medium transition-all">
+                    <i class="fa-solid fa-users w-5 text-center"></i><span>Referrals Network</span>
                 </a>
             </nav>
         </div>
-        <div class="p-4 border-t border-gray-700">
-            <div class="flex items-center space-x-3 p-2 bg-gray-700/50 rounded-lg">
-                <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold">AR</div>
-                <div>
-                    <h4 class="text-sm font-semibold">Allah ditta</h4>
-                    <span class="text-xs text-green-400"><i class="fa-solid fa-circle text-[8px]"></i> Active</span>
+
+        <!-- User Profile Footer in Sidebar -->
+        <div class="p-4 border-t border-gray-800 bg-gray-900/50">
+            <div class="flex items-center space-x-3 p-2.5 bg-gray-800/80 rounded-xl border border-gray-700/50">
+                <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white shadow">AD</div>
+                <div class="overflow-hidden">
+                    <h4 class="text-sm font-semibold truncate">Allah ditta</h4>
+                    <span class="text-xs text-green-400 flex items-center space-x-1">
+                        <i class="fa-solid fa-circle text-[8px]"></i> <span>Verified Account</span>
+                    </span>
                 </div>
             </div>
         </div>
@@ -54,149 +66,182 @@
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col overflow-hidden">
         
-        <!-- Top Header -->
-        <header class="h-16 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-6">
-            <h2 id="pageTitle" class="text-xl font-bold text-white">Dashboard Overview</h2>
+        <!-- Top Header Bar -->
+        <header class="h-20 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-8 shadow-sm">
+            <h2 id="pageTitle" class="text-2xl font-bold text-white">Dashboard Overview</h2>
             <div class="flex items-center space-x-4">
-                <div class="bg-gray-700 px-4 py-2 rounded-full text-sm font-medium flex items-center space-x-2">
-                    <i class="fa-solid fa-wallet text-yellow-400"></i>
-                    <span>Balance: $<span id="userBalance">0.00</span></span>
+                <div class="bg-gray-800 border border-gray-700 px-5 py-2.5 rounded-2xl text-sm font-medium flex items-center space-x-3 shadow-inner">
+                    <div class="w-8 h-8 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center justify-center">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs text-gray-400 block">Total Balance</span>
+                        <span class="font-bold text-base text-white">$<span id="userBalance">1.20</span></span>
+                    </div>
                 </div>
             </div>
         </header>
 
         <!-- Dynamic Content Body -->
-        <main class="flex-1 overflow-y-auto p-6 bg-gray-900">
+        <main class="flex-1 overflow-y-auto p-8 bg-gray-950">
             
             <!-- 1. Dashboard Tab -->
-            <div id="tab-dashboard" class="space-y-6">
+            <div id="tab-dashboard" class="space-y-8">
+                <!-- Statistics Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 flex items-center space-x-4">
-                        <div class="p-4 bg-indigo-500/20 text-indigo-400 rounded-lg text-2xl"><i class="fa-solid fa-dollar-sign"></i></div>
+                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
+                        <div class="p-4 bg-indigo-600/20 text-indigo-400 rounded-xl text-2xl"><i class="fa-solid fa-dollar-sign"></i></div>
                         <div>
-                            <p class="text-sm text-gray-400">Total Earnings</p>
-                            <h3 class="text-2xl font-bold">$<span id="statEarnings">0.00</span></h3>
+                            <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Total Earnings</p>
+                            <h3 class="text-2xl font-bold text-white mt-1">$<span id="statEarnings">1.20</span></h3>
                         </div>
                     </div>
-                    <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 flex items-center space-x-4">
-                        <div class="p-4 bg-green-500/20 text-green-400 rounded-lg text-2xl"><i class="fa-solid fa-tv"></i></div>
+                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
+                        <div class="p-4 bg-green-600/20 text-green-400 rounded-xl text-2xl"><i class="fa-solid fa-tv"></i></div>
                         <div>
-                            <p class="text-sm text-gray-400">Ads Watched Today</p>
-                            <h3 class="text-2xl font-bold" id="statAdsToday">0</h3>
+                            <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Ads Watched Today</p>
+                            <h3 class="text-2xl font-bold text-white mt-1" id="statAdsToday">4</h3>
                         </div>
                     </div>
-                    <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 flex items-center space-x-4">
-                        <div class="p-4 bg-yellow-500/20 text-yellow-400 rounded-lg text-2xl"><i class="fa-solid fa-gamepad"></i></div>
+                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
+                        <div class="p-4 bg-yellow-600/20 text-yellow-400 rounded-xl text-2xl"><i class="fa-solid fa-gamepad"></i></div>
                         <div>
-                            <p class="text-sm text-gray-400">Games Played</p>
-                            <h3 class="text-2xl font-bold" id="statGamesPlayed">0</h3>
+                            <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Games Played</p>
+                            <h3 class="text-2xl font-bold text-white mt-1" id="statGamesPlayed">2</h3>
                         </div>
                     </div>
-                    <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 flex items-center space-x-4">
-                        <div class="p-4 bg-purple-500/20 text-purple-400 rounded-lg text-2xl"><i class="fa-solid fa-users"></i></div>
+                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
+                        <div class="p-4 bg-purple-600/20 text-purple-400 rounded-xl text-2xl"><i class="fa-solid fa-users"></i></div>
                         <div>
-                            <p class="text-sm text-gray-400">Referral Earnings</p>
-                            <h3 class="text-2xl font-bold">$0.00</h3>
+                            <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Referral Bonus</p>
+                            <h3 class="text-2xl font-bold text-white mt-1">$0.00</h3>
                         </div>
                     </div>
                 </div>
 
-                <!-- Announcement / Quick Actions -->
-                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 rounded-xl flex flex-col md:flex-row items-center justify-between">
-                    <div>
-                        <h3 class="text-xl font-bold mb-2">Ready to boost your income today?</h3>
-                        <p class="text-indigo-100 text-sm">Watch sponsored video ads or play interactive mini-games to earn instant rewards.</p>
+                <!-- Banner / Announcement -->
+                <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-8 rounded-3xl flex flex-col md:flex-row items-center justify-between shadow-xl">
+                    <div class="space-y-2">
+                        <span class="bg-white/20 text-xs font-semibold px-3 py-1 rounded-full uppercase">Boost Income</span>
+                        <h3 class="text-2xl font-bold text-white">Start watching promotional ads or playing games!</h3>
+                        <p class="text-indigo-100 text-sm max-w-xl">Complete daily tasks to unlock higher tiers and bigger cash prizes instantly.</p>
                     </div>
-                    <button onclick="switchTab('watchAds')" class="mt-4 md:mt-0 bg-white text-indigo-600 font-semibold px-6 py-3 rounded-lg shadow hover:bg-gray-100 transition">Start Watching Ads</button>
+                    <button onclick="switchTab('watchAds')" class="mt-6 md:mt-0 bg-white text-indigo-600 font-bold px-8 py-3.5 rounded-xl shadow-lg hover:bg-gray-100 transition transform hover:-translate-y-0.5">Start Watching Ads</button>
                 </div>
             </div>
 
             <!-- 2. Watch Ads Tab -->
             <div id="tab-watchAds" class="hidden space-y-6">
-                <h3 class="text-lg font-semibold">Available Promotional Ads</h3>
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold text-white">Sponsored Advertisements</h3>
+                    <span class="text-sm text-gray-400">Watch full duration to claim reward</span>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 flex flex-col justify-between">
+                    <!-- Ad Item 1 -->
+                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col justify-between shadow-lg">
                         <div>
-                            <div class="h-36 bg-gray-700 rounded-lg mb-4 flex items-center justify-center text-gray-400 text-2xl font-bold">Ad Banner #1</div>
-                            <h4 class="font-bold text-lg mb-1">TRONEX SPACE Promotion</h4>
-                            <p class="text-sm text-gray-400 mb-4">Watch for 15 seconds to earn reward.</p>
+                            <div class="h-40 bg-gradient-to-br from-gray-800 to-gray-700 rounded-xl mb-4 flex flex-col items-center justify-center text-indigo-400 border border-gray-700">
+                                <i class="fa-solid fa-rectangle-ad text-4xl mb-2"></i>
+                                <span class="font-bold text-sm">TRONEX SPACE Ad</span>
+                            </div>
+                            <h4 class="font-bold text-lg text-white mb-1">TRONEX Promo Video</h4>
+                            <p class="text-xs text-gray-400 mb-4">Duration: 15 Seconds • Reward: $0.05</p>
                         </div>
-                        <button onclick="watchAd(0.05)" class="w-full bg-indigo-600 hover:bg-indigo-500 py-2.5 rounded-lg font-semibold transition">Watch & Earn $0.05</button>
+                        <button onclick="watchAd(0.05)" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-semibold text-white shadow transition">Watch & Earn $0.05</button>
                     </div>
-                    <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 flex flex-col justify-between">
+                    <!-- Ad Item 2 -->
+                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col justify-between shadow-lg">
                         <div>
-                            <div class="h-36 bg-gray-700 rounded-lg mb-4 flex items-center justify-center text-gray-400 text-2xl font-bold">Ad Banner #2</div>
-                            <h4 class="font-bold text-lg mb-1">Techincom Solutions</h4>
-                            <p class="text-sm text-gray-400 mb-4">Watch for 20 seconds to earn reward.</p>
+                            <div class="h-40 bg-gradient-to-br from-gray-800 to-gray-700 rounded-xl mb-4 flex flex-col items-center justify-center text-green-400 border border-gray-700">
+                                <i class="fa-solid fa-rectangle-ad text-4xl mb-2"></i>
+                                <span class="font-bold text-sm">Techincom Banner</span>
+                            </div>
+                            <h4 class="font-bold text-lg text-white mb-1">Techincom Solutions</h4>
+                            <p class="text-xs text-gray-400 mb-4">Duration: 20 Seconds • Reward: $0.08</p>
                         </div>
-                        <button onclick="watchAd(0.08)" class="w-full bg-indigo-600 hover:bg-indigo-500 py-2.5 rounded-lg font-semibold transition">Watch & Earn $0.08</button>
+                        <button onclick="watchAd(0.08)" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-semibold text-white shadow transition">Watch & Earn $0.08</button>
                     </div>
-                    <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 flex flex-col justify-between">
+                    <!-- Ad Item 3 -->
+                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col justify-between shadow-lg">
                         <div>
-                            <div class="h-36 bg-gray-700 rounded-lg mb-4 flex items-center justify-center text-gray-400 text-2xl font-bold">Ad Banner #3</div>
-                            <h4 class="font-bold text-lg mb-1">MC Square Network</h4>
-                            <p class="text-sm text-gray-400 mb-4">Watch for 10 seconds to earn reward.</p>
+                            <div class="h-40 bg-gradient-to-br from-gray-800 to-gray-700 rounded-xl mb-4 flex flex-col items-center justify-center text-yellow-400 border border-gray-700">
+                                <i class="fa-solid fa-rectangle-ad text-4xl mb-2"></i>
+                                <span class="font-bold text-sm">MC Square Promo</span>
+                            </div>
+                            <h4 class="font-bold text-lg text-white mb-1">MC Square Network</h4>
+                            <p class="text-xs text-gray-400 mb-4">Duration: 10 Seconds • Reward: $0.03</p>
                         </div>
-                        <button onclick="watchAd(0.03)" class="w-full bg-indigo-600 hover:bg-indigo-500 py-2.5 rounded-lg font-semibold transition">Watch & Earn $0.03</button>
+                        <button onclick="watchAd(0.03)" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-semibold text-white shadow transition">Watch & Earn $0.03</button>
                     </div>
                 </div>
             </div>
 
-            <!-- 3. Games Tab -->
+            <!-- 3. Games Tab (Multiple Game Options) -->
             <div id="tab-games" class="hidden space-y-6">
-                <h3 class="text-lg font-semibold">Play Mini-Games & Win Cash</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 flex items-center justify-between">
+                <h3 class="text-xl font-bold text-white">Mini-Games Arcade & Rewards</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Game 1 -->
+                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col justify-between shadow-lg">
                         <div>
-                            <h4 class="font-bold text-lg mb-1">Lucky Spin Wheel</h4>
-                            <p class="text-sm text-gray-400 mb-4">Spin the wheel and test your luck for cash prizes.</p>
-                            <button onclick="playGame('Spin')" class="bg-green-600 hover:bg-green-500 px-4 py-2 rounded-lg font-semibold text-sm transition">Play Spin ($0.10)</button>
+                            <div class="text-4xl text-green-400 p-4 bg-green-500/10 rounded-2xl w-fit mb-4"><i class="fa-solid fa-dharmachakra"></i></div>
+                            <h4 class="font-bold text-lg text-white mb-1">Lucky Spin Wheel</h4>
+                            <p class="text-xs text-gray-400 mb-4">Spin the wheel every hour and win guaranteed cash bonuses up to $0.10.</p>
                         </div>
-                        <div class="text-4xl text-green-400 p-4 bg-green-500/10 rounded-xl"><i class="fa-solid fa-dharmachakra"></i></div>
+                        <button onclick="playGame('Spin Wheel', 0.10)" class="w-full bg-green-600 hover:bg-green-500 py-3 rounded-xl font-semibold text-white shadow transition">Play Spin ($0.10)</button>
                     </div>
-                    <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 flex items-center justify-between">
+                    <!-- Game 2 -->
+                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col justify-between shadow-lg">
                         <div>
-                            <h4 class="font-bold text-lg mb-1">Number Guessing Game</h4>
-                            <p class="text-sm text-gray-400 mb-4">Guess the correct number to win bonus rewards.</p>
-                            <button onclick="playGame('Guess')" class="bg-green-600 hover:bg-green-500 px-4 py-2 rounded-lg font-semibold text-sm transition">Play Game ($0.05)</button>
+                            <div class="text-4xl text-yellow-400 p-4 bg-yellow-500/10 rounded-2xl w-fit mb-4"><i class="fa-solid fa-puzzle-piece"></i></div>
+                            <h4 class="font-bold text-lg text-white mb-1">Number Guessing</h4>
+                            <p class="text-xs text-gray-400 mb-4">Guess the correct secret number between 1 to 10 to win instant cash.</p>
                         </div>
-                        <div class="text-4xl text-green-400 p-4 bg-green-500/10 rounded-xl"><i class="fa-solid fa-puzzle-piece"></i></div>
+                        <button onclick="playGame('Number Guessing', 0.05)" class="w-full bg-green-600 hover:bg-green-500 py-3 rounded-xl font-semibold text-white shadow transition">Play Game ($0.05)</button>
+                    </div>
+                    <!-- Game 3 -->
+                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col justify-between shadow-lg">
+                        <div>
+                            <div class="text-4xl text-purple-400 p-4 bg-purple-500/10 rounded-2xl w-fit mb-4"><i class="fa-solid fa-dice"></i></div>
+                            <h4 class="font-bold text-lg text-white mb-1">Color Prediction</h4>
+                            <p class="text-xs text-gray-400 mb-4">Pick the winning color combination and double your game rewards.</p>
+                        </div>
+                        <button onclick="playGame('Color Prediction', 0.08)" class="w-full bg-green-600 hover:bg-green-500 py-3 rounded-xl font-semibold text-white shadow transition">Play Prediction ($0.08)</button>
                     </div>
                 </div>
             </div>
 
-            <!-- 4. Withdraw Tab -->
+            <!-- 4. Withdraw Tab (Fully Functional) -->
             <div id="tab-withdraw" class="hidden space-y-6 max-w-xl">
-                <h3 class="text-lg font-semibold">Request Payout</h3>
-                <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 space-y-4">
+                <h3 class="text-xl font-bold text-white">Request Payout / Withdraw</h3>
+                <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800 space-y-5 shadow-xl">
                     <div>
-                        <label class="block text-sm text-gray-400 mb-1">Select Payment Method</label>
-                        <select class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white focus:outline-none">
-                            <option>JazzCash / EasyPaisa</option>
-                            <option>Bank Transfer</option>
-                            <option>USDT / Crypto</option>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Select Payment Method</label>
+                        <select id="withdrawMethod" class="w-full bg-gray-800 border border-gray-700 rounded-xl p-3.5 text-white focus:outline-none focus:border-indigo-500">
+                            <option>JazzCash / EasyPaisa (Pakistan)</option>
+                            <option>Bank Transfer (Local)</option>
+                            <option>USDT / Crypto Wallet</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm text-gray-400 mb-1">Account Number / Details</label>
-                        <input type="text" placeholder="Enter account number" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white focus:outline-none">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Account Number / IBAN</label>
+                        <input type="text" id="accountDetails" placeholder="e.g. 03001234567" class="w-full bg-gray-800 border border-gray-700 rounded-xl p-3.5 text-white focus:outline-none focus:border-indigo-500">
                     </div>
                     <div>
-                        <label class="block text-sm text-gray-400 mb-1">Amount ($)</label>
-                        <input type="number" id="withdrawAmount" placeholder="Min $5.00" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white focus:outline-none">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Withdraw Amount ($) <span class="text-gray-500 font-normal">(Min $5.00)</span></label>
+                        <input type="number" id="withdrawAmount" placeholder="Enter amount" class="w-full bg-gray-800 border border-gray-700 rounded-xl p-3.5 text-white focus:outline-none focus:border-indigo-500">
                     </div>
-                    <button onclick="requestWithdraw()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-lg font-semibold transition">Submit Request</button>
+                    <button onclick="requestWithdraw()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3.5 rounded-xl font-bold text-white shadow-lg transition">Submit Withdrawal Request</button>
                 </div>
             </div>
 
             <!-- 5. Referral Tab -->
-            <div id="tab-referral" class="hidden space-y-6">
-                <h3 class="text-lg font-semibold">Invite Friends & Earn Commission</h3>
-                <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 space-y-4">
-                    <p class="text-sm text-gray-400">Share your referral link with friends and get 10% of their earnings forever!</p>
-                    <div class="flex space-x-2">
-                        <input type="text" readonly value="https://adearn-pro.app/ref/user982" class="flex-1 bg-gray-700 border border-gray-600 rounded-lg p-3 text-white focus:outline-none">
-                        <button onclick="alert('Referral link copied!')" class="bg-indigo-600 hover:bg-indigo-500 px-6 rounded-lg font-semibold transition">Copy</button>
+            <div id="tab-referral" class="hidden space-y-6 max-w-2xl">
+                <h3 class="text-xl font-bold text-white">Referral Program</h3>
+                <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800 space-y-4 shadow-xl">
+                    <p class="text-sm text-gray-300">Invite your friends and family to join AdEarn Pro. You will receive a lifetime commission of 10% on all their ad-watching and game earnings!</p>
+                    <div class="flex space-x-3 pt-2">
+                        <input type="text" readonly value="https://adearn-pro.app/ref/user982" class="flex-1 bg-gray-800 border border-gray-700 rounded-xl p-3.5 text-white focus:outline-none">
+                        <button onclick="alert('Referral link copied to clipboard successfully!')" class="bg-indigo-600 hover:bg-indigo-500 px-6 rounded-xl font-semibold text-white transition">Copy Link</button>
                     </div>
                 </div>
             </div>
@@ -204,7 +249,7 @@
         </main>
     </div>
 
-    <!-- JavaScript Application Logic -->
+    <!-- Application JavaScript Logic -->
     <script>
         let state = {
             balance: 1.20,
@@ -223,54 +268,68 @@
             const tabs = ['dashboard', 'watchAds', 'games', 'withdraw', 'referral'];
             tabs.forEach(t => {
                 document.getElementById('tab-' + t).classList.add('hidden');
+                document.getElementById('nav-' + t).classList.remove('bg-indigo-600', 'text-white', 'shadow-md');
+                document.getElementById('nav-' + t).classList.add('hover:bg-gray-800', 'text-gray-300');
             });
-            document.getElementById('tab-' + tabId).classList.remove('hidden');
             
-            // Update page title
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            const activeNav = document.getElementById('nav-' + tabId);
+            activeNav.classList.remove('hover:bg-gray-800', 'text-gray-300');
+            activeNav.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
+            
+            // Header Title Update
             const titles = {
                 dashboard: 'Dashboard Overview',
-                watchAds: 'Watch Sponsored Ads',
-                games: 'Play Mini-Games',
+                watchAds: 'Watch Sponsored Ads Zone',
+                games: 'Play & Earn Games Arcade',
                 withdraw: 'Withdraw Funds',
-                referral: 'Referral Program'
+                referral: 'Referrals & Earnings Network'
             };
             document.getElementById('pageTitle').innerText = titles[tabId];
         }
 
         function watchAd(reward) {
-            alert('Ad started! Please wait a few seconds...');
+            alert('Advertisement video started. Please wait...');
             setTimeout(() => {
                 state.balance += reward;
                 state.adsToday += 1;
                 updateUI();
-                alert(`Success! You earned $${reward.toFixed(2)}.`);
+                alert(`Congratulations! Ad completed successfully. $${reward.toFixed(2)} added to your balance.`);
             }, 1500);
         }
 
-        function playGame(gameType) {
-            let reward = gameType === 'Spin' ? 0.10 : 0.05;
-            alert('Playing ' + gameType + '...');
+        function playGame(gameName, reward) {
+            alert('Starting ' + gameName + '...');
             setTimeout(() => {
                 state.balance += reward;
                 state.gamesPlayed += 1;
                 updateUI();
-                alert(`Congratulations! You won $${reward.toFixed(2)} from ${gameType}.`);
+                alert(`You won ${gameName}! $${reward.toFixed(2)} credited to your account.`);
             }, 1500);
         }
 
         function requestWithdraw() {
             let amt = parseFloat(document.getElementById('withdrawAmount').value);
+            let details = document.getElementById('accountDetails').value;
+            
+            if (!details.trim()) {
+                alert('Please enter your account details or number!');
+                return;
+            }
             if (isNaN(amt) || amt < 5) {
                 alert('Minimum withdrawal amount is $5.00');
                 return;
             }
             if (amt > state.balance) {
-                alert('Insufficient balance!');
+                alert('Insufficient balance for this withdrawal request!');
                 return;
             }
+            
             state.balance -= amt;
             updateUI();
-            alert('Withdrawal request submitted successfully!');
+            document.getElementById('withdrawAmount').value = '';
+            document.getElementById('accountDetails').value = '';
+            alert('Withdrawal request submitted successfully! Funds will be transferred within 24 hours.');
         }
 
         updateUI();
