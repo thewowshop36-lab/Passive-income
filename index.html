@@ -11,7 +11,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Poppins', sans-serif; }
-        /* Smooth transitions for sidebar */
         #sidebar {
             transition: transform 0.3s ease-in-out;
         }
@@ -59,14 +58,16 @@
             </nav>
         </div>
 
-        <!-- User Profile Footer in Sidebar -->
+        <!-- Sidebar Footer Status -->
         <div class="p-4 border-t border-gray-800 bg-gray-900/50">
             <div class="flex items-center space-x-3 p-2.5 bg-gray-800/80 rounded-xl border border-gray-700/50">
-                <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white shadow">AR</div>
+                <div class="w-10 h-10 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold shadow">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
                 <div class="overflow-hidden">
-                    <h4 class="text-sm font-semibold truncate text-white">Allah ditta RABNAWAZ</h4>
+                    <h4 class="text-sm font-semibold truncate text-white">System Secure</h4>
                     <span class="text-xs text-green-400 flex items-center space-x-1">
-                        <i class="fa-solid fa-circle text-[8px]"></i> <span>Verified Account</span>
+                        <i class="fa-solid fa-circle text-[8px]"></i> <span>Online Mode</span>
                     </span>
                 </div>
             </div>
@@ -289,7 +290,6 @@
             document.getElementById('statGamesPlayed').innerText = state.gamesPlayed;
         }
 
-        // Toggle Sidebar Function for Mobile Hamburger Menu
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
