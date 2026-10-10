@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AdEarn Pro - Advanced Earning Platform</title>
+    <title>AdEarn Pro - Modern Earning Platform</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -11,39 +11,49 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Poppins', sans-serif; }
+        /* Smooth transitions for sidebar */
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-gray-950 text-gray-100 flex h-screen overflow-hidden">
 
-    <!-- Sidebar (Fully Visible & Fixed) -->
-    <aside class="w-72 bg-gray-900 border-r border-gray-800 flex flex-col justify-between shadow-xl">
+    <!-- Sidebar with Toggle Support -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-gray-900 border-r border-gray-800 flex flex-col justify-between shadow-2xl transform -translate-x-full md:translate-x-0 md:static">
         <div>
             <!-- Logo Header -->
-            <div class="p-6 flex items-center space-x-3 border-b border-gray-800">
-                <div class="bg-indigo-600 p-2.5 rounded-xl text-white font-bold text-xl shadow-lg shadow-indigo-600/30">
-                    <i class="fa-solid fa-coins"></i>
+            <div class="p-6 flex items-center justify-between border-b border-gray-800">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-indigo-600 p-2.5 rounded-xl text-white font-bold text-xl shadow-lg shadow-indigo-600/30">
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold tracking-wide text-white">AdEarn Pro</h1>
+                        <span class="text-xs text-indigo-400 font-medium">Earning & Rewards App</span>
+                    </div>
                 </div>
-                <div>
-                    <h1 class="text-lg font-bold tracking-wide text-white">AdEarn Pro</h1>
-                    <span class="text-xs text-indigo-400 font-medium">Earning & Rewards App</span>
-                </div>
+                <!-- Close Button for Mobile -->
+                <button onclick="toggleSidebar()" class="md:hidden text-gray-400 hover:text-white text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
             
             <!-- Navigation Links -->
             <nav class="p-4 space-y-2">
-                <a href="#" onclick="switchTab('dashboard')" id="nav-dashboard" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl bg-indigo-600 text-white font-medium shadow-md transition-all">
+                <a href="#" onclick="switchTab('dashboard'); toggleSidebarOnMobile();" id="nav-dashboard" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl bg-indigo-600 text-white font-medium shadow-md transition-all">
                     <i class="fa-solid fa-house w-5 text-center"></i><span>Dashboard</span>
                 </a>
-                <a href="#" onclick="switchTab('watchAds')" id="nav-watchAds" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl hover:bg-gray-800 text-gray-300 font-medium transition-all">
+                <a href="#" onclick="switchTab('watchAds'); toggleSidebarOnMobile();" id="nav-watchAds" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl hover:bg-gray-800 text-gray-300 font-medium transition-all">
                     <i class="fa-solid fa-tv w-5 text-center"></i><span>Watch Ads Zone</span>
                 </a>
-                <a href="#" onclick="switchTab('games')" id="nav-games" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl hover:bg-gray-800 text-gray-300 font-medium transition-all">
+                <a href="#" onclick="switchTab('games'); toggleSidebarOnMobile();" id="nav-games" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl hover:bg-gray-800 text-gray-300 font-medium transition-all">
                     <i class="fa-solid fa-gamepad w-5 text-center"></i><span>Play & Earn Games</span>
                 </a>
-                <a href="#" onclick="switchTab('withdraw')" id="nav-withdraw" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl hover:bg-gray-800 text-gray-300 font-medium transition-all">
+                <a href="#" onclick="switchTab('withdraw'); toggleSidebarOnMobile();" id="nav-withdraw" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl hover:bg-gray-800 text-gray-300 font-medium transition-all">
                     <i class="fa-solid fa-wallet w-5 text-center"></i><span>Withdraw Funds</span>
                 </a>
-                <a href="#" onclick="switchTab('referral')" id="nav-referral" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl hover:bg-gray-800 text-gray-300 font-medium transition-all">
+                <a href="#" onclick="switchTab('referral'); toggleSidebarOnMobile();" id="nav-referral" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl hover:bg-gray-800 text-gray-300 font-medium transition-all">
                     <i class="fa-solid fa-users w-5 text-center"></i><span>Referrals Network</span>
                 </a>
             </nav>
@@ -52,9 +62,9 @@
         <!-- User Profile Footer in Sidebar -->
         <div class="p-4 border-t border-gray-800 bg-gray-900/50">
             <div class="flex items-center space-x-3 p-2.5 bg-gray-800/80 rounded-xl border border-gray-700/50">
-                <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white shadow">AD</div>
+                <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white shadow">AR</div>
                 <div class="overflow-hidden">
-                    <h4 class="text-sm font-semibold truncate">Allah ditta</h4>
+                    <h4 class="text-sm font-semibold truncate text-white">Allah ditta RABNAWAZ</h4>
                     <span class="text-xs text-green-400 flex items-center space-x-1">
                         <i class="fa-solid fa-circle text-[8px]"></i> <span>Verified Account</span>
                     </span>
@@ -63,58 +73,79 @@
         </div>
     </aside>
 
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden md:hidden"></div>
+
     <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col overflow-hidden">
+    <div class="flex-1 flex flex-col overflow-hidden w-full">
         
-        <!-- Top Header Bar -->
-        <header class="h-20 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-8 shadow-sm">
-            <h2 id="pageTitle" class="text-2xl font-bold text-white">Dashboard Overview</h2>
+        <!-- Top Header Bar with Hamburger Button -->
+        <header class="h-20 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-6 md:px-8 shadow-sm">
             <div class="flex items-center space-x-4">
-                <div class="bg-gray-800 border border-gray-700 px-5 py-2.5 rounded-2xl text-sm font-medium flex items-center space-x-3 shadow-inner">
+                <!-- Hamburger Button to open Sidebar -->
+                <button onclick="toggleSidebar()" class="md:hidden text-gray-300 hover:text-white text-xl p-2 bg-gray-800 rounded-xl border border-gray-700">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h2 id="pageTitle" class="text-xl md:text-2xl font-bold text-white">Dashboard Overview</h2>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="bg-gray-800 border border-gray-700 px-4 md:px-5 py-2.5 rounded-2xl text-sm font-medium flex items-center space-x-3 shadow-inner">
                     <div class="w-8 h-8 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center justify-center">
                         <i class="fa-solid fa-wallet"></i>
                     </div>
                     <div>
-                        <span class="text-xs text-gray-400 block">Total Balance</span>
-                        <span class="font-bold text-base text-white">$<span id="userBalance">1.20</span></span>
+                        <span class="text-[10px] text-gray-400 block uppercase">Balance</span>
+                        <span class="font-bold text-sm md:text-base text-white">$<span id="userBalance">1.20</span></span>
                     </div>
                 </div>
             </div>
         </header>
 
         <!-- Dynamic Content Body -->
-        <main class="flex-1 overflow-y-auto p-8 bg-gray-950">
+        <main class="flex-1 overflow-y-auto p-6 md:p-8 bg-gray-950">
             
-            <!-- 1. Dashboard Tab -->
+            <!-- 1. Dashboard Tab (5 Beautiful Statistic Boxes) -->
             <div id="tab-dashboard" class="space-y-8">
-                <!-- Statistics Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
-                        <div class="p-4 bg-indigo-600/20 text-indigo-400 rounded-xl text-2xl"><i class="fa-solid fa-dollar-sign"></i></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+                    <!-- Box 1 -->
+                    <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
+                        <div class="p-3.5 bg-indigo-600/20 text-indigo-400 rounded-xl text-xl"><i class="fa-solid fa-dollar-sign"></i></div>
                         <div>
-                            <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Total Earnings</p>
-                            <h3 class="text-2xl font-bold text-white mt-1">$<span id="statEarnings">1.20</span></h3>
+                            <p class="text-[11px] text-gray-400 uppercase tracking-wider font-semibold">Total Earnings</p>
+                            <h3 class="text-xl font-bold text-white mt-0.5">$<span id="statEarnings">1.20</span></h3>
                         </div>
                     </div>
-                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
-                        <div class="p-4 bg-green-600/20 text-green-400 rounded-xl text-2xl"><i class="fa-solid fa-tv"></i></div>
+                    <!-- Box 2 -->
+                    <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
+                        <div class="p-3.5 bg-green-600/20 text-green-400 rounded-xl text-xl"><i class="fa-solid fa-tv"></i></div>
                         <div>
-                            <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Ads Watched Today</p>
-                            <h3 class="text-2xl font-bold text-white mt-1" id="statAdsToday">4</h3>
+                            <p class="text-[11px] text-gray-400 uppercase tracking-wider font-semibold">Ads Watched</p>
+                            <h3 class="text-xl font-bold text-white mt-0.5" id="statAdsToday">4</h3>
                         </div>
                     </div>
-                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
-                        <div class="p-4 bg-yellow-600/20 text-yellow-400 rounded-xl text-2xl"><i class="fa-solid fa-gamepad"></i></div>
+                    <!-- Box 3 -->
+                    <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
+                        <div class="p-3.5 bg-yellow-600/20 text-yellow-400 rounded-xl text-xl"><i class="fa-solid fa-gamepad"></i></div>
                         <div>
-                            <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Games Played</p>
-                            <h3 class="text-2xl font-bold text-white mt-1" id="statGamesPlayed">2</h3>
+                            <p class="text-[11px] text-gray-400 uppercase tracking-wider font-semibold">Games Played</p>
+                            <h3 class="text-xl font-bold text-white mt-0.5" id="statGamesPlayed">2</h3>
                         </div>
                     </div>
-                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
-                        <div class="p-4 bg-purple-600/20 text-purple-400 rounded-xl text-2xl"><i class="fa-solid fa-users"></i></div>
+                    <!-- Box 4 -->
+                    <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
+                        <div class="p-3.5 bg-purple-600/20 text-purple-400 rounded-xl text-xl"><i class="fa-solid fa-users"></i></div>
                         <div>
-                            <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Referral Bonus</p>
-                            <h3 class="text-2xl font-bold text-white mt-1">$0.00</h3>
+                            <p class="text-[11px] text-gray-400 uppercase tracking-wider font-semibold">Referral Bonus</p>
+                            <h3 class="text-xl font-bold text-white mt-0.5">$0.00</h3>
+                        </div>
+                    </div>
+                    <!-- Box 5 -->
+                    <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg sm:col-span-2 lg:col-span-1">
+                        <div class="p-3.5 bg-pink-600/20 text-pink-400 rounded-xl text-xl"><i class="fa-solid fa-chart-line"></i></div>
+                        <div>
+                            <p class="text-[11px] text-gray-400 uppercase tracking-wider font-semibold">Account Tier</p>
+                            <h3 class="text-xl font-bold text-white mt-0.5">Level 1</h3>
                         </div>
                     </div>
                 </div>
@@ -137,7 +168,6 @@
                     <span class="text-sm text-gray-400">Watch full duration to claim reward</span>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Ad Item 1 -->
                     <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col justify-between shadow-lg">
                         <div>
                             <div class="h-40 bg-gradient-to-br from-gray-800 to-gray-700 rounded-xl mb-4 flex flex-col items-center justify-center text-indigo-400 border border-gray-700">
@@ -149,7 +179,6 @@
                         </div>
                         <button onclick="watchAd(0.05)" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-semibold text-white shadow transition">Watch & Earn $0.05</button>
                     </div>
-                    <!-- Ad Item 2 -->
                     <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col justify-between shadow-lg">
                         <div>
                             <div class="h-40 bg-gradient-to-br from-gray-800 to-gray-700 rounded-xl mb-4 flex flex-col items-center justify-center text-green-400 border border-gray-700">
@@ -161,7 +190,6 @@
                         </div>
                         <button onclick="watchAd(0.08)" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-semibold text-white shadow transition">Watch & Earn $0.08</button>
                     </div>
-                    <!-- Ad Item 3 -->
                     <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col justify-between shadow-lg">
                         <div>
                             <div class="h-40 bg-gradient-to-br from-gray-800 to-gray-700 rounded-xl mb-4 flex flex-col items-center justify-center text-yellow-400 border border-gray-700">
@@ -176,11 +204,10 @@
                 </div>
             </div>
 
-            <!-- 3. Games Tab (Multiple Game Options) -->
+            <!-- 3. Games Tab -->
             <div id="tab-games" class="hidden space-y-6">
                 <h3 class="text-xl font-bold text-white">Mini-Games Arcade & Rewards</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Game 1 -->
                     <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col justify-between shadow-lg">
                         <div>
                             <div class="text-4xl text-green-400 p-4 bg-green-500/10 rounded-2xl w-fit mb-4"><i class="fa-solid fa-dharmachakra"></i></div>
@@ -189,7 +216,6 @@
                         </div>
                         <button onclick="playGame('Spin Wheel', 0.10)" class="w-full bg-green-600 hover:bg-green-500 py-3 rounded-xl font-semibold text-white shadow transition">Play Spin ($0.10)</button>
                     </div>
-                    <!-- Game 2 -->
                     <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col justify-between shadow-lg">
                         <div>
                             <div class="text-4xl text-yellow-400 p-4 bg-yellow-500/10 rounded-2xl w-fit mb-4"><i class="fa-solid fa-puzzle-piece"></i></div>
@@ -198,7 +224,6 @@
                         </div>
                         <button onclick="playGame('Number Guessing', 0.05)" class="w-full bg-green-600 hover:bg-green-500 py-3 rounded-xl font-semibold text-white shadow transition">Play Game ($0.05)</button>
                     </div>
-                    <!-- Game 3 -->
                     <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col justify-between shadow-lg">
                         <div>
                             <div class="text-4xl text-purple-400 p-4 bg-purple-500/10 rounded-2xl w-fit mb-4"><i class="fa-solid fa-dice"></i></div>
@@ -210,7 +235,7 @@
                 </div>
             </div>
 
-            <!-- 4. Withdraw Tab (Fully Functional) -->
+            <!-- 4. Withdraw Tab -->
             <div id="tab-withdraw" class="hidden space-y-6 max-w-xl">
                 <h3 class="text-xl font-bold text-white">Request Payout / Withdraw</h3>
                 <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800 space-y-5 shadow-xl">
@@ -264,6 +289,20 @@
             document.getElementById('statGamesPlayed').innerText = state.gamesPlayed;
         }
 
+        // Toggle Sidebar Function for Mobile Hamburger Menu
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        function toggleSidebarOnMobile() {
+            if (window.innerWidth < 768) {
+                toggleSidebar();
+            }
+        }
+
         function switchTab(tabId) {
             const tabs = ['dashboard', 'watchAds', 'games', 'withdraw', 'referral'];
             tabs.forEach(t => {
@@ -277,7 +316,6 @@
             activeNav.classList.remove('hover:bg-gray-800', 'text-gray-300');
             activeNav.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
             
-            // Header Title Update
             const titles = {
                 dashboard: 'Dashboard Overview',
                 watchAds: 'Watch Sponsored Ads Zone',
