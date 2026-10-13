@@ -1,373 +1,1038 @@
 <!DOCTYPE html>
-<html lang="ur" dir="ltr">
+<html lang="en">
+  
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7851628350442317"
+     crossorigin="anonymous"></script>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AdEarn Pro - Modern Earning Platform</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Ad Network Header Script (Correctly placed in Head) -->
-    <script src="https://beastscarnival.com/b8/5d/b3/b85db3bf8114fc1cf6a50737b91bc62b.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Poppins', sans-serif; }
-        #sidebar {
-            transition: transform 0.3s ease-in-out;
-        }
-    </style>
+ <meta name="google-site-verification" content="Z7x9RTZEmPO-qEgee6EfJXOAwUNFXZT0yelA_jOqQpI" />
+  <meta name="monetag" content="985b920342044b06f0e1d1b209c41706">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Passive Income - Smart VIP Earning Platform</title>
+  <!-- Tailwind CSS & FontAwesome -->
+      <meta name="description" content="Passive Income پر لاگ ان کریں اور پاکستان میں موبائل سے روزانہ مائیکرو ریوارڈز اور فکسڈ ایڈ ریٹرنز حاصل کرنے کے آسان طریقے جانیں۔" />
+    <meta name="keywords" content="passive income in Pakistan, online earning apps, ghar baithe paise kaise kamaye, mobile earning platform" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+  
 </head>
-<body class="bg-gray-950 text-gray-100 flex h-screen overflow-hidden">
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex justify-center selection:bg-orange-500 selection:text-white">
 
-    <!-- Sidebar with Toggle Support -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-gray-900 border-r border-gray-800 flex flex-col justify-between shadow-2xl transform -translate-x-full md:translate-x-0 md:static">
+  <!-- Mobile Container Wrapper -->
+  <div id="app" class="w-full max-w-md bg-white min-h-screen shadow-2xl relative flex flex-col pb-20">
+
+    <!-- Global App Header -->
+    <header id="global-header" class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-3 flex items-center justify-between transition-all hidden">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-400 flex items-center justify-center text-white shadow-md shadow-orange-500/20">
+          <i class="fa-solid fa-wallet text-sm"></i>
+        </div>
         <div>
-            <!-- Logo Header -->
-            <div class="p-6 flex items-center justify-between border-b border-gray-800">
-                <div class="flex items-center space-x-3">
-                    <div class="bg-indigo-600 p-2.5 rounded-xl text-white font-bold text-xl shadow-lg shadow-indigo-600/30">
-                        <i class="fa-solid fa-coins"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-lg font-bold tracking-wide text-white">AdEarn Pro</h1>
-                        <span class="text-xs text-indigo-400 font-medium">Earning & Rewards App</span>
-                    </div>
-                </div>
-                <!-- Close Button for Mobile -->
-                <button onclick="toggleSidebar()" class="md:hidden text-gray-400 hover:text-white text-xl">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            
-            <!-- Navigation Links -->
-            <nav class="p-4 space-y-2">
-                <a href="#" onclick="switchTab('dashboard'); toggleSidebarOnMobile();" id="nav-dashboard" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl bg-indigo-600 text-white font-medium shadow-md transition-all">
-                    <i class="fa-solid fa-house w-5 text-center"></i><span>Dashboard</span>
-                </a>
-                <a href="#" onclick="switchTab('watchAds'); toggleSidebarOnMobile();" id="nav-watchAds" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl hover:bg-gray-800 text-gray-300 font-medium transition-all">
-                    <i class="fa-solid fa-tv w-5 text-center"></i><span>Watch Ads Zone</span>
-                </a>
-                <a href="#" onclick="switchTab('games'); toggleSidebarOnMobile();" id="nav-games" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl hover:bg-gray-800 text-gray-300 font-medium transition-all">
-                    <i class="fa-solid fa-gamepad w-5 text-center"></i><span>Play & Earn Games</span>
-                </a>
-                <a href="#" onclick="switchTab('withdraw'); toggleSidebarOnMobile();" id="nav-withdraw" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl hover:bg-gray-800 text-gray-300 font-medium transition-all">
-                    <i class="fa-solid fa-wallet w-5 text-center"></i><span>Withdraw Funds</span>
-                </a>
-                <a href="#" onclick="switchTab('referral'); toggleSidebarOnMobile();" id="nav-referral" class="sidebar-link flex items-center space-x-3.5 p-3.5 rounded-xl hover:bg-gray-800 text-gray-300 font-medium transition-all">
-                    <i class="fa-solid fa-users w-5 text-center"></i><span>Referrals Network</span>
-                </a>
-            </nav>
+          <h1 class="text-sm font-extrabold text-slate-900 tracking-tight leading-none">Passive Income</h1>
+          <span class="text-[10px] font-bold text-orange-500">VIP Earning Hub</span>
         </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button id="header-admin-btn" onclick="switchScreen('admin')" class="hidden px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
+          <i class="fa-solid fa-shield-halved"></i> Admin
+        </button>
+        <button onclick="toggleUserMenu()" class="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-slate-100 transition relative">
+          <i class="fa-regular fa-user text-sm"></i>
+        </button>
+      </div>
+    </header>
 
-        <!-- Sidebar Footer Status -->
-        <div class="p-4 border-t border-gray-800 bg-gray-900/50">
-            <div class="flex items-center space-x-3 p-2.5 bg-gray-800/80 rounded-xl border border-gray-700/50">
-                <div class="w-10 h-10 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold shadow">
-                    <i class="fa-solid fa-shield-halved"></i>
-                </div>
-                <div class="overflow-hidden">
-                    <h4 class="text-sm font-semibold truncate text-white">System Secure</h4>
-                    <span class="text-xs text-green-400 flex items-center space-x-1">
-                        <i class="fa-solid fa-circle text-[8px]"></i> <span>Online Mode</span>
-                    </span>
-                </div>
-            </div>
-        </div>
-    </aside>
-
-    <!-- Overlay for mobile sidebar -->
-    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden md:hidden"></div>
-
-    <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col overflow-hidden w-full">
-        
-        <!-- Top Header Bar with Hamburger Button -->
-        <header class="h-20 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-6 md:px-8 shadow-sm">
-            <div class="flex items-center space-x-4">
-                <!-- Hamburger Button to open Sidebar -->
-                <button onclick="toggleSidebar()" class="md:hidden text-gray-300 hover:text-white text-xl p-2 bg-gray-800 rounded-xl border border-gray-700">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <h2 id="pageTitle" class="text-xl md:text-2xl font-bold text-white">Dashboard Overview</h2>
-            </div>
-            
-            <div class="flex items-center space-x-4">
-                <div class="bg-gray-800 border border-gray-700 px-4 md:px-5 py-2.5 rounded-2xl text-sm font-medium flex items-center space-x-3 shadow-inner">
-                    <div class="w-8 h-8 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center justify-center">
-                        <i class="fa-solid fa-wallet"></i>
-                    </div>
-                    <div>
-                        <span class="text-[10px] text-gray-400 block uppercase">Balance</span>
-                        <span class="font-bold text-sm md:text-base text-white">$<span id="userBalance">1.20</span></span>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Dynamic Content Body -->
-        <main class="flex-1 overflow-y-auto p-6 md:p-8 bg-gray-950">
-            
-            <!-- 1. Dashboard Tab -->
-            <div id="tab-dashboard" class="space-y-8">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
-                    <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
-                        <div class="p-3.5 bg-indigo-600/20 text-indigo-400 rounded-xl text-xl"><i class="fa-solid fa-dollar-sign"></i></div>
-                        <div>
-                            <p class="text-[11px] text-gray-400 uppercase tracking-wider font-semibold">Total Earnings</p>
-                            <h3 class="text-xl font-bold text-white mt-0.5">$<span id="statEarnings">1.20</span></h3>
-                        </div>
-                    </div>
-                    <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
-                        <div class="p-3.5 bg-green-600/20 text-green-400 rounded-xl text-xl"><i class="fa-solid fa-tv"></i></div>
-                        <div>
-                            <p class="text-[11px] text-gray-400 uppercase tracking-wider font-semibold">Ads Watched</p>
-                            <h3 class="text-xl font-bold text-white mt-0.5" id="statAdsToday">4</h3>
-                        </div>
-                    </div>
-                    <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
-                        <div class="p-3.5 bg-yellow-600/20 text-yellow-400 rounded-xl text-xl"><i class="fa-solid fa-gamepad"></i></div>
-                        <div>
-                            <p class="text-[11px] text-gray-400 uppercase tracking-wider font-semibold">Games Played</p>
-                            <h3 class="text-xl font-bold text-white mt-0.5" id="statGamesPlayed">2</h3>
-                        </div>
-                    </div>
-                    <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg">
-                        <div class="p-3.5 bg-purple-600/20 text-purple-400 rounded-xl text-xl"><i class="fa-solid fa-users"></i></div>
-                        <div>
-                            <p class="text-[11px] text-gray-400 uppercase tracking-wider font-semibold">Referral Bonus</p>
-                            <h3 class="text-xl font-bold text-white mt-0.5">$0.00</h3>
-                        </div>
-                    </div>
-                    <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 flex items-center space-x-4 shadow-lg sm:col-span-2 lg:col-span-1">
-                        <div class="p-3.5 bg-pink-600/20 text-pink-400 rounded-xl text-xl"><i class="fa-solid fa-chart-line"></i></div>
-                        <div>
-                            <p class="text-[11px] text-gray-400 uppercase tracking-wider font-semibold">Account Tier</p>
-                            <h3 class="text-xl font-bold text-white mt-0.5">Level 1</h3>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Banner / Announcement -->
-                <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-8 rounded-3xl flex flex-col md:flex-row items-center justify-between shadow-xl">
-                    <div class="space-y-2">
-                        <span class="bg-white/20 text-xs font-semibold px-3 py-1 rounded-full uppercase">Boost Income</span>
-                        <h3 class="text-2xl font-bold text-white">Start watching promotional ads or playing games!</h3>
-                        <p class="text-indigo-100 text-sm max-w-xl">Complete daily tasks to unlock higher tiers and bigger cash prizes instantly.</p>
-                    </div>
-                    <button onclick="switchTab('watchAds')" class="mt-6 md:mt-0 bg-white text-indigo-600 font-bold px-8 py-3.5 rounded-xl shadow-lg hover:bg-gray-100 transition transform hover:-translate-y-0.5">Start Watching Ads</button>
-                </div>
-            </div>
-
-            <!-- 2. Watch Ads Tab (Correctly Placed Banner Container & Direct Links) -->
-            <div id="tab-watchAds" class="hidden space-y-6">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-xl font-bold text-white">Sponsored Advertisements Zone</h3>
-                    <span class="text-sm text-gray-400">Click below to open direct ads & earn rewards</span>
-                </div>
-
-                <!-- Banner Ad Container & Invoke Script -->
-                <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col items-center justify-center space-y-4 shadow-lg">
-                    <h4 class="text-sm font-semibold text-gray-300">Live Banner Advertisement</h4>
-                    <div id="container-f4d67fd9e6924c356864fd8f8c8d3a0b" class="flex justify-center items-center overflow-hidden min-h-[250px]"></div>
-                </div>
-
-                <!-- Direct Link Buttons -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col justify-between shadow-lg space-y-4">
-                        <div>
-                            <h4 class="font-bold text-lg text-white mb-1">Sponsored Campaign #1</h4>
-                            <p class="text-xs text-gray-400">Click to view advertisement and claim instant reward.</p>
-                        </div>
-                        <a href="https://beastscarnival.com/bmus9vwr3d?key=836464293cb77fa37dfc023c1d8701d0" target="_blank" onclick="watchAd(0.05)" class="block text-center w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-semibold text-white shadow transition">Open Direct Ad & Earn $0.05</a>
-                    </div>
-                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col justify-between shadow-lg space-y-4">
-                        <div>
-                            <h4 class="font-bold text-lg text-white mb-1">Sponsored Campaign #2</h4>
-                            <p class="text-xs text-gray-400">Explore partner link to collect bonus credits.</p>
-                        </div>
-                        <a href="https://beastscarnival.com/bmus9vwr3d?key=836464293cb77fa37dfc023c1d8701d0" target="_blank" onclick="watchAd(0.08)" class="block text-center w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-semibold text-white shadow transition">Open Direct Ad & Earn $0.08</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. Games Tab -->
-            <div id="tab-games" class="hidden space-y-6">
-                <h3 class="text-xl font-bold text-white">Mini-Games Arcade & Rewards</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col justify-between shadow-lg">
-                        <div>
-                            <div class="text-4xl text-green-400 p-4 bg-green-500/10 rounded-2xl w-fit mb-4"><i class="fa-solid fa-dharmachakra"></i></div>
-                            <h4 class="font-bold text-lg text-white mb-1">Lucky Spin Wheel</h4>
-                            <p class="text-xs text-gray-400 mb-4">Spin the wheel every hour and win guaranteed cash bonuses up to $0.10.</p>
-                        </div>
-                        <button onclick="playGame('Spin Wheel', 0.10)" class="w-full bg-green-600 hover:bg-green-500 py-3 rounded-xl font-semibold text-white shadow transition">Play Spin ($0.10)</button>
-                    </div>
-                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col justify-between shadow-lg">
-                        <div>
-                            <div class="text-4xl text-yellow-400 p-4 bg-yellow-500/10 rounded-2xl w-fit mb-4"><i class="fa-solid fa-puzzle-piece"></i></div>
-                            <h4 class="font-bold text-lg text-white mb-1">Number Guessing</h4>
-                            <p class="text-xs text-gray-400 mb-4">Guess the correct secret number between 1 to 10 to win instant cash.</p>
-                        </div>
-                        <button onclick="playGame('Number Guessing', 0.05)" class="w-full bg-green-600 hover:bg-green-500 py-3 rounded-xl font-semibold text-white shadow transition">Play Game ($0.05)</button>
-                    </div>
-                    <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col justify-between shadow-lg">
-                        <div>
-                            <div class="text-4xl text-purple-400 p-4 bg-purple-500/10 rounded-2xl w-fit mb-4"><i class="fa-solid fa-dice"></i></div>
-                            <h4 class="font-bold text-lg text-white mb-1">Color Prediction</h4>
-                            <p class="text-xs text-gray-400 mb-4">Pick the winning color combination and double your game rewards.</p>
-                        </div>
-                        <button onclick="playGame('Color Prediction', 0.08)" class="w-full bg-green-600 hover:bg-green-500 py-3 rounded-xl font-semibold text-white shadow transition">Play Prediction ($0.08)</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. Withdraw Tab -->
-            <div id="tab-withdraw" class="hidden space-y-6 max-w-xl">
-                <h3 class="text-xl font-bold text-white">Request Payout / Withdraw</h3>
-                <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800 space-y-5 shadow-xl">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Select Payment Method</label>
-                        <select id="withdrawMethod" class="w-full bg-gray-800 border border-gray-700 rounded-xl p-3.5 text-white focus:outline-none focus:border-indigo-500">
-                            <option>JazzCash / EasyPaisa (Pakistan)</option>
-                            <option>Bank Transfer (Local)</option>
-                            <option>USDT / Crypto Wallet</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Account Number / IBAN</label>
-                        <input type="text" id="accountDetails" placeholder="e.g. 03001234567" class="w-full bg-gray-800 border border-gray-700 rounded-xl p-3.5 text-white focus:outline-none focus:border-indigo-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Withdraw Amount ($) <span class="text-gray-500 font-normal">(Min $5.00)</span></label>
-                        <input type="number" id="withdrawAmount" placeholder="Enter amount" class="w-full bg-gray-800 border border-gray-700 rounded-xl p-3.5 text-white focus:outline-none focus:border-indigo-500">
-                    </div>
-                    <button onclick="requestWithdraw()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3.5 rounded-xl font-bold text-white shadow-lg transition">Submit Withdrawal Request</button>
-                </div>
-            </div>
-
-            <!-- 5. Referral Tab -->
-            <div id="tab-referral" class="hidden space-y-6 max-w-2xl">
-                <h3 class="text-xl font-bold text-white">Referral Program</h3>
-                <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800 space-y-4 shadow-xl">
-                    <p class="text-sm text-gray-300">Invite your friends and family to join AdEarn Pro. You will receive a lifetime commission of 10% on all their ad-watching and game earnings!</p>
-                    <div class="flex space-x-3 pt-2">
-                        <input type="text" readonly value="https://adearn-pro.app/ref/user982" class="flex-1 bg-gray-800 border border-gray-700 rounded-xl p-3.5 text-white focus:outline-none">
-                        <button onclick="alert('Referral link copied to clipboard successfully!')" class="bg-indigo-600 hover:bg-indigo-500 px-6 rounded-xl font-semibold text-white transition">Copy Link</button>
-                    </div>
-                </div>
-            </div>
-
-        </main>
+    <!-- Dropdown User Menu -->
+    <div id="user-menu-dropdown" class="hidden absolute top-14 right-4 z-50 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 text-xs space-y-1">
+      <div class="p-2.5 bg-slate-50 rounded-xl mb-1 border border-slate-100">
+        <p class="font-extrabold text-slate-900 text-xs truncate" id="menu-user-name">User</p>
+        <p class="text-[10px] text-slate-400 font-mono truncate" id="menu-user-id">ID</p>
+        <span id="menu-user-badge" class="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">Member</span>
+      </div>
+      <a href="javascript:void(0)" onclick="switchScreen('home'); closeUserMenu()" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium">
+        <i class="fa-solid fa-house text-orange-500 w-4"></i> Dashboard
+      </a>
+      <a href="javascript:void(0)" onclick="switchScreen('plans'); closeUserMenu()" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium">
+        <i class="fa-solid fa-gem text-amber-500 w-4"></i> 10 VIP Plans
+      </a>
+      <a href="javascript:void(0)" onclick="switchScreen('deposit'); closeUserMenu()" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium">
+        <i class="fa-solid fa-circle-plus text-emerald-500 w-4"></i> Deposit Funds
+      </a>
+      <a href="javascript:void(0)" onclick="switchScreen('withdraw'); closeUserMenu()" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium">
+        <i class="fa-solid fa-money-bill-transfer text-indigo-500 w-4"></i> Withdraw
+      </a>
+      <a id="menu-admin-link" href="javascript:void(0)" onclick="switchScreen('admin'); closeUserMenu()" class="hidden flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-amber-50 text-amber-700 font-bold border-t border-slate-100 mt-1">
+        <i class="fa-solid fa-shield-halved text-amber-600 w-4"></i> Admin Backoffice
+      </a>
+      <button onclick="handleLogout()" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-rose-600 hover:bg-rose-50 font-bold transition">
+        <i class="fa-solid fa-arrow-right-from-bracket w-4"></i> Logout
+      </button>
     </div>
 
-    <!-- Banner Ad Invoke & Options Scripts (Correctly placed before closing body) -->
-    <script async="async" data-cfasync="false" src="https://beastscarnival.com/f4d67fd9e6924c356864fd8f8c8d3a0b/invoke.js"></script>
-    <script>
-      var atOptions = {
-        'key' : '35d390e6e45f0114853dc989206caa71',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
-    </script>
-    <script src="https://beastscarnival.com/35d390e6e45f0114853dc989206caa71/invoke.js"></script>
+    <!-- MAIN SCREENS CONTAINER -->
+    <main class="flex-1 overflow-y-auto">
 
-    <!-- Application JavaScript Logic -->
-    <script>
-        let state = {
-            balance: 1.20,
-            adsToday: 4,
-            gamesPlayed: 2
-        };
+      <!-- ================= 1. AUTH SCREEN ================= -->
+      <section id="screen-auth" class="p-6 flex flex-col justify-center min-h-[90vh]">
+        <div class="text-center mb-6">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-400 mx-auto flex items-center justify-center text-white shadow-xl shadow-orange-500/30 mb-3">
+            <i class="fa-solid fa-wallet text-2xl"></i>
+          </div>
+          <h2 class="text-2xl font-black text-slate-900 tracking-tight">Passive Income</h2>
+          <p class="text-xs text-slate-500 mt-1">Earn Daily Micro-Rewards & Fixed $0.05 Ad Returns</p>
+        </div>
 
-        function updateUI() {
-            document.getElementById('userBalance').innerText = state.balance.toFixed(2);
-            document.getElementById('statEarnings').innerText = state.balance.toFixed(2);
-            document.getElementById('statAdsToday').innerText = state.adsToday;
-            document.getElementById('statGamesPlayed').innerText = state.gamesPlayed;
-        }
+        <!-- Auth Tabs -->
+        <div class="flex p-1 bg-slate-100 rounded-xl mb-5">
+          <button id="auth-tab-login" onclick="setAuthMode('login')" class="flex-1 py-2.5 text-xs font-bold rounded-lg bg-white text-orange-600 shadow-sm transition">Sign In</button>
+          <button id="auth-tab-register" onclick="setAuthMode('register')" class="flex-1 py-2.5 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition">Create Account</button>
+        </div>
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
-        }
+        <!-- Auth Form -->
+        <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-3.5">
+          <div id="auth-fullname-field" class="hidden">
+            <label class="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-regular fa-user text-sm"></i></span>
+              <input type="text" id="auth-fullname" placeholder="e.g. John Doe" class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+            </div>
+          </div>
 
-        function toggleSidebarOnMobile() {
-            if (window.innerWidth < 768) {
-                toggleSidebar();
-            }
-        }
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Email or Mobile Number</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-regular fa-envelope text-sm"></i></span>
+              <input type="text" id="auth-identifier" required placeholder="user@gmail.com or 03001234567" class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+            </div>
+          </div>
 
-        function switchTab(tabId) {
-            const tabs = ['dashboard', 'watchAds', 'games', 'withdraw', 'referral'];
-            tabs.forEach(t => {
-                document.getElementById('tab-' + t).classList.add('hidden');
-                document.getElementById('nav-' + t).classList.remove('bg-indigo-600', 'text-white', 'shadow-md');
-                document.getElementById('nav-' + t).classList.add('hover:bg-gray-800', 'text-gray-300');
-            });
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-lock text-sm"></i></span>
+              <input type="password" id="auth-password" required placeholder="••••••••" class="w-full pl-10 pr-10 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+              <button type="button" onclick="togglePasswordVisibility('auth-password')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
+                <i class="fa-regular fa-eye text-sm"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Referral Code Input (Registration only) -->
+          <div id="auth-referral-field" class="hidden">
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-bold text-slate-700">Referral Code (Optional)</label>
+              <span class="text-[10px] text-emerald-600 font-bold flex items-center gap-1"><i class="fa-solid fa-gift"></i> Bonus Eligible</span>
+            </div>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-ticket text-sm"></i></span>
+              <input type="text" id="auth-referral-code" placeholder="e.g. PI-123456" class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white uppercase tracking-wider font-mono transition">
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">If invited by a friend, enter their code here.</p>
+          </div>
+
+          <button type="submit" id="auth-submit-btn" class="w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-xl shadow-lg shadow-orange-500/25 transition flex items-center justify-center gap-2 text-sm mt-2">
+            <span>Sign In</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
+        </form>
+
+        <!-- Trusted Partners & Official Collaborations Section -->
+        <div class="mt-6 pt-5 border-t border-slate-200 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] uppercase tracking-wider font-extrabold text-slate-500 flex items-center gap-1.5">
+              <i class="fa-solid fa-handshake text-orange-500"></i> Official Partners & Ecosystem
+            </span>
+            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+              <i class="fa-solid fa-shield-check"></i> Verified Network
+            </span>
+          </div>
+
+          <!-- Partner Logos & Badges Grid -->
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-slate-50 border border-slate-200 hover:border-amber-300 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm transition">
+              <div class="w-8 h-8 rounded-lg bg-amber-400/10 text-amber-500 flex items-center justify-center text-lg font-black mb-1"><i class="fa-brands fa-bitcoin"></i></div>
+              <span class="text-[11px] font-black text-slate-800 leading-tight">Binance</span>
+              <span class="text-[9px] text-slate-400 font-medium">Liquidity Node</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-200 hover:border-emerald-300 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm transition">
+              <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-coins"></i></div>
+              <span class="text-[11px] font-black text-slate-800 leading-tight">Tether USDT</span>
+              <span class="text-[9px] text-slate-400 font-medium">TRC20 Official</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-200 hover:border-rose-300 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm transition">
+              <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-cube"></i></div>
+              <span class="text-[11px] font-black text-slate-800 leading-tight">Tron DAO</span>
+              <span class="text-[9px] text-slate-400 font-medium">Instant Block</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-200 hover:border-orange-300 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm transition">
+              <div class="w-8 h-8 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-money-bill-wave"></i></div>
+              <span class="text-[11px] font-black text-slate-800 leading-tight">JazzCash</span>
+              <span class="text-[9px] text-slate-400 font-medium">Direct Settlement</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-200 hover:border-emerald-300 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm transition">
+              <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-wallet"></i></div>
+              <span class="text-[11px] font-black text-slate-800 leading-tight">EasyPaisa</span>
+              <span class="text-[9px] text-slate-400 font-medium">Pakistan Gateway</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-200 hover:border-blue-300 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm transition">
+              <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-shield-halved"></i></div>
+              <span class="text-[11px] font-black text-slate-800 leading-tight">Cloudflare</span>
+              <span class="text-[9px] text-slate-400 font-medium">256-Bit SSL</span>
+            </div>
+          </div>
+
+          <div class="p-3 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 rounded-xl border border-orange-100 flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-orange-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm"><i class="fa-solid fa-award"></i></div>
+            <p class="text-[10px] text-slate-600 leading-relaxed font-medium">
+              Official payment settlement channels & encrypted infrastructure guaranteed by verified global financial partners.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. HOME SCREEN ================= -->
+      <section id="screen-home" class="hidden p-4 space-y-4">
+        <!-- Live Admin Notification Box on Dashboard -->
+        <div id="user-inbox-alert-banner" class="hidden bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white p-3.5 rounded-2xl shadow-lg border border-amber-300/40 flex items-start gap-3">
+          <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-lg shrink-0">📢</div>
+          <div class="flex-1 min-w-0">
+            <h4 class="text-xs font-black tracking-wide text-amber-100 flex items-center gap-1">
+              <i class="fa-solid fa-bullhorn text-[10px]"></i> ADMIN SPECIAL NOTICE
+            </h4>
+            <p id="user-inbox-alert-text" class="text-xs font-bold mt-1 text-white leading-relaxed whitespace-pre-line"></p>
+            <span id="user-inbox-alert-date" class="text-[9px] text-white/80 mt-1 block"></span>
+          </div>
+          <button type="button" onclick="dismissUserInboxAlert()" class="text-white/80 hover:text-white text-xs font-bold px-2 py-1 rounded-lg bg-black/20 hover:bg-black/30 transition">✕</button>
+        </div>
+        <!-- Balance Card -->
+        <div class="bg-gradient-to-br from-orange-500 via-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-xl shadow-orange-500/25 relative overflow-hidden">
+          <div class="flex justify-between items-start mb-2">
+            <span class="text-xs font-semibold text-orange-100 tracking-wide uppercase">Available Balance</span>
+            <span id="home-badge-plan" class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-bold tracking-wider">No Plan</span>
+          </div>
+          <div>
+            <div class="text-3xl font-black tracking-tight" id="home-balance-usd">$0.00 USD</div>
+            <div class="text-sm font-semibold text-orange-100" id="home-balance-pkr">≈ 0 PKR (Rate: 280)</div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-white/20">
+            <button onclick="switchScreen('deposit')" class="py-2.5 px-3 bg-white text-orange-600 hover:bg-orange-50 rounded-xl font-bold text-xs shadow transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-circle-plus text-orange-500"></i> Deposit Funds
+            </button>
+            <button onclick="switchScreen('withdraw')" class="py-2.5 px-3 bg-orange-700/60 hover:bg-orange-700/80 text-white rounded-xl font-bold text-xs backdrop-blur-sm border border-white/20 transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-money-bill-transfer text-amber-300"></i> Withdraw
+            </button>
+          </div>
+        </div>
+
+        <!-- VIP Plan & Ads Widget -->
+        <div id="home-vip-card" class="bg-white rounded-2xl p-4 border border-orange-100 shadow-sm relative overflow-hidden">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 id="home-plan-title" class="font-bold text-sm text-slate-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-gem text-slate-400"></i> No Active VIP Plan
+              </h3>
+              <p id="home-plan-subtitle" class="text-xs text-slate-500 mt-0.5">Activate a VIP plan to unlock daily ad limits & earnings</p>
+            </div>
+            <button onclick="switchScreen('plans')" class="text-xs font-bold text-orange-600 hover:text-orange-700 bg-orange-50 px-3 py-1.5 rounded-lg border border-orange-200 transition">Upgrade</button>
+          </div>
+          <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="font-semibold text-slate-600">Daily Ads Watched Today:</span>
+              <span id="home-ads-progress-text" class="font-black text-orange-600">0 / 0 Ads</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+              <div id="home-ads-progress-bar" class="bg-gradient-to-r from-orange-500 to-amber-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <div class="flex justify-between items-center text-[11px] text-slate-400 mt-2">
+              <span><i class="fa-solid fa-coins text-amber-500"></i> $0.05 USD / Ad</span>
+              <span><i class="fa-regular fa-clock"></i> Resets in: <span id="home-timer-countdown">24h 00m</span></span>
+            </div>
+          </div>
+          <button onclick="switchScreen('watch')" class="w-full mt-3 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl font-bold text-xs shadow-md shadow-orange-500/20 hover:from-orange-600 hover:to-amber-600 transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-play"></i> <span>Watch Ads & Earn $0.05 Each</span>
+          </button>
+        </div>
+
+        <!-- Invite Friends & Earn Referral Card -->
+        <div id="home-referral-card" class="bg-gradient-to-br from-orange-50 via-amber-50 to-orange-100/50 rounded-2xl p-4 border border-orange-200 shadow-sm relative overflow-hidden">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-500 text-white flex items-center justify-center font-bold text-sm shadow-sm"><i class="fa-solid fa-gift"></i></div>
+              <div>
+                <h4 class="font-bold text-xs text-slate-800">Invite Friends & Earn</h4>
+                <p class="text-[10px] text-slate-500">Earn $1.00 USD on friend's first deposit</p>
+              </div>
+            </div>
+            <span class="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-emerald-300">+$1.00 / Deposit</span>
+          </div>
+          <p class="text-[11px] text-slate-600 mb-3 leading-relaxed">
+            Share your unique referral code. When your friend registers and makes their first approved deposit, you instantly receive a <strong>$1.00 USD (280 PKR) bonus</strong>!
+          </p>
+          <div class="bg-white rounded-xl p-2.5 border border-orange-200 flex items-center justify-between mb-3 shadow-inner">
+            <div>
+              <span class="block text-[9px] uppercase tracking-wider font-bold text-slate-400">Your Referral Code</span>
+              <span id="home-referral-code" class="text-sm font-black font-mono text-orange-600 tracking-wider">PI-100000</span>
+            </div>
+            <div class="flex gap-1.5">
+              <button type="button" onclick="copyReferralCode()" class="px-2.5 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm transition"><i class="fa-regular fa-copy"></i> Copy</button>
+              <button type="button" onclick="shareReferralLink()" class="px-2.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-bold flex items-center gap-1 transition"><i class="fa-solid fa-share-nodes"></i> Share</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-center">
+            <div class="bg-white/80 p-2 rounded-xl border border-orange-100">
+              <span class="block text-[10px] font-semibold text-slate-500">Friends Invited</span>
+              <span id="home-referral-count" class="text-sm font-black text-slate-800">0 Users</span>
+            </div>
+            <div class="bg-white/80 p-2 rounded-xl border border-orange-100">
+              <span class="block text-[10px] font-semibold text-slate-500">Bonus Earned</span>
+              <span id="home-referral-earnings" class="text-sm font-black text-emerald-600">$0.00 USD</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Quick Cards -->
+        <div class="grid grid-cols-2 gap-3">
+          <div onclick="switchScreen('plans')" class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm hover:border-orange-200 transition cursor-pointer flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-bold"><i class="fa-solid fa-layer-group text-lg"></i></div>
+            <div>
+              <div class="text-xs font-bold text-slate-800">10 VIP Plans</div>
+              <div class="text-[10px] text-slate-400">1,000 to 10,000 PKR</div>
+            </div>
+          </div>
+          <div onclick="switchScreen('watch')" class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm hover:border-orange-200 transition cursor-pointer flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold"><i class="fa-solid fa-tv text-lg"></i></div>
+            <div>
+              <div class="text-xs font-bold text-slate-800">Watch Ads</div>
+              <div class="text-[10px] text-slate-400">$0.05 / 15s Timer</div>
+            </div>
+          </div>
+          <div onclick="switchScreen('deposit')" class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm hover:border-orange-200 transition cursor-pointer flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold"><i class="fa-solid fa-wallet text-lg"></i></div>
+            <div>
+              <div class="text-xs font-bold text-slate-800">Deposit</div>
+              <div class="text-[10px] text-slate-400">USDT, Jazz, Easy</div>
+            </div>
+          </div>
+          <div onclick="switchScreen('withdraw')" class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm hover:border-orange-200 transition cursor-pointer flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold"><i class="fa-solid fa-arrow-up-right-from-square text-lg"></i></div>
+            <div>
+              <div class="text-xs font-bold text-slate-800">Withdraw</div>
+              <div class="text-[10px] text-slate-400">Instant Processing</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity Feed -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700">Recent Transactions</h3>
+            <span class="text-[11px] text-orange-600 font-semibold cursor-pointer" onclick="switchScreen('deposit')">View All</span>
+          </div>
+          <div id="home-recent-list" class="space-y-2">
+            <div class="text-center py-4 text-xs text-slate-400">Your starting balance is $0.00. Make a deposit to activate plans!</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 3. PLANS SCREEN ================= -->
+      <section id="screen-plans" class="hidden p-4 space-y-4">
+        <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-4 text-white shadow-md">
+          <h2 class="text-lg font-black tracking-tight">10 VIP Investment Plans</h2>
+          <p class="text-xs text-orange-100 mt-1">Upgrade your tier using your wallet balance. Fixed $0.05 USD on every ad!</p>
+        </div>
+        <div id="plans-container" class="space-y-3"></div>
+      </section>
+
+      <!-- ================= 4. WATCH ADS SCREEN (100% REAL DIRECT AD CLICK SYSTEM) ================= -->
+<section id="screen-watch" class="hidden p-4 space-y-4">
+    <!-- Header Summary Card -->
+    <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-4 text-white shadow-lg relative overflow-hidden">
+        <div class="relative z-10">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider bg-black/20 px-2.5 py-1 rounded-full backdrop-blur-sm">VIP Sponsored Tasks</span>
+                <span id="ads-plan-badge" class="text-xs font-extrabold bg-white text-orange-600 px-2.5 py-1 rounded-full shadow-sm">Free Tier</span>
+            </div>
+            <h2 class="text-xl font-extrabold mt-2">Daily Ad Rewards</h2>
+            <p class="text-xs text-orange-100 mt-0.5">Click real sponsor ads, keep open & claim instant USD rewards!</p>
             
-            document.getElementById('tab-' + tabId).classList.remove('hidden');
-            const activeNav = document.getElementById('nav-' + tabId);
-            activeNav.classList.remove('hover:bg-gray-800', 'text-gray-300');
-            activeNav.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
-            
-            const titles = {
-                dashboard: 'Dashboard Overview',
-                watchAds: 'Watch Sponsored Ads Zone',
-                games: 'Play & Earn Games Arcade',
-                withdraw: 'Withdraw Funds',
-                referral: 'Referrals & Earnings Network'
-            };
-            document.getElementById('pageTitle').innerText = titles[tabId];
-        }
+            <div class="grid grid-cols-2 gap-2 mt-4">
+                <div class="bg-white/10 backdrop-blur-md rounded-xl p-2.5 border border-white/20">
+                    <p class="text-[10px] text-orange-100 font-semibold">Today's Progress</p>
+                    <p id="watch-counter-text" class="text-lg font-black text-white mt-0.5">0 / 2 Ads</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md rounded-xl p-2.5 border border-white/20">
+                    <p class="text-[10px] text-orange-100 font-semibold">Reward Per Ad</p>
+                    <p class="text-lg font-black text-white mt-0.5">$0.05 <span class="text-[10px] font-normal">USD</span></p>
+                </div>
+            </div>
+        </div>
+        <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+    </div>
 
-        function watchAd(reward) {
-            setTimeout(() => {
-                state.balance += reward;
-                state.adsToday += 1;
-                updateUI();
-            }, 1000);
-        }
+    <!-- Real Click Ad Watch Card -->
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4 text-center">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 border border-amber-200 rounded-full text-amber-700 text-xs font-bold">
+            <i class="fa-solid fa-shield-check text-emerald-500"></i> Verified Partner Ad (Monetag & Adsterra)
+        </div>
 
-        function playGame(gameName, reward) {
-            alert('Starting ' + gameName + '...');
-            setTimeout(() => {
-                state.balance += reward;
-                state.gamesPlayed += 1;
-                updateUI();
-                alert(`You won ${gameName}! $${reward.toFixed(2)} credited to your account.`);
-            }, 1500);
-        }
+        <div id="ad-status-box" class="py-4 px-3 bg-slate-50 rounded-xl border border-slate-100">
+            <!-- Idle View -->
+            <div id="ad-standby-view">
+                <div class="w-16 h-16 bg-gradient-to-tr from-orange-500 to-amber-400 text-white rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-md mb-3 animate-pulse">
+                    <i class="fa-solid fa-play"></i>
+                </div>
+                <h3 class="font-extrabold text-slate-800 text-base">Click & Watch Sponsor Ad</h3>
+                <p class="text-xs text-slate-500 mt-1 max-w-xs mx-auto">Click below to open the real sponsor ad in a new tab. Keep it open while the timer runs to earn $0.05 USD.</p>
+            </div>
 
-        function requestWithdraw() {
-            let amt = parseFloat(document.getElementById('withdrawAmount').value);
-            let details = document.getElementById('accountDetails').value;
-            
-            if (!details.trim()) {
-                alert('Please enter your account details or number!');
-                return;
+            <!-- Active Running View -->
+            <div id="ad-running-view" class="hidden space-y-3">
+                <div class="relative w-20 h-20 mx-auto flex items-center justify-center">
+                    <div class="w-16 h-16 rounded-full border-4 border-orange-500 border-t-transparent animate-spin"></div>
+                    <span id="ad-timer-num" class="absolute font-black text-2xl text-slate-800">15</span>
+                </div>
+                <p class="text-xs font-bold text-orange-600 animate-pulse">Sponsor Ad opened in new tab... Please wait while timer finishes!</p>
+            </div>
+
+            <!-- Success View -->
+            <div id="ad-success-view" class="hidden space-y-2 py-2">
+                <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl shadow-sm">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h3 class="font-extrabold text-emerald-600 text-base">Reward Credited!</h3>
+                <p class="text-xs text-slate-600">+$0.05 USD added to your wallet balance.</p>
+            </div>
+        </div>
+
+        <!-- Direct Click Action Button -->
+        <button id="ad-start-btn" onclick="startWatchingAd()" class="w-full py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-extrabold rounded-xl shadow-lg shadow-orange-500/25 active:scale-95 transition-all flex items-center justify-center gap-2 text-sm">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            <span>Click To Open Sponsor Ad & Earn $0.05</span>
+        </button>
+    </div>
+
+      </section>
+
+      <!-- ================= 5. DEPOSIT SCREEN ================= -->
+      <section id="screen-deposit" class="hidden p-4 space-y-4">
+        <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-4 text-white shadow-md">
+          <h2 class="text-lg font-black tracking-tight">Deposit Funds</h2>
+          <p class="text-xs text-orange-100 mt-1">Manual account deposit verification via USDT, JazzCash or EasyPaisa</p>
+        </div>
+        <div class="flex p-1 bg-slate-100 rounded-xl gap-1">
+          <button id="dep-tab-usdt" onclick="selectDepositMethod('usdt')" class="flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold bg-white text-orange-600 shadow-sm transition">USDT (TRC20)</button>
+          <button id="dep-tab-jazzcash" onclick="selectDepositMethod('jazzcash')" class="flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition">JazzCash</button>
+          <button id="dep-tab-easypaisa" onclick="selectDepositMethod('easypaisa')" class="flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition">EasyPaisa</button>
+        </div>
+        <div id="deposit-channel-details" class="p-4 bg-white rounded-2xl border border-slate-200 space-y-3"></div>
+        <form onsubmit="handleDepositSubmit(event)" class="bg-white rounded-2xl p-4 border border-slate-200 space-y-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Deposit Amount (<span id="dep-form-currency-label">USD</span>)</label>
+            <input type="number" id="dep-amount" step="any" required placeholder="Enter amount sent" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Transaction ID / Reference Hash</label>
+            <input type="text" id="dep-txnid" required placeholder="e.g. TXN9872134091 or Blockchain Hash" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white font-mono text-xs transition">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Sender Mobile No. / Wallet Address</label>
+            <input type="text" id="dep-sender" required placeholder="e.g. 03001234567 or T..." class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Attach Payment Screenshot Proof</label>
+            <label class="border-2 border-dashed border-slate-200 hover:border-orange-400 bg-slate-50 rounded-xl p-3 flex flex-col items-center justify-center cursor-pointer transition">
+              <input type="file" id="dep-screenshot-input" accept="image/*" onchange="handleScreenshotSelected(event)" class="hidden">
+              <div id="dep-screenshot-placeholder" class="text-center py-2">
+                <i class="fa-solid fa-cloud-arrow-up text-xl text-slate-400 mb-1"></i>
+                <p class="text-xs text-slate-500 font-semibold">Upload Payment Receipt</p>
+              </div>
+              <div id="dep-screenshot-preview-box" class="hidden w-full flex items-center justify-between text-xs text-emerald-600 font-bold">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> Screenshot Attached</span>
+                <span class="text-[10px] text-slate-400 underline">Change</span>
+              </div>
+            </label>
+          </div>
+          <button type="submit" class="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-xl shadow-md transition text-xs flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-paper-plane"></i> Submit Deposit for Admin Verification
+          </button>
+        </form>
+      </section>
+
+      <!-- ================= 6. WITHDRAW SCREEN ================= -->
+      <section id="screen-withdraw" class="hidden p-4 space-y-4">
+        <div class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-4 text-white shadow-md">
+          <div class="flex justify-between items-center">
+            <div>
+              <h2 class="text-lg font-black tracking-tight">Withdraw Funds</h2>
+              <p class="text-xs text-slate-400 mt-0.5">Direct payout to your account</p>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] text-slate-400 uppercase font-bold">Balance</span>
+              <p id="wd-current-balance" class="font-black text-sm text-emerald-400">$0.00 USD</p>
+            </div>
+          </div>
+        </div>
+        <div class="flex p-1 bg-slate-100 rounded-xl gap-1">
+          <button id="wd-tab-usdt" onclick="selectWithdrawMethod('usdt')" class="flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold bg-white text-orange-600 shadow-sm transition">USDT (TRC20)</button>
+          <button id="wd-tab-jazzcash" onclick="selectWithdrawMethod('jazzcash')" class="flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition">JazzCash</button>
+          <button id="wd-tab-easypaisa" onclick="selectWithdrawMethod('easypaisa')" class="flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition">EasyPaisa</button>
+        </div>
+        <form onsubmit="handleWithdrawSubmit(event)" class="bg-white rounded-2xl p-4 border border-slate-200 space-y-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Withdrawal Amount (<span id="wd-form-currency-label">USD</span>)</label>
+            <input type="number" id="wd-amount" step="any" required placeholder="Min $12 USD" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Account Holder Full Name</label>
+            <input type="text" id="wd-account-title" required placeholder="Account Title" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Account Number / Wallet Address</label>
+            <input type="text" id="wd-account-identifier" required placeholder="e.g. 03001234567 or T..." class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+          </div>
+          <button type="submit" class="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-xl shadow-md transition text-xs flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-paper-plane"></i> Submit Withdrawal Request
+          </button>
+        </form>
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 space-y-2">
+          <h4 class="font-bold text-xs uppercase tracking-wider text-slate-700">Withdrawal History</h4>
+          <div id="user-withdrawal-history" class="space-y-2"></div>
+        </div>
+      </section>
+
+      <!-- ================= 7. STRICT ADMIN BACKOFFICE ================= -->
+      <section id="screen-admin" class="hidden p-4 space-y-4">
+        <div class="bg-slate-950 text-white rounded-2xl p-4 border border-slate-800 shadow-xl">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-shield-halved"></i></div>
+              <div>
+                <h2 class="text-sm font-black tracking-tight flex items-center gap-1.5">
+                  Admin Control Panel <span class="bg-amber-400 text-slate-950 text-[9px] font-black px-1.5 py-0.5 rounded">MASTER</span>
+                </h2>
+                <p class="text-[10px] text-slate-400">Logged in as: <span class="text-amber-300 font-mono">Adjatt87@gmail.com</span></p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button type="button" onclick="syncFromCloud(false)" id="admin-sync-btn" title="Sync live users from cloud" class="text-xs text-amber-300 hover:text-white flex items-center gap-1 bg-amber-500/20 hover:bg-amber-500/30 px-2.5 py-1.5 rounded-lg border border-amber-500/30 font-bold transition">
+                <i class="fa-solid fa-rotate" id="admin-sync-icon"></i> <span>Sync</span>
+              </button>
+              <button onclick="handleLogout()" class="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 bg-rose-500/10 px-2.5 py-1.5 rounded-lg border border-rose-500/20 font-bold transition"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between px-3 py-1.5 bg-emerald-950/60 border border-emerald-800/60 rounded-xl text-[10px] text-emerald-300 mb-3">
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Dedicated Cloud Database (JSONBin.io Private Key)</span>
+            <span id="admin-last-sync-time" class="text-slate-400 font-mono">Live</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="p-2 bg-slate-900 rounded-xl border border-slate-800">
+              <span class="block text-[10px] text-slate-400">Pending Deposits</span>
+              <span id="admin-badge-dep" class="font-black text-amber-400 text-base">0</span>
+            </div>
+            <div class="p-2 bg-slate-900 rounded-xl border border-slate-800">
+              <span class="block text-[10px] text-slate-400">Pending Payouts</span>
+              <span id="admin-badge-wd" class="font-black text-rose-400 text-base">0</span>
+            </div>
+            <div class="p-2 bg-slate-900 rounded-xl border border-slate-800">
+              <span class="block text-[10px] text-slate-400">Registered Users</span>
+              <span id="admin-badge-users" class="font-black text-emerald-400 text-base">0</span>
+            </div>
+          </div>
+        </div>
+<!-- Adsterra Monetization & Ad Network Suite -->
+        <div class="p-4 bg-slate-900 border border-slate-800 rounded-2xl text-xs space-y-3 text-white shadow-lg mb-3">
+          <div class="flex items-center justify-between">
+            <span class="font-bold flex items-center gap-1.5 text-amber-400">
+              <i class="fa-solid fa-rectangle-ad text-base"></i> Adsterra Monetization Control Center
+            </span>
+            <span class="text-[9px] bg-amber-400/20 text-amber-300 font-extrabold px-2 py-0.5 rounded">Real Ad Income</span>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            Configure your Adsterra Direct Link (Smartlink), Banner ad code, and Social Bar script below.
+          </p>
+
+          <!-- 1. Direct Link -->
+          <div class="space-y-1">
+            <label class="text-[10px] font-bold text-slate-300 flex items-center justify-between">
+              <span>1. Adsterra Direct Link (Smartlink URL)</span>
+              <span class="text-[9px] text-orange-400 font-normal">Opens when user starts ad</span>
+            </label>
+            <div class="flex gap-2">
+              <input type="url" id="admin-ad-link-input" placeholder="e.g. https://www.profitablecpmrate.com/your-smartlink-id" class="flex-1 px-3 py-2 text-xs bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-amber-400">
+              <button type="button" onclick="testOpenAdLink()" class="px-2.5 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-amber-300 font-bold rounded-xl text-[11px] transition shrink-0">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Test Link
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. Adsterra Banner Code -->
+          <div class="space-y-1">
+            <label class="text-[10px] font-bold text-slate-300 flex items-center justify-between">
+              <span>2. Adsterra Banner Code (Container / HTML)</span>
+              <span class="text-[9px] text-orange-400 font-normal">Displays on Watch screen</span>
+            </label>
+            <textarea id="admin-ad-banner-input" rows="2" placeholder='<div id="container-f4d67fd9e6924c356864fd8f8c8d3a0b"></div>' class="w-full px-3 py-1.5 text-[11px] font-mono bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"></textarea>
+          </div>
+
+          <!-- 3. Adsterra Social Bar Script -->
+          <div class="space-y-1">
+            <label class="text-[10px] font-bold text-slate-300 flex items-center justify-between">
+              <span>3. Adsterra Social Bar / Popunder Script URL</span>
+              <span class="text-[9px] text-orange-400 font-normal">Interactive ad script</span>
+            </label>
+            <input type="text" id="admin-ad-socialbar-input" value="https://pl31493201.profitableratecpmnetwork.com/b8/5d/b3/b85db3bf8114fc1cf6a50737b91bc62b.js" class="w-full px-3 py-2 text-xs bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-amber-400">
+          </div>
+
+          <div class="pt-1 border-t border-slate-800/80">
+            <button type="button" onclick="adminSaveAdSettings()" class="w-full py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-extrabold rounded-xl text-xs transition shadow-md">
+              <i class="fa-solid fa-floppy-disk mr-1"></i> Save All Ad Settings
+            </button>
+          </div>
+
+          <!-- Admin Testing Shortcuts -->
+          <div class="pt-2 border-t border-slate-800 flex gap-2">
+            <button type="button" onclick="adminQuickVipForSelf()" class="flex-1 py-1.5 px-2 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-[10px] font-bold rounded-lg transition text-center">
+              <i class="fa-solid fa-crown mr-1"></i> Admin VIP 10 Test (35 Ads)
+            </button>
+            <button type="button" onclick="adminResetSelfAdLimit()" class="flex-1 py-1.5 px-2 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-[10px] font-bold rounded-lg transition text-center">
+              <i class="fa-solid fa-rotate-left mr-1"></i> Reset Counter (0 Ads)
+            </button>
+          </div>
+        </div>
+        <div class="flex p-1 bg-slate-200/70 rounded-xl text-xs gap-1">
+          <button id="admin-tab-dep" onclick="setAdminTab('deposits')" class="flex-1 py-2.5 text-center rounded-lg bg-white text-orange-600 shadow-sm transition font-bold">Deposits (<span id="admin-tab-cnt-dep">0</span>)</button>
+          <button id="admin-tab-wd" onclick="setAdminTab('withdrawals')" class="flex-1 py-2.5 text-center rounded-lg text-slate-500 hover:text-slate-800 transition font-bold">Payouts (<span id="admin-tab-cnt-wd">0</span>)</button>
+          <button id="admin-tab-users" onclick="setAdminTab('users')" class="flex-1 py-2.5 text-center rounded-lg text-slate-500 hover:text-slate-800 transition font-bold">Users (<span id="admin-tab-cnt-users">0</span>)</button>
+        </div>
+
+        <div id="admin-panel-deposits" class="space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex justify-between items-center">
+            <span>Manual Deposits (Proof Review)</span>
+            <span class="text-[10px] text-slate-400">USDT TRC20 • JazzCash • EasyPaisa</span>
+          </h3>
+          <div id="admin-deposits-list" class="space-y-2.5"></div>
+        </div>
+
+        <div id="admin-panel-withdrawals" class="hidden space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex justify-between items-center">
+            <span>Withdrawal Requests (Payout Queue)</span>
+          </h3>
+          <div id="admin-withdrawals-list" class="space-y-2.5"></div>
+        </div>
+
+        <div id="admin-panel-users" class="hidden space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex justify-between items-center">
+            <span>All Registered Accounts</span>
+            <span class="text-[10px] text-slate-400">Real Database Snapshot</span>
+          </h3>
+          <div id="admin-users-list" class="space-y-2"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Global Receipt Preview Modal -->
+    <div id="receipt-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl relative">
+        <div class="p-3 bg-slate-900 text-white flex justify-between items-center">
+          <span class="text-xs font-bold"><i class="fa-solid fa-receipt mr-1"></i> Attached Payment Receipt</span>
+          <button onclick="closeReceiptModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-sm"></i></button>
+        </div>
+        <div class="p-2 max-h-[70vh] overflow-auto flex items-center justify-center bg-slate-100">
+          <img id="receipt-modal-img" src="" alt="Proof" class="max-w-full max-h-[65vh] object-contain rounded-lg">
+        </div>
+        <div class="p-2.5 bg-white border-t border-slate-200 text-center">
+          <button onclick="closeReceiptModal()" class="w-full py-2 bg-slate-900 text-white rounded-xl text-xs font-bold">Close Receipt</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <nav id="bottom-nav-bar" class="fixed bottom-0 z-40 w-full max-w-md bg-white/95 backdrop-blur-md border-t border-slate-200 px-3 py-2 flex items-center justify-around text-[10px] font-bold text-slate-400 hidden">
+      <button onclick="switchScreen('home')" id="nav-btn-home" class="flex flex-col items-center gap-1 transition py-1 text-orange-600">
+        <i class="fa-solid fa-house text-base"></i><span>Home</span>
+      </button>
+      <button onclick="switchScreen('plans')" id="nav-btn-plans" class="flex flex-col items-center gap-1 transition py-1">
+        <i class="fa-solid fa-layer-group text-base"></i><span>Plans</span>
+      </button>
+      <button onclick="switchScreen('watch')" id="nav-btn-watch" class="flex flex-col items-center gap-1 transition py-1 relative">
+        <div class="w-9 h-9 -mt-4 rounded-full bg-gradient-to-tr from-orange-500 to-amber-400 text-white flex items-center justify-center shadow-lg shadow-orange-500/30">
+          <i class="fa-solid fa-play text-sm ml-0.5"></i>
+        </div>
+        <span>Watch</span>
+      </button>
+      <button onclick="switchScreen('deposit')" id="nav-btn-deposit" class="flex flex-col items-center gap-1 transition py-1">
+        <i class="fa-solid fa-circle-plus text-base"></i><span>Deposit</span>
+      </button>
+      <button onclick="switchScreen('withdraw')" id="nav-btn-withdraw" class="flex flex-col items-center gap-1 transition py-1">
+        <i class="fa-solid fa-money-bill-transfer text-base"></i><span>Withdraw</span>
+      </button>
+    </nav>
+
+    <!-- Toast Notification Popup -->
+    <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 transform hidden">
+      <div class="px-4 py-2.5 rounded-xl bg-slate-900/95 text-white shadow-xl text-xs font-bold flex items-center gap-2 border border-slate-700">
+        <span id="toast-icon"></span>
+        <span id="toast-message">Notification</span>
+      </div>
+    </div>
+
+  </div>
+
+ 
+              
+          
+<!-- APPLICATION LOGIC SCRIPT -->
+  <script>
+    const ADMIN_EMAIL = "adjatt87@gmail.com";
+    const USD_TO_PKR = 280.0;
+    const AD_REWARD_USD = 0.05;
+
+    // Dedicated Cloud Database (JSONBin.io API with Private Master Key)
+    const JSONBIN_URL = "https://api.jsonbin.io/v3/b/6ab4e6b7ffd5d1605329b5fd";
+    const JSONBIN_KEY = "$2a$10$2zkWHyyET6.M2zVcJkTBX.n1wrpw51LweZM.KfFaZRJgqW071pfQq";
+    const EVENT_STREAM_URL = "https://ntfy.sh/pi_passive_adjatt87_stream";
+    let isSyncingCloud = false;
+    let cloudAutoSyncTimer = null;
+
+    async function syncFromCloud(silent = true) {
+      if (isSyncingCloud) return;
+      isSyncingCloud = true;
+      const syncIcon = document.getElementById("admin-sync-icon");
+      if (syncIcon) syncIcon.classList.add("fa-spin");
+
+      try {
+        let localUsers = getUsers();
+        let localDeps = getDeposits();
+        let localWds = getWithdrawals();
+        let hasChanges = false;
+
+        try {
+          const res = await fetch(`${JSONBIN_URL}/latest`, {
+            headers: { "X-Master-Key": JSONBIN_KEY, "X-Bin-Meta": "false" }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data) {
+              const remoteUsers = data.users || (data.record ? data.record.users : []) || [];
+              const remoteDeps = data.deposits || (data.record ? data.record.deposits : []) || [];
+              const remoteWds = data.withdrawals || (data.record ? data.record.withdrawals : []) || [];
+
+              const userMap = new Map();
+              remoteUsers.forEach(u => { if (u && u.identifier) userMap.set(u.identifier.toLowerCase(), { ...u }); });
+              localUsers.forEach(u => {
+                if (!u || !u.identifier) return;
+                const k = u.identifier.toLowerCase();
+                const remote = userMap.get(k);
+                if (remote) {
+                  const localTime = Number(u.lastUpdatedAt) || 0;
+                  const remoteTime = Number(remote.lastUpdatedAt) || 0;
+                  let chosen = (localTime >= remoteTime) ? { ...remote, ...u } : { ...u, ...remote };
+
+                  const combinedPlans = [...(remote.activePlans || []), ...(u.activePlans || [])];
+                  const uniquePlansMap = new Map();
+                  combinedPlans.forEach(p => { if (p && p.planId) uniquePlansMap.set(String(p.planId), p); });
+                  const finalPlans = Array.from(uniquePlansMap.values());
+
+                  const finalPlanLimit = finalPlans.length > 0
+                    ? finalPlans.reduce((sum, p) => sum + (p.dailyAds || 0), 0)
+                    : Math.max(Number(u.planDailyAdLimit) || 0, Number(remote.planDailyAdLimit) || 0, 5);
+
+                  const finalPlanName = finalPlans.length > 0
+                    ? finalPlans.map(p => p.name).join(" + ")
+                    : (chosen.activePlanName || "FREE Starter Plan");
+
+                  userMap.set(k, {
+                    ...chosen,
+                    inbox: (remote.inbox && remote.inbox.length > 0) ? remote.inbox : (u.inbox || []),
+                    activePlans: finalPlans,
+                    planDailyAdLimit: finalPlanLimit,
+                    activePlanName: finalPlanName
+                  });
+                } else {
+                  userMap.set(k, { ...u });
+                }
+              });
+              localUsers = Array.from(userMap.values());
+
+              const depMap = new Map();
+              remoteDeps.forEach(d => { if (d && d.id) depMap.set(String(d.id), { ...d }); });
+              localDeps.forEach(d => {
+                if (!d || !d.id) return;
+                const key = String(d.id);
+                const remote = depMap.get(key);
+                if (remote) {
+                  let resolvedStatus = d.status || remote.status || "PENDING";
+                  if (d.status === "APPROVED" || remote.status === "APPROVED") {
+                    resolvedStatus = "APPROVED";
+                  } else if (d.status === "REJECTED" || remote.status === "REJECTED") {
+                    resolvedStatus = "REJECTED";
+                  }
+                  depMap.set(key, { ...remote, ...d, status: resolvedStatus });
+                } else {
+                  depMap.set(key, { ...d });
+                }
+              });
+              localDeps = Array.from(depMap.values());
+
+              const wdMap = new Map();
+              remoteWds.forEach(w => { if (w && w.id) wdMap.set(String(w.id), { ...w }); });
+              localWds.forEach(w => {
+                if (!w || !w.id) return;
+                const key = String(w.id);
+                const remote = wdMap.get(key);
+                if (remote) {
+                  let resolvedStatus = w.status || remote.status || "PENDING";
+                  if (w.status === "COMPLETED" || remote.status === "COMPLETED") resolvedStatus = "COMPLETED";
+                  else if (w.status === "REJECTED" || remote.status === "REJECTED") resolvedStatus = "REJECTED";
+                  wdMap.set(key, { ...remote, ...w, status: resolvedStatus });
+                } else {
+                  wdMap.set(key, { ...w });
+                }
+              });
+              localWds = Array.from(wdMap.values());
+
+              hasChanges = true;
             }
-            if (isNaN(amt) || amt < 5) {
-                alert('Minimum withdrawal amount is $5.00');
-                return;
-            }
-            if (amt > state.balance) {
-                alert('Insufficient balance for this withdrawal request!');
-                return;
-            }
-            
-            state.balance -= amt;
-            updateUI();
-            document.getElementById('withdrawAmount').value = '';
-            document.getElementById('accountDetails').value = '';
-            alert('Withdrawal request submitted successfully! Funds will be transferred within 24 hours.');
+          }
+        } catch (e) {
+          console.warn("JSONBin cloud read error:", e);
         }
 
-        updateUI();
-    </script>
-</body>
-</html>
+        if (hasChanges) {
+          saveUsers(localUsers);
+          saveDeposits(localDeps);
+          saveWithdrawals(localWds);
+        }
+
+        if (currentScreen === "admin") {
+          renderAdminScreen();
+        } else if (currentScreen !== "auth") {
+          refreshCurrentScreen(currentScreen);
+          checkUserInboxNotifications();
+        }
+      } catch (err) {
+        console.warn("Cloud sync offline fallback:", err);
+      } finally {
+        isSyncingCloud = false;
+        if (syncIcon) syncIcon.classList.remove("fa-spin");
+      }
+    }
+const SUPABASE_URL = "https://pwoktwbyxrqibxeueqrj.supabase.co";
+const SUPABASE_KEY = "sb_publishable_dEy5j2PPP_JNE7cukAf6Eg_8no0Rfck";
+
+async function pushToSupabase(usersList, depsList, wdsList) {
+  try {
+    if (usersList && usersList.length > 0) {
+      const rows = usersList.map(u => ({
+        id: String(u.id),
+        identifier: u.identifier,
+        full_name: u.fullName || "",
+        phone: u.phone || "",
+        password: u.password || "",
+        balance_usd: Number(u.balanceUsd) || 0,
+        balance_pkr: Number(u.balancePkr) || 0,
+        active_plan_name: u.activePlanName || "Free",
+        ads_watched_today: Number(u.adsWatchedToday) || 0,
+        plan_daily_ad_limit: Number(u.planDailyAdLimit) || 2,
+        referral_code: u.referralCode || ""
+      }));
+      fetch(`${SUPABASE_URL}/rest/v1/users`, {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          "Prefer": "resolution=merge-duplicates"
+        },
+        body: JSON.stringify(rows)
+      }).catch(() => {});
+    }
+
+    if (depsList && depsList.length > 0) {
+      const depRows = depsList.map(d => ({
+        id: String(d.id),
+        user_identifier: d.userIdentifier,
+        amount: Number(d.amount) || 0,
+        method: d.method || "easypaisa",
+        tid: d.tid || "",
+        screenshot: (d.screenshot && d.screenshot.length > 500) ? "Attached" : (d.screenshot || ""),
+        status: d.status || "pending"
+      }));
+      fetch(`${SUPABASE_URL}/rest/v1/deposits`, {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          "Prefer": "resolution=merge-duplicates"
+        },
+        body: JSON.stringify(depRows)
+      }).catch(() => {});
+    }
+
+    if (wdsList && wdsList.length > 0) {
+      const wdRows = wdsList.map(w => ({
+        id: String(w.id),
+        user_identifier: w.userIdentifier,
+        amount: Number(w.amount) || 0,
+        method: w.method || "easypaisa",
+        account_number: w.accountNumber || "",
+        account_title: w.accountTitle || "",
+        status: w.status || "pending"
+      }));
+      fetch(`${SUPABASE_URL}/rest/v1/withdrawals`, {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          "Prefer": "resolution=merge-duplicates"
+        },
+        body: JSON.stringify(wdRows)
+      }).catch(() => {});
+    }
+  } catch (err) {}
+}
+    // 🔄 Fetch Live Data from Supabase
+async function fetchFromSupabase() {
+  try {
+    const uRes = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*`, {
+      headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
+    });
+    if (uRes.ok) {
+      const sbUsers = await uRes.json();
+      if (sbUsers && sbUsers.length > 0) {
+        let localUsers = getUsers();
+        const userMap = new Map();
+        localUsers.forEach(u => userMap.set(String(u.identifier).toLowerCase(), u));
+        sbUsers.forEach(su => {
+          const key = String(su.identifier).toLowerCase();
+          const existing = userMap.get(key) || {};
+          const today = new Date().toDateString();
+          const isSameDay = (existing.lastAdResetDate === today);
+
+          userMap.set(key, {
+            ...existing,
+            id: su.id || existing.id,
+            identifier: su.identifier,
+            fullName: su.full_name || existing.fullName || "",
+            phone: su.phone || existing.phone || "",
+            password: su.password || existing.password || "",
+            balanceUsd: Number(su.balance_usd) || existing.balanceUsd || 0,
+            balancePkr: Number(su.balance_pkr) || existing.balancePkr || 0,
+            activePlanName: su.active_plan_name || existing.activePlanName || "Free",
+            adsWatchedToday: isSameDay ? (Number(su.ads_watched_today) || existing.adsWatchedToday || 0) : 0,
+            lastAdResetDate: existing.lastAdResetDate || today,
+            planDailyAdLimit: Number(su.plan_daily_ad_limit) || existing.planDailyAdLimit || 0,
+            referralCode: su.referral_code || existing.referralCode || ""
+          });
+        });
+        saveUsers(Array.from(userMap.values()));
+      }
+    }
+
+    const dRes = await fetch(`${SUPABASE_URL}/rest/v1/deposits?select=*`, {
+      headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
+    });
+    if (dRes.ok) {
+      const sbDeps = await dRes.json();
+      if (sbDeps && sbDeps.length > 0) {
+        let localDeps = getDeposits();
+        const depMap = new Map();
+        localDeps.forEach(d => depMap.set(String(d.id), d));
+        sbDeps.forEach(sd => {
+          const key = String(sd.id);
+          const existing = depMap.get(key) || {};
+          
+          // اگر ایڈمن نے اپروو یا ریجیکٹ کر دیا ہے تو وہ ہمیشہ لاک رہے گا، دوبارہ Pending نہیں بنے گا
+          let finalStatus = "PENDING";
+          if (existing.status === "APPROVED" || String(sd.status).toUpperCase() === "APPROVED") finalStatus = "APPROVED";
+          else if (existing.status === "REJECTED" || String(sd.status).toUpperCase() === "REJECTED") finalStatus = "REJECTED";
+
+          depMap.set(key, {
+            ...existing,
+            id: sd.id,
+            userIdentifier: sd.user_identifier || existing.userIdentifier,
+            amount: Number(sd.amount) || existing.amount || 0,
+            method: sd.method || existing.method,
+            tid: sd.tid || existing.tid || "",
+            screenshot: sd.screenshot || existing.screenshot || "",
+            status: finalStatus,
+            date: sd.created_at || existing.date || new Date().toISOString()
+          });
+        });
+        saveDeposits(Array.from(depMap.values()));
+      }
+    }
+  
+    const wRes = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?select=*`, {
+      headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
+    });
+    if (wRes.ok) {
+      const sbWds = await wRes.json();
+      if (sbWds && sbWds.length > 0) {
+        let localWds = getWithdrawals();
+        const wdMap = new Map();
+        localWds.forEach(w => wdMap.set(String(w.id), w));
+        sbWds.forEach(sw => {
+          const key = String(sw.id);
+          const existing = wdMap.get(key) || {};
+          wdMap.set(key, {
+            ...existing,
+            id: sw.id,
+            userIdentifier: sw.user_identifier,
+            amount: Number(sw.amount) || 0,
+            method: sw.method,
+            accountNumber: sw.account_number || "",
+            accountTitle: sw.account_title || "",
+            status: sw.status || existing.status || "PENDING",
+            date: sw.created_at || existing.date || new Date().toISOString()
+          });
+        });
+        saveWithdrawals(Array.from(wdMap.values()));
+      }
+    }
+
+    if (currentScreen === "admin") {
+      renderAdminScreen();
+    }
+  } catch (err) {}
+}
+
+async function updateSupabaseDepositStatus(depositId, newStatus) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/deposits?id=eq.${depositId}`, {
+      method: "PATCH",
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ status: newStatus })
+    });
+  } catch(e) {}
+}
+    async function syncToCloud(eventType = null, eventPayload = null) {
+      try {
+        let localUsers = getUsers();
+        let localDeps = getDeposits();
+        let localWds = getWithdrawals();
+pushToSupabase(localUsers, localDeps, localWds);
+        fetchFromSupabase();
+        if (eventType && eventPayload) {
+          try {
+            const safePayload = { ...eventPayload };
+            if (safePayload.screenshot && safePayload.screenshot.length > 2000) {
+              safePayload.screenshot = "[Image attached]";
+            }
+            fetch(EVENT_STREAM_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ type: e
