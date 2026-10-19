@@ -1,438 +1,1309 @@
 <!DOCTYPE html>
-<html lang="ur" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VideoTube - Professional Player</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Passive Income - Smart VIP Earning Platform</title>
+  <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            ytDark: '#0f0f0f',
-            ytCard: '#181818',
-            ytRed: '#FF0000'
-          }
-        }
-      }
-    }
-  </script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://www.youtube.com/iframe_api"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    /* یوٹیوب کے کسی بھی پوشیدہ واٹر مارک یا کلک آؤٹ کو بلاک کرنے کی کسٹم شیلڈز */
-    .yt-shield-top {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      z-index: 20;
-      pointer-events: auto;
-      background: transparent;
-    }
-    .yt-shield-bottom {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      z-index: 20;
-      pointer-events: auto;
-      background: transparent;
-    }
-    /* کسٹم پروگریس بار رینج */
-    input[type=range]::-webkit-slider-thumb {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: #ff0000;
-      cursor: pointer;
-      -webkit-appearance: none;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-[#0f0f0f] text-white font-sans antialiased min-h-screen flex flex-col selection:bg-red-600">
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex justify-center selection:bg-orange-500 selection:text-white">
 
-  <!-- Header -->
-  <header class="sticky top-0 z-40 bg-[#0f0f0f]/95 border-b border-neutral-800 px-4 py-2.5 flex items-center justify-between">
-    <div class="flex items-center space-x-2.5 cursor-pointer" onclick="filterCat('All'); closePlayer();">
-      <div class="bg-red-600 w-8 h-6 rounded-lg flex items-center justify-center shadow-lg shadow-red-600/30">
-        <i class="fa-solid fa-play text-white text-xs"></i>
+  <!-- Mobile Container Wrapper -->
+  <div id="app" class="w-full max-w-md bg-white min-h-screen shadow-2xl relative flex flex-col pb-20">
+
+    <!-- Global App Header -->
+    <header id="global-header" class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-3 flex items-center justify-between transition-all hidden">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-400 flex items-center justify-center text-white shadow-md shadow-orange-500/20">
+          <i class="fa-solid fa-wallet text-sm"></i>
+        </div>
+        <div>
+          <h1 class="text-sm font-extrabold text-slate-900 tracking-tight leading-none">Passive Income</h1>
+          <span class="text-[10px] font-bold text-orange-500">VIP Earning Hub</span>
+        </div>
       </div>
-      <span class="text-xl font-bold tracking-tight">VideoTube</span>
-    </div>
-
-    <!-- Search Bar -->
-    <div class="flex-1 max-w-lg mx-4">
-      <div class="relative">
-        <input 
-          id="searchInput" 
-          type="text" 
-          placeholder="سرچ کریں..." 
-          onkeyup="searchVideos()"
-          class="w-full bg-[#181818] border border-neutral-700 rounded-full py-1.5 pl-4 pr-10 text-sm focus:outline-none focus:border-red-500 transition placeholder:text-neutral-500"
-        />
-        <i class="fa-solid fa-magnifying-glass text-neutral-400 absolute right-3.5 top-2.5 text-sm"></i>
+      <div class="flex items-center space-x-2">
+        <button id="header-admin-btn" onclick="switchScreen('admin')" class="hidden px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
+          <i class="fa-solid fa-shield-halved"></i> Admin
+        </button>
+        <button onclick="toggleUserMenu()" class="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-slate-100 transition relative">
+          <i class="fa-regular fa-user text-sm"></i>
+        </button>
       </div>
-    </div>
+    </header>
 
-    <!-- User Profile Icon -->
-    <div class="flex items-center space-x-3">
-      <button class="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center text-neutral-300">
-        <i class="fa-regular fa-bell text-sm"></i>
+    <!-- Dropdown User Menu -->
+    <div id="user-menu-dropdown" class="hidden absolute top-14 right-4 z-50 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 text-xs space-y-1">
+      <div class="p-2.5 bg-slate-50 rounded-xl mb-1 border border-slate-100">
+        <p class="font-extrabold text-slate-900 text-xs truncate" id="menu-user-name">User</p>
+        <p class="text-[10px] text-slate-400 font-mono truncate" id="menu-user-id">ID</p>
+        <span id="menu-user-badge" class="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">Member</span>
+      </div>
+      <a href="javascript:void(0)" onclick="switchScreen('home'); closeUserMenu()" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium">
+        <i class="fa-solid fa-house text-orange-500 w-4"></i> Dashboard
+      </a>
+      <a href="javascript:void(0)" onclick="switchScreen('plans'); closeUserMenu()" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium">
+        <i class="fa-solid fa-gem text-amber-500 w-4"></i> 10 VIP Plans
+      </a>
+      <a href="javascript:void(0)" onclick="switchScreen('deposit'); closeUserMenu()" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium">
+        <i class="fa-solid fa-circle-plus text-emerald-500 w-4"></i> Deposit Funds
+      </a>
+      <a href="javascript:void(0)" onclick="switchScreen('withdraw'); closeUserMenu()" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium">
+        <i class="fa-solid fa-money-bill-transfer text-indigo-500 w-4"></i> Withdraw
+      </a>
+      <a id="menu-admin-link" href="javascript:void(0)" onclick="switchScreen('admin'); closeUserMenu()" class="hidden flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-amber-50 text-amber-700 font-bold border-t border-slate-100 mt-1">
+        <i class="fa-solid fa-shield-halved text-amber-600 w-4"></i> Admin Backoffice
+      </a>
+      <button onclick="handleLogout()" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-rose-600 hover:bg-rose-50 font-bold transition">
+        <i class="fa-solid fa-arrow-right-from-bracket w-4"></i> Logout
       </button>
-      <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-red-600 to-red-400 flex items-center justify-center font-bold text-xs">
-        U
-      </div>
-    </div>
-  </header>
-
-  <!-- Categories Bar -->
-  <div class="sticky top-[53px] z-30 bg-[#0f0f0f]/95 backdrop-blur flex space-x-2 px-4 py-2.5 overflow-x-auto border-b border-neutral-800/80 text-xs no-scrollbar">
-    <button onclick="filterCat('All')" class="cat-btn px-3.5 py-1.5 rounded-lg bg-white text-black font-semibold transition">All</button>
-    <button onclick="filterCat('Tech')" class="cat-btn px-3.5 py-1.5 rounded-lg bg-neutral-800 text-neutral-300 hover:bg-neutral-700 transition">Tech</button>
-    <button onclick="filterCat('Gaming')" class="cat-btn px-3.5 py-1.5 rounded-lg bg-neutral-800 text-neutral-300 hover:bg-neutral-700 transition">Gaming</button>
-    <button onclick="filterCat('Music')" class="cat-btn px-3.5 py-1.5 rounded-lg bg-neutral-800 text-neutral-300 hover:bg-neutral-700 transition">Music</button>
-    <button onclick="filterCat('Movies')" class="cat-btn px-3.5 py-1.5 rounded-lg bg-neutral-800 text-neutral-300 hover:bg-neutral-700 transition">Movies</button>
-  </div>
-
-  <!-- 100% Real Custom Professional Video Player (No YouTube Branding) -->
-  <div id="playerSection" class="hidden max-w-5xl mx-auto w-full p-4 lg:p-6 transition-all duration-300">
-    <div id="videoContainer" class="relative group aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-2xl border border-neutral-800">
-      
-      <!-- YouTube Video Container (controls=0 se YouTube کا لوگو اور پاپ اپس بند ہو جاتے ہیں) -->
-      <div id="ytPlayerDiv" class="w-full h-full pointer-events-none"></div>
-
-      <!-- Invisible Shield (روکتی ہے کہ کوئی غلطی سے یوٹیوب سائٹ پر نہ جائے) -->
-      <div class="yt-shield-top"></div>
-      <div class="yt-shield-bottom"></div>
-
-      <!-- Click to Play/Pause on whole screen -->
-      <div class="absolute inset-0 z-20 cursor-pointer" onclick="togglePlayPause()"></div>
-
-      <!-- Center Play/Pause Indicator -->
-      <div id="centerPlayIcon" class="absolute inset-0 z-30 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-200">
-        <div class="w-16 h-16 bg-black/70 backdrop-blur rounded-full flex items-center justify-center text-white text-2xl shadow-xl">
-          <i id="centerIcon" class="fa-solid fa-play ml-1"></i>
-        </div>
-      </div>
-
-      <!-- Custom Professional Bottom Control Bar (100% Real Website Controls) -->
-      <div id="customControls" class="absolute bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black/95 via-black/60 to-transparent p-3 pt-8 transition-opacity duration-300 opacity-100">
-        <!-- Progress Slider Bar -->
-        <div class="relative w-full flex items-center mb-2">
-          <input 
-            id="progressBar" 
-            type="range" 
-            min="0" 
-            max="100" 
-            value="0" 
-            step="0.1" 
-            oninput="seekVideo(this.value)" 
-            class="w-full h-1 bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-red-600"
-          />
-        </div>
-
-        <!-- Controls Row -->
-        <div class="flex items-center justify-between text-white text-sm">
-          <div class="flex items-center space-x-4">
-            <!-- Play/Pause Button -->
-            <button onclick="togglePlayPause()" class="hover:text-red-500 transition">
-              <i id="playPauseIcon" class="fa-solid fa-play text-lg"></i>
-            </button>
-
-            <!-- Volume Mute Button -->
-            <button onclick="toggleMute()" class="hover:text-neutral-300 transition">
-              <i id="volumeIcon" class="fa-solid fa-volume-high text-base"></i>
-            </button>
-
-            <!-- Time Display -->
-            <span id="timeDisplay" class="text-xs text-neutral-300 font-mono tracking-wider">00:00 / 00:00</span>
-          </div>
-
-          <div class="flex items-center space-x-3">
-            <!-- Fullscreen Button -->
-            <button onclick="toggleFullScreen()" class="hover:text-red-500 transition p-1">
-              <i class="fa-solid fa-expand text-base"></i>
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
 
-    <!-- Video Info Section -->
-    <div class="mt-4">
-      <h1 id="playerTitle" class="text-xl md:text-2xl font-bold text-neutral-100 leading-snug"></h1>
-      
-      <div class="flex flex-wrap items-center justify-between gap-4 mt-3 pb-4 border-b border-neutral-800">
-        <!-- Channel Info -->
-        <div class="flex items-center space-x-3">
-          <div id="playerChannelAvatar" class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center font-bold text-sm text-white">C</div>
+    <!-- MAIN SCREENS CONTAINER -->
+    <main class="flex-1 overflow-y-auto">
+
+      <!-- ================= 1. AUTH SCREEN ================= -->
+      <section id="screen-auth" class="p-6 flex flex-col justify-center min-h-[90vh]">
+        <div class="text-center mb-6">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-400 mx-auto flex items-center justify-center text-white shadow-xl shadow-orange-500/30 mb-3">
+            <i class="fa-solid fa-wallet text-2xl"></i>
+          </div>
+          <h2 class="text-2xl font-black text-slate-900 tracking-tight">Passive Income</h2>
+          <p class="text-xs text-slate-500 mt-1">Earn Daily Micro-Rewards & Fixed $0.05 Ad Returns</p>
+        </div>
+
+        <!-- Auth Tabs -->
+        <div class="flex p-1 bg-slate-100 rounded-xl mb-5">
+          <button id="auth-tab-login" onclick="setAuthMode('login')" class="flex-1 py-2.5 text-xs font-bold rounded-lg bg-white text-orange-600 shadow-sm transition">Sign In</button>
+          <button id="auth-tab-register" onclick="setAuthMode('register')" class="flex-1 py-2.5 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition">Create Account</button>
+        </div>
+
+        <!-- Auth Form -->
+        <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-3.5">
+          <div id="auth-fullname-field" class="hidden">
+            <label class="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-regular fa-user text-sm"></i></span>
+              <input type="text" id="auth-fullname" placeholder="e.g. John Doe" class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+            </div>
+          </div>
+
           <div>
-            <h3 id="playerChannel" class="font-bold text-sm text-white"></h3>
-            <p class="text-xs text-neutral-400">1.2M subscribers</p>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Email or Mobile Number</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-regular fa-envelope text-sm"></i></span>
+              <input type="text" id="auth-identifier" required placeholder="user@gmail.com or 03001234567" class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+            </div>
           </div>
-          <button class="bg-white hover:bg-neutral-200 text-black px-4 py-2 rounded-full font-bold text-xs transition ml-2">Subscribe</button>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-lock text-sm"></i></span>
+              <input type="password" id="auth-password" required placeholder="••••••••" class="w-full pl-10 pr-10 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+              <button type="button" onclick="togglePasswordVisibility('auth-password')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
+                <i class="fa-regular fa-eye text-sm"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Referral Code Input (Registration only) -->
+          <div id="auth-referral-field" class="hidden">
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-bold text-slate-700">Referral Code (Optional)</label>
+              <span class="text-[10px] text-emerald-600 font-bold flex items-center gap-1"><i class="fa-solid fa-gift"></i> Bonus Eligible</span>
+            </div>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-ticket text-sm"></i></span>
+              <input type="text" id="auth-referral-code" placeholder="e.g. PI-123456" class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white uppercase tracking-wider font-mono transition">
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">If invited by a friend, enter their code here.</p>
+          </div>
+
+          <button type="submit" id="auth-submit-btn" class="w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-xl shadow-lg shadow-orange-500/25 transition flex items-center justify-center gap-2 text-sm mt-2">
+            <span>Sign In</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
+        </form>
+
+        <!-- Trusted Partners & Official Collaborations Section -->
+        <div class="mt-6 pt-5 border-t border-slate-200 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] uppercase tracking-wider font-extrabold text-slate-500 flex items-center gap-1.5">
+              <i class="fa-solid fa-handshake text-orange-500"></i> Official Partners & Ecosystem
+            </span>
+            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+              <i class="fa-solid fa-shield-check"></i> Verified Network
+            </span>
+          </div>
+
+          <!-- Partner Logos Grid -->
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm">
+              <div class="w-8 h-8 rounded-lg bg-amber-400/10 text-amber-500 flex items-center justify-center text-lg font-black mb-1"><i class="fa-brands fa-bitcoin"></i></div>
+              <span class="text-[11px] font-black text-slate-800 leading-tight">Binance</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm">
+              <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-coins"></i></div>
+              <span class="text-[11px] font-black text-slate-800 leading-tight">Tether USDT</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm">
+              <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-cube"></i></div>
+              <span class="text-[11px] font-black text-slate-800 leading-tight">Tron DAO</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm">
+              <div class="w-8 h-8 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-money-bill-wave"></i></div>
+              <span class="text-[11px] font-black text-slate-800 leading-tight">JazzCash</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm">
+              <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-wallet"></i></div>
+              <span class="text-[11px] font-black text-slate-800 leading-tight">EasyPaisa</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm">
+              <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center text-lg font-black mb-1"><i class="fa-solid fa-shield-halved"></i></div>
+              <span class="text-[11px] font-black text-slate-800 leading-tight">Cloudflare</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. HOME SCREEN ================= -->
+      <section id="screen-home" class="hidden p-4 space-y-4">
+        <!-- Balance Card -->
+        <div class="bg-gradient-to-br from-orange-500 via-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-xl shadow-orange-500/25 relative overflow-hidden">
+          <div class="flex justify-between items-start mb-2">
+            <span class="text-xs font-semibold text-orange-100 tracking-wide uppercase">Available Balance</span>
+            <span id="home-badge-plan" class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-bold tracking-wider">No Plan</span>
+          </div>
+          <div>
+            <div class="text-3xl font-black tracking-tight" id="home-balance-usd">$0.00 USD</div>
+            <div class="text-sm font-semibold text-orange-100" id="home-balance-pkr">≈ 0 PKR</div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-white/20">
+            <button onclick="switchScreen('deposit')" class="py-2.5 px-3 bg-white text-orange-600 hover:bg-orange-50 rounded-xl font-bold text-xs shadow transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-circle-plus text-orange-500"></i> Deposit Funds
+            </button>
+            <button onclick="switchScreen('withdraw')" class="py-2.5 px-3 bg-orange-700/60 hover:bg-orange-700/80 text-white rounded-xl font-bold text-xs backdrop-blur-sm border border-white/20 transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-money-bill-transfer text-amber-300"></i> Withdraw
+            </button>
+          </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="flex items-center space-x-2 text-xs">
-          <div class="flex items-center bg-neutral-800 rounded-full overflow-hidden">
-            <button class="flex items-center space-x-1.5 px-3 py-2 hover:bg-neutral-700 transition text-neutral-200">
-              <i class="fa-regular fa-thumbs-up"></i>
-              <span>124K</span>
-            </button>
-            <div class="w-[1px] h-4 bg-neutral-700"></div>
-            <button class="px-3 py-2 hover:bg-neutral-700 transition text-neutral-200">
-              <i class="fa-regular fa-thumbs-down"></i>
-            </button>
+        <!-- VIP Plan & Ads Widget -->
+        <div id="home-vip-card" class="bg-white rounded-2xl p-4 border border-orange-100 shadow-sm relative overflow-hidden">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 id="home-plan-title" class="font-bold text-sm text-slate-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-gem text-slate-400"></i> No Active VIP Plan
+              </h3>
+              <p id="home-plan-subtitle" class="text-xs text-slate-500 mt-0.5">Activate a VIP plan to unlock daily ad limits</p>
+            </div>
+            <button onclick="switchScreen('plans')" class="text-xs font-bold text-orange-600 hover:text-orange-700 bg-orange-50 px-3 py-1.5 rounded-lg border border-orange-200 transition">Upgrade</button>
           </div>
-          <button onclick="copyShareLink()" class="flex items-center space-x-1.5 bg-neutral-800 hover:bg-neutral-700 px-3.5 py-2 rounded-full text-neutral-200 transition">
-            <i class="fa-solid fa-share"></i>
-            <span>Share</span>
-          </button>
-          <button onclick="closePlayer()" class="bg-neutral-800 hover:bg-neutral-700 px-3 py-2 rounded-full text-neutral-400 hover:text-white transition">
-            <i class="fa-solid fa-xmark mr-1"></i> بند کریں
+          <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="font-semibold text-slate-600">Daily Ads Watched Today:</span>
+              <span id="home-ads-progress-text" class="font-black text-orange-600">0 / 0 Ads</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+              <div id="home-ads-progress-bar" class="bg-gradient-to-r from-orange-500 to-amber-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <div class="flex justify-between items-center text-[11px] text-slate-400 mt-2">
+              <span><i class="fa-solid fa-coins text-amber-500"></i> $0.05 USD / Ad</span>
+              <span><i class="fa-regular fa-clock"></i> Resets in: <span id="home-timer-countdown">24h 00m</span></span>
+            </div>
+          </div>
+          <button onclick="switchScreen('watch')" class="w-full mt-3 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl font-bold text-xs shadow-md shadow-orange-500/20 hover:from-orange-600 hover:to-amber-600 transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-play"></i> <span>Watch Ads & Earn $0.05 Each</span>
           </button>
         </div>
-      </div>
 
-      <!-- Description Box -->
-      <div class="mt-3 bg-[#181818] p-4 rounded-xl text-xs text-neutral-300 leading-relaxed border border-neutral-800/60">
-        <p id="playerViews" class="font-bold text-neutral-200 mb-1"></p>
-        <p id="playerDesc">Enjoy watching this video in high definition on VideoTube.</p>
+        <!-- Invite Friends Card -->
+        <div class="bg-gradient-to-br from-orange-50 via-amber-50 to-orange-100/50 rounded-2xl p-4 border border-orange-200 shadow-sm relative overflow-hidden">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-500 text-white flex items-center justify-center font-bold text-sm shadow-sm"><i class="fa-solid fa-gift"></i></div>
+              <div>
+                <h4 class="font-bold text-xs text-slate-800">Invite Friends & Earn</h4>
+                <p class="text-[10px] text-slate-500">Earn $1.00 USD on first deposit</p>
+              </div>
+            </div>
+            <span class="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-emerald-300">+$1.00 / Deposit</span>
+          </div>
+          <div class="bg-white rounded-xl p-2.5 border border-orange-200 flex items-center justify-between mb-3 shadow-inner">
+            <div>
+              <span class="block text-[9px] uppercase tracking-wider font-bold text-slate-400">Your Referral Code</span>
+              <span id="home-referral-code" class="text-sm font-black font-mono text-orange-600 tracking-wider">PI-100000</span>
+            </div>
+            <div class="flex gap-1.5">
+              <button type="button" onclick="copyReferralCode()" class="px-2.5 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm transition"><i class="fa-regular fa-copy"></i> Copy</button>
+              <button type="button" onclick="shareReferralLink()" class="px-2.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-bold flex items-center gap-1 transition"><i class="fa-solid fa-share-nodes"></i> Share</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Quick Cards -->
+        <div class="grid grid-cols-2 gap-3">
+          <div onclick="switchScreen('plans')" class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm hover:border-orange-200 transition cursor-pointer flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-bold"><i class="fa-solid fa-layer-group text-lg"></i></div>
+            <div>
+              <div class="text-xs font-bold text-slate-800">10 VIP Plans</div>
+              <div class="text-[10px] text-slate-400">1,000 to 10,000 PKR</div>
+            </div>
+          </div>
+          <div onclick="switchScreen('watch')" class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm hover:border-orange-200 transition cursor-pointer flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold"><i class="fa-solid fa-tv text-lg"></i></div>
+            <div>
+              <div class="text-xs font-bold text-slate-800">Watch Ads</div>
+              <div class="text-[10px] text-slate-400">5 to 35 Daily Limit</div>
+            </div>
+          </div>
+          <div onclick="switchScreen('deposit')" class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm hover:border-orange-200 transition cursor-pointer flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold"><i class="fa-solid fa-wallet text-lg"></i></div>
+            <div>
+              <div class="text-xs font-bold text-slate-800">Deposit</div>
+              <div class="text-[10px] text-slate-400">USDT, Jazz, Easy</div>
+            </div>
+          </div>
+          <div onclick="switchScreen('withdraw')" class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm hover:border-orange-200 transition cursor-pointer flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold"><i class="fa-solid fa-arrow-up-right-from-square text-lg"></i></div>
+            <div>
+              <div class="text-xs font-bold text-slate-800">Withdraw</div>
+              <div class="text-[10px] text-slate-400">Min $12 / 3,360 PKR</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 3. PLANS SCREEN ================= -->
+      <section id="screen-plans" class="hidden p-4 space-y-4">
+        <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-4 text-white shadow-md">
+          <h2 class="text-lg font-black tracking-tight">10 VIP Investment Plans</h2>
+          <p class="text-xs text-orange-100 mt-1">Upgrade your tier using your wallet balance. Fixed $0.05 USD on every ad!</p>
+        </div>
+        <div id="plans-container" class="space-y-3"></div>
+      </section>
+
+      <!-- ================= 4. WATCH ADS SCREEN ================= -->
+      <section id="screen-watch" class="hidden p-4 space-y-4">
+        <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-4 shadow-lg border border-slate-700">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-xs text-slate-400 font-medium">Daily Limit Progress</span>
+              <h3 id="watch-counter-text" class="text-xl font-extrabold text-orange-400 mt-0.5">0 / 0 Ads</h3>
+            </div>
+            <div class="text-right">
+              <span class="text-xs text-slate-400 font-medium">Daily Reset</span>
+              <p id="watch-timer-clock" class="text-xs font-mono font-bold text-amber-300 mt-0.5">24h 00m 00s</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+          <div class="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-circle-play text-orange-500"></i> Sponsored Micro-Ad Video</span>
+            <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Earn +$0.05 USD</span>
+          </div>
+          <div class="relative bg-slate-950 aspect-video flex flex-col items-center justify-center text-white p-6 text-center">
+            <div id="ad-standby-view" class="space-y-3">
+              <div class="w-14 h-14 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/40 flex items-center justify-center mx-auto text-2xl shadow-lg animate-pulse">
+                <i class="fa-solid fa-play ml-1"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-sm">Crypto & FinTech Global Ad</h4>
+                <p class="text-xs text-slate-400 mt-1">Watch for 15 seconds to receive your fixed $0.05 USD reward</p>
+              </div>
+              <button id="ad-start-btn" onclick="startWatchingAd()" class="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl text-xs font-bold shadow-lg transition">
+                Start Watching Ad
+              </button>
+            </div>
+            <div id="ad-running-view" class="hidden space-y-3">
+              <div class="relative w-20 h-20 mx-auto flex items-center justify-center">
+                <svg class="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                  <path class="text-slate-800" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                  <path id="ad-timer-svg-path" class="text-orange-500 transition-all duration-1000" stroke-dasharray="100, 100" stroke-width="3" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                </svg>
+                <span id="ad-timer-num" class="absolute text-2xl font-black">15s</span>
+              </div>
+              <p class="text-xs text-orange-300 font-semibold animate-pulse">Streaming verified ad sponsor...</p>
+            </div>
+            <div id="ad-completed-view" class="hidden space-y-2">
+              <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-check"></i>
+              </div>
+              <h4 class="font-bold text-sm text-emerald-400">Reward Credited!</h4>
+              <p class="text-xs text-slate-300">+$0.05 USD added to your wallet balance.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 5. DEPOSIT SCREEN ================= -->
+      <section id="screen-deposit" class="hidden p-4 space-y-4">
+        <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-4 text-white shadow-md">
+          <h2 class="text-lg font-black tracking-tight">Deposit Funds</h2>
+          <p class="text-xs text-orange-100 mt-1">Manual account deposit verification via USDT, JazzCash or EasyPaisa</p>
+        </div>
+        <div class="flex p-1 bg-slate-100 rounded-xl gap-1">
+          <button id="dep-tab-usdt" onclick="selectDepositMethod('usdt')" class="flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold bg-white text-orange-600 shadow-sm transition">USDT (TRC20)</button>
+          <button id="dep-tab-jazzcash" onclick="selectDepositMethod('jazzcash')" class="flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition">JazzCash</button>
+          <button id="dep-tab-easypaisa" onclick="selectDepositMethod('easypaisa')" class="flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition">EasyPaisa</button>
+        </div>
+        <div id="deposit-channel-details" class="p-4 bg-white rounded-2xl border border-slate-200 space-y-3"></div>
+        <form onsubmit="handleDepositSubmit(event)" class="bg-white rounded-2xl p-4 border border-slate-200 space-y-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Deposit Amount (<span id="dep-form-currency-label">USD</span>)</label>
+            <input type="number" id="dep-amount" step="any" required placeholder="Enter amount sent" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Transaction ID / Reference Hash</label>
+            <input type="text" id="dep-txnid" required placeholder="e.g. TXN9872134091" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white font-mono text-xs transition">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Sender Mobile No. / Wallet Address</label>
+            <input type="text" id="dep-sender" required placeholder="e.g. 03001234567" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Attach Payment Screenshot Proof</label>
+            <label class="border-2 border-dashed border-slate-200 hover:border-orange-400 bg-slate-50 rounded-xl p-3 flex flex-col items-center justify-center cursor-pointer transition">
+              <input type="file" id="dep-screenshot-input" accept="image/*" onchange="handleScreenshotSelected(event)" class="hidden">
+              <div id="dep-screenshot-placeholder" class="text-center py-2">
+                <i class="fa-solid fa-cloud-arrow-up text-xl text-slate-400 mb-1"></i>
+                <p class="text-xs text-slate-500 font-semibold">Upload Payment Receipt</p>
+              </div>
+              <div id="dep-screenshot-preview-box" class="hidden w-full flex items-center justify-between text-xs text-emerald-600 font-bold">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> Screenshot Attached</span>
+                <span class="text-[10px] text-slate-400 underline">Change</span>
+              </div>
+            </label>
+          </div>
+          <button type="submit" class="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-xl shadow-md transition text-xs flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-paper-plane"></i> Submit Deposit for Admin Verification
+          </button>
+        </form>
+      </section>
+
+      <!-- ================= 6. WITHDRAW SCREEN ================= -->
+      <section id="screen-withdraw" class="hidden p-4 space-y-4">
+        <div class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-4 text-white shadow-md">
+          <div class="flex justify-between items-center">
+            <div>
+              <h2 class="text-lg font-black tracking-tight">Withdraw Funds</h2>
+              <p class="text-xs text-slate-400 mt-0.5">Direct payout to your account</p>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] text-slate-400 uppercase font-bold">Balance</span>
+              <p id="wd-current-balance" class="font-black text-sm text-emerald-400">$0.00 USD</p>
+            </div>
+          </div>
+        </div>
+        <div class="flex p-1 bg-slate-100 rounded-xl gap-1">
+          <button id="wd-tab-usdt" onclick="selectWithdrawMethod('usdt')" class="flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold bg-white text-orange-600 shadow-sm transition">USDT (TRC20)</button>
+          <button id="wd-tab-jazzcash" onclick="selectWithdrawMethod('jazzcash')" class="flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition">JazzCash</button>
+          <button id="wd-tab-easypaisa" onclick="selectWithdrawMethod('easypaisa')" class="flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition">EasyPaisa</button>
+        </div>
+        <form onsubmit="handleWithdrawSubmit(event)" class="bg-white rounded-2xl p-4 border border-slate-200 space-y-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Withdrawal Amount (<span id="wd-form-currency-label">USD</span>)</label>
+            <input type="number" id="wd-amount" step="any" required placeholder="Min $12 USD" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Account Holder Full Name</label>
+            <input type="text" id="wd-account-title" required placeholder="Account Title" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Account Number / Wallet Address</label>
+            <input type="text" id="wd-account-identifier" required placeholder="e.g. 03001234567" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white transition">
+          </div>
+          <button type="submit" class="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-xl shadow-md transition text-xs flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-paper-plane"></i> Submit Withdrawal Request
+          </button>
+        </form>
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 space-y-2">
+          <h4 class="font-bold text-xs uppercase tracking-wider text-slate-700">Withdrawal History</h4>
+          <div id="user-withdrawal-history" class="space-y-2"></div>
+        </div>
+      </section>
+
+      <!-- ================= 7. ADMIN BACKOFFICE ================= -->
+      <section id="screen-admin" class="hidden p-4 space-y-4">
+        <div class="bg-slate-950 text-white rounded-2xl p-4 border border-slate-800 shadow-xl">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-shield-halved"></i></div>
+              <div>
+                <h2 class="text-sm font-black tracking-tight flex items-center gap-1.5">
+                  Admin Control Panel <span class="bg-amber-400 text-slate-950 text-[9px] font-black px-1.5 py-0.5 rounded">MASTER</span>
+                </h2>
+                <p class="text-[10px] text-slate-400">Logged in as: <span class="text-amber-300 font-mono">Adjatt87@gmail.com</span></p>
+              </div>
+            </div>
+            <button onclick="handleLogout()" class="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 bg-rose-500/10 px-2.5 py-1.5 rounded-lg border border-rose-500/20 font-bold transition"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+          </div>
+          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="p-2 bg-slate-900 rounded-xl border border-slate-800">
+              <span class="block text-[10px] text-slate-400">Pending Deposits</span>
+              <span id="admin-badge-dep" class="font-black text-amber-400 text-base">0</span>
+            </div>
+            <div class="p-2 bg-slate-900 rounded-xl border border-slate-800">
+              <span class="block text-[10px] text-slate-400">Pending Payouts</span>
+              <span id="admin-badge-wd" class="font-black text-rose-400 text-base">0</span>
+            </div>
+            <div class="p-2 bg-slate-900 rounded-xl border border-slate-800">
+              <span class="block text-[10px] text-slate-400">Registered Users</span>
+              <span id="admin-badge-users" class="font-black text-emerald-400 text-base">0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex p-1 bg-slate-200/70 rounded-xl text-xs gap-1">
+          <button id="admin-tab-dep" onclick="setAdminTab('deposits')" class="flex-1 py-2.5 text-center rounded-lg bg-white text-orange-600 shadow-sm transition font-bold">Deposits (<span id="admin-tab-cnt-dep">0</span>)</button>
+          <button id="admin-tab-wd" onclick="setAdminTab('withdrawals')" class="flex-1 py-2.5 text-center rounded-lg text-slate-500 hover:text-slate-800 transition font-bold">Payouts (<span id="admin-tab-cnt-wd">0</span>)</button>
+          <button id="admin-tab-users" onclick="setAdminTab('users')" class="flex-1 py-2.5 text-center rounded-lg text-slate-500 hover:text-slate-800 transition font-bold">Users (<span id="admin-tab-cnt-users">0</span>)</button>
+        </div>
+
+        <div id="admin-panel-deposits" class="space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex justify-between items-center">
+            <span>Manual Deposits (Proof Review)</span>
+          </h3>
+          <div id="admin-deposits-list" class="space-y-2.5"></div>
+        </div>
+
+        <div id="admin-panel-withdrawals" class="hidden space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700">Withdrawal Requests</h3>
+          <div id="admin-withdrawals-list" class="space-y-2.5"></div>
+        </div>
+
+        <div id="admin-panel-users" class="hidden space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex justify-between items-center">
+            <span>All Registered Accounts</span>
+          </h3>
+          <div id="admin-users-list" class="space-y-2"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Global Receipt Preview Modal -->
+    <div id="receipt-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl relative">
+        <div class="p-3 bg-slate-900 text-white flex justify-between items-center">
+          <span class="text-xs font-bold"><i class="fa-solid fa-receipt mr-1"></i> Attached Payment Receipt</span>
+          <button onclick="closeReceiptModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-sm"></i></button>
+        </div>
+        <div class="p-2 max-h-[70vh] overflow-auto flex items-center justify-center bg-slate-100">
+          <img id="receipt-modal-img" src="" alt="Proof" class="max-w-full max-h-[65vh] object-contain rounded-lg">
+        </div>
+        <div class="p-2.5 bg-white border-t border-slate-200 text-center">
+          <button onclick="closeReceiptModal()" class="w-full py-2 bg-slate-900 text-white rounded-xl text-xs font-bold">Close Receipt</button>
+        </div>
       </div>
     </div>
+
+    <!-- Bottom Navigation Bar -->
+    <nav id="bottom-nav-bar" class="fixed bottom-0 z-40 w-full max-w-md bg-white/95 backdrop-blur-md border-t border-slate-200 px-3 py-2 flex items-center justify-around text-[10px] font-bold text-slate-400 hidden">
+      <button onclick="switchScreen('home')" id="nav-btn-home" class="flex flex-col items-center gap-1 transition py-1 text-orange-600">
+        <i class="fa-solid fa-house text-base"></i><span>Home</span>
+      </button>
+      <button onclick="switchScreen('plans')" id="nav-btn-plans" class="flex flex-col items-center gap-1 transition py-1">
+        <i class="fa-solid fa-layer-group text-base"></i><span>Plans</span>
+      </button>
+      <button onclick="switchScreen('watch')" id="nav-btn-watch" class="flex flex-col items-center gap-1 transition py-1 relative">
+        <div class="w-9 h-9 -mt-4 rounded-full bg-gradient-to-tr from-orange-500 to-amber-400 text-white flex items-center justify-center shadow-lg shadow-orange-500/30">
+          <i class="fa-solid fa-play text-sm ml-0.5"></i>
+        </div>
+        <span>Watch</span>
+      </button>
+      <button onclick="switchScreen('deposit')" id="nav-btn-deposit" class="flex flex-col items-center gap-1 transition py-1">
+        <i class="fa-solid fa-circle-plus text-base"></i><span>Deposit</span>
+      </button>
+      <button onclick="switchScreen('withdraw')" id="nav-btn-withdraw" class="flex flex-col items-center gap-1 transition py-1">
+        <i class="fa-solid fa-money-bill-transfer text-base"></i><span>Withdraw</span>
+      </button>
+    </nav>
+
+    <!-- Toast Notification Popup -->
+    <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 transform hidden">
+      <div class="px-4 py-2.5 rounded-xl bg-slate-900/95 text-white shadow-xl text-xs font-bold flex items-center gap-2 border border-slate-700">
+        <span id="toast-icon"></span>
+        <span id="toast-message">Notification</span>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Video Grid Feed -->
-  <main class="flex-1 p-4 lg:p-6 max-w-7xl mx-auto w-full">
-    <div id="videoGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-6"></div>
-  </main>
-
+  <!-- APPLICATION LOGIC SCRIPT -->
   <script>
-    const DEFAULT_VIDEOS = [
-      { id: 1, videoId: "aqz-KE-bpKQ", title: "Big Buck Bunny 4K (Open Animation)", channel: "Blender Animation", cat: "Movies", views: "15.4M views", time: "3 days ago", duration: "9:56", desc: "A large and lovable rabbit deals with bullying forest creatures in this iconic classic." },
-      { id: 2, videoId: "R6MlUcmOul8", title: "Tears of Steel - Sci-Fi VFX Short in 4K", channel: "Blender VFX Lab", cat: "Tech", views: "4.9M views", time: "1 week ago", duration: "12:14", desc: "Exploring cutting-edge open-source visual effects in a dystopian future." },
-      { id: 3, videoId: "jfKfPfyJRdk", title: "Lofi Hip Hop Radio - Beats to Relax / Study", channel: "Lofi Girl", cat: "Music", views: "28.4M views", time: "Live", duration: "LIVE", desc: "Relaxing lofi music stream for studying, working, coding, or sleeping peacefully." },
-      { id: 4, videoId: "8X2kIfS6fb8", title: "Cyberpunk 2077 - Next-Gen Ray Tracing Ultra", channel: "Digital Foundry", cat: "Gaming", views: "6.7M views", time: "2 days ago", duration: "15:40", desc: "Deep dive into ray tracing overdrive mode running on RTX 4090 at 4K." }
+    const ADMIN_EMAIL = "adjatt87@gmail.com";
+    const USD_TO_PKR = 280.0;
+    const AD_REWARD_USD = 0.05;
+
+    // 10 Structured VIP Investment Plans
+    const VIP_PLANS = [
+      { id: 1, name: "VIP 1", pricePkr: 1000, priceUsd: 3.57, dailyAds: 5, dailyIncomeUsd: 0.25, dailyIncomePkr: 70, returnRoi: "7% Daily" },
+      { id: 2, name: "VIP 2", pricePkr: 2000, priceUsd: 7.14, dailyAds: 7, dailyIncomeUsd: 0.35, dailyIncomePkr: 98, returnRoi: "4.9% Daily" },
+      { id: 3, name: "VIP 3", pricePkr: 3000, priceUsd: 10.71, dailyAds: 10, dailyIncomeUsd: 0.50, dailyIncomePkr: 140, returnRoi: "4.7% Daily" },
+      { id: 4, name: "VIP 4", pricePkr: 4000, priceUsd: 14.29, dailyAds: 12, dailyIncomeUsd: 0.60, dailyIncomePkr: 168, returnRoi: "4.2% Daily" },
+      { id: 5, name: "VIP 5", pricePkr: 5000, priceUsd: 17.86, dailyAds: 15, dailyIncomeUsd: 0.75, dailyIncomePkr: 210, returnRoi: "4.2% Daily" },
+      { id: 6, name: "VIP 6", pricePkr: 6000, priceUsd: 21.43, dailyAds: 18, dailyIncomeUsd: 0.90, dailyIncomePkr: 252, returnRoi: "4.2% Daily" },
+      { id: 7, name: "VIP 7", pricePkr: 7000, priceUsd: 25.00, dailyAds: 20, dailyIncomeUsd: 1.00, dailyIncomePkr: 280, returnRoi: "4.0% Daily" },
+      { id: 8, name: "VIP 8", pricePkr: 8000, priceUsd: 28.57, dailyAds: 25, dailyIncomeUsd: 1.25, dailyIncomePkr: 350, returnRoi: "4.4% Daily" },
+      { id: 9, name: "VIP 9", pricePkr: 9000, priceUsd: 32.14, dailyAds: 30, dailyIncomeUsd: 1.50, dailyIncomePkr: 420, returnRoi: "4.7% Daily" },
+      { id: 10, name: "VIP 10", pricePkr: 10000, priceUsd: 35.71, dailyAds: 35, dailyIncomeUsd: 1.75, dailyIncomePkr: 490, returnRoi: "4.9% Daily (Max VIP)" }
     ];
 
-    function getAllVideos() {
-      const stored = localStorage.getItem('videotube_admin_videos');
-      const adminVideos = stored ? JSON.parse(stored) : [];
-      return [...adminVideos, ...DEFAULT_VIDEOS];
-    }
+    const PAYMENT_CHANNELS = {
+      usdt: { name: "USDT (TRC20)", address: "TTrgXzK7v91bNqV81903XkLA9821hUqwZp", title: "Binance TRC20 Settlement", currency: "USD", note: "Send only TRC20 USDT network tokens to this address." },
+      jazzcash: { name: "JazzCash", address: "0300-1234567", title: "Passive Income Official", currency: "PKR", note: "Send via JazzCash mobile app or retail agent." },
+      easypaisa: { name: "EasyPaisa", address: "0345-9876543", title: "Passive Income Official", currency: "PKR", note: "Send via EasyPaisa mobile app or retail agent." }
+    };
 
-    let currentCat = "All";
-    let activeVidId = null;
-    let ytPlayer = null;
-    let isPlaying = false;
-    let updateInterval = null;
+    // Database Initialization (Preserves all registered users permanently)
+    function initDatabase() {
+      let users = JSON.parse(localStorage.getItem("pi_users") || "[]");
+      
+      // Ensure Admin exists
+      let adminUser = users.find(u => u.identifier.toLowerCase() === ADMIN_EMAIL);
+      if (!adminUser) {
+        adminUser = {
+          id: 1,
+          identifier: ADMIN_EMAIL,
+          fullName: "System Administrator",
+          password: "admin123",
+          balanceUsd: 0.0,
+          balancePkr: 0.0,
+          activePlanId: null,
+          activePlanName: null,
+          planDailyAdLimit: 0,
+          adsWatchedToday: 0,
+          lastAdWatchTimestamp: 0,
+          isAdmin: true,
+          referralCode: "ADMIN01",
+          referralCount: 0,
+          referralEarningsUsd: 0.0,
+          hasCompletedFirstDeposit: true
+        };
+        users.unshift(adminUser);
+      } else {
+        adminUser.isAdmin = true;
+      }
 
-    function renderVideos() {
-      const grid = document.getElementById('videoGrid');
-      grid.innerHTML = '';
-      const query = document.getElementById('searchInput').value.toLowerCase().trim();
-      const allVideos = getAllVideos();
-
-      const filtered = allVideos.filter(v => {
-        const matchesCat = currentCat === 'All' || v.cat.toLowerCase() === currentCat.toLowerCase();
-        const matchesQuery = query === '' || 
-          v.title.toLowerCase().includes(query) || 
-          v.channel.toLowerCase().includes(query);
-        return matchesCat && matchesQuery;
+      // Ensure every user has valid referral fields and clean balances
+      users = users.map(u => {
+        if (!u.referralCode) {
+          u.referralCode = (u.identifier.toLowerCase() === ADMIN_EMAIL || u.isAdmin) ? "ADMIN01" : ("PI-" + (u.id % 900000 + 100000));
+        }
+        if (typeof u.referralCount === "undefined") u.referralCount = 0;
+        if (typeof u.referralEarningsUsd === "undefined") u.referralEarningsUsd = 0.0;
+        if (typeof u.hasCompletedFirstDeposit === "undefined") u.hasCompletedFirstDeposit = false;
+        return u;
       });
 
-      filtered.forEach(v => {
-        const card = document.createElement('div');
-        card.className = "cursor-pointer group flex flex-col space-y-2.5";
-        card.onclick = () => playVideo(v);
-        card.innerHTML = `
-          <div class="relative aspect-video rounded-xl overflow-hidden bg-neutral-900 border border-neutral-800/80">
-            <img src="https://img.youtube.com/vi/${v.videoId}/hqdefault.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="${v.title}">
-            <span class="absolute bottom-2 right-2 text-[11px] font-bold px-1.5 py-0.5 rounded ${v.duration === 'LIVE' ? 'bg-red-600' : 'bg-black/80'} text-white">${v.duration || '10:00'}</span>
-          </div>
-          <div class="flex space-x-2.5 items-start">
-            <div class="w-9 h-9 rounded-full bg-neutral-800 flex items-center justify-center font-bold text-xs text-neutral-200 flex-shrink-0 border border-neutral-700/50">
-              ${v.channel ? v.channel[0].toUpperCase() : 'V'}
-            </div>
-            <div class="flex-1 min-w-0">
-              <h4 class="text-xs font-semibold text-neutral-100 line-clamp-2 leading-snug group-hover:text-red-400 transition">${v.title}</h4>
-              <p class="text-[11px] text-neutral-400 mt-1">${v.channel || 'Video Creator'}</p>
-              <p class="text-[11px] text-neutral-500">${v.views || '1.2K views'} • ${v.time || 'Recently'}</p>
-            </div>
-          </div>
-        `;
-        grid.appendChild(card);
+      localStorage.setItem("pi_users", JSON.stringify(users));
+
+      if (!localStorage.getItem("pi_deposits")) localStorage.setItem("pi_deposits", JSON.stringify([]));
+      if (!localStorage.getItem("pi_withdrawals")) localStorage.setItem("pi_withdrawals", JSON.stringify([]));
+    }
+
+    initDatabase();
+
+    function getUsers() { return JSON.parse(localStorage.getItem("pi_users") || "[]"); }
+    function saveUsers(users) { localStorage.setItem("pi_users", JSON.stringify(users)); }
+    function getDeposits() { return JSON.parse(localStorage.getItem("pi_deposits") || "[]"); }
+    function saveDeposits(deps) { localStorage.setItem("pi_deposits", JSON.stringify(deps)); }
+    function getWithdrawals() { return JSON.parse(localStorage.getItem("pi_withdrawals") || "[]"); }
+    function saveWithdrawals(wds) { localStorage.setItem("pi_withdrawals", JSON.stringify(wds)); }
+
+    function getCurrentUser() {
+      const id = parseInt(localStorage.getItem("pi_current_user_id") || "0");
+      if (!id) return null;
+      const user = getUsers().find(u => u.id === id);
+      if (!user) return null;
+      const now = Date.now();
+      if (user.lastAdWatchTimestamp > 0 && (now - user.lastAdWatchTimestamp >= 86400000)) {
+        user.adsWatchedToday = 0;
+        updateCurrentUser({ adsWatchedToday: 0 });
+      }
+      return user;
+    }
+
+    function updateCurrentUser(updatedFields) {
+      const current = getCurrentUser();
+      if (!current) return;
+      const users = getUsers();
+      const idx = users.findIndex(u => u.id === current.id);
+      if (idx !== -1) {
+        users[idx] = { ...users[idx], ...updatedFields };
+        saveUsers(users);
+      }
+    }
+
+    let currentScreen = "auth";
+    let authMode = "login";
+    let selectedDepMethod = "usdt";
+    let selectedWdMethod = "usdt";
+    let selectedScreenshotBase64 = null;
+
+    function switchScreen(screen) {
+      const user = getCurrentUser();
+      if (!user) screen = "auth";
+
+      if (screen === "admin") {
+        if (!user || user.identifier.toLowerCase() !== ADMIN_EMAIL) {
+          showToast("Access Denied: Admin authorization required.", "error");
+          screen = "home";
+        }
+      }
+
+      currentScreen = screen;
+      ["auth", "home", "plans", "watch", "deposit", "withdraw", "admin"].forEach(s => {
+        const el = document.getElementById(`screen-${s}`);
+        if (el) el.classList.add("hidden");
       });
-    }
 
-    function playVideo(v) {
-      activeVidId = v.videoId;
-      const playerSection = document.getElementById('playerSection');
-      playerSection.classList.remove('hidden');
+      const target = document.getElementById(`screen-${screen}`);
+      if (target) target.classList.remove("hidden");
 
-      document.getElementById('playerTitle').innerText = v.title;
-      document.getElementById('playerChannel').innerText = v.channel || 'Video Creator';
-      document.getElementById('playerChannelAvatar').innerText = v.channel ? v.channel[0].toUpperCase() : 'V';
-      document.getElementById('playerViews').innerText = `${v.views || '1.2K views'} • ${v.time || 'Recently'}`;
-      document.getElementById('playerDesc').innerText = v.desc || 'Enjoy watching this video in high definition on VideoTube.';
+      const header = document.getElementById("global-header");
+      const bottomNav = document.getElementById("bottom-nav-bar");
+      const headerAdminBtn = document.getElementById("header-admin-btn");
+      const menuAdminLink = document.getElementById("menu-admin-link");
 
-      playerSection.scrollIntoView({ behavior: 'smooth' });
-
-      // Create or update YouTube player with controls: 0 (NO YOUTUBE LOGO, NO SUGGESTION POPUPS)
-      if (ytPlayer && ytPlayer.loadVideoById) {
-        ytPlayer.loadVideoById(v.videoId);
+      if (screen === "auth") {
+        header.classList.add("hidden");
+        bottomNav.classList.add("hidden");
       } else {
-        ytPlayer = new YT.Player('ytPlayerDiv', {
-          height: '100%',
-          width: '100%',
-          videoId: v.videoId,
-          playerVars: {
-            'autoplay': 1,
-            'controls': 0,        // یوٹیوب کا اپنا کنٹرول بار، یوٹیوب لوگو اور پاپ اپس بند!
-            'modestbranding': 1,
-            'rel': 0,
-            'iv_load_policy': 3,
-            'playsinline': 1,
-            'disablekb': 1,
-            'fs': 0
-          },
-          events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-          }
-        });
-      }
-    }
-
-    function onPlayerReady(event) {
-      event.target.playVideo();
-      startProgressTracking();
-    }
-
-    function onPlayerStateChange(event) {
-      if (event.data === YT.PlayerState.PLAYING) {
-        isPlaying = true;
-        document.getElementById('playPauseIcon').className = "fa-solid fa-pause text-lg";
-        startProgressTracking();
-      } else {
-        isPlaying = false;
-        document.getElementById('playPauseIcon').className = "fa-solid fa-play text-lg";
-        clearInterval(updateInterval);
-      }
-    }
-
-    function togglePlayPause() {
-      if (!ytPlayer) return;
-      if (isPlaying) {
-        ytPlayer.pauseVideo();
-        showCenterAnimation("fa-pause");
-      } else {
-        ytPlayer.playVideo();
-        showCenterAnimation("fa-play");
-      }
-    }
-
-    function showCenterAnimation(iconClass) {
-      const icon = document.getElementById('centerIcon');
-      const box = document.getElementById('centerPlayIcon');
-      icon.className = `fa-solid ${iconClass} ${iconClass === 'fa-play' ? 'ml-1' : ''}`;
-      box.classList.remove('opacity-0');
-      setTimeout(() => box.classList.add('opacity-0'), 500);
-    }
-
-    function toggleMute() {
-      if (!ytPlayer) return;
-      const volIcon = document.getElementById('volumeIcon');
-      if (ytPlayer.isMuted()) {
-        ytPlayer.unMute();
-        volIcon.className = "fa-solid fa-volume-high text-base";
-      } else {
-        ytPlayer.mute();
-        volIcon.className = "fa-solid fa-volume-xmark text-base text-red-500";
-      }
-    }
-
-    function startProgressTracking() {
-      clearInterval(updateInterval);
-      updateInterval = setInterval(() => {
-        if (!ytPlayer || !ytPlayer.getCurrentTime) return;
-        const current = ytPlayer.getCurrentTime() || 0;
-        const duration = ytPlayer.getDuration() || 1;
-        const percent = (current / duration) * 100;
-        document.getElementById('progressBar').value = percent;
-        document.getElementById('timeDisplay').innerText = `${formatTime(current)} / ${formatTime(duration)}`;
-      }, 500);
-    }
-
-    function seekVideo(val) {
-      if (!ytPlayer || !ytPlayer.getDuration) return;
-      const duration = ytPlayer.getDuration();
-      const seekTo = (val / 100) * duration;
-      ytPlayer.seekTo(seekTo, true);
-    }
-
-    function formatTime(seconds) {
-      const s = Math.floor(seconds % 60);
-      const m = Math.floor((seconds / 60) % 60);
-      const h = Math.floor(seconds / 3600);
-      const pad = (num) => num.toString().padStart(2, '0');
-      if (h > 0) {
-        return `${h}:${pad(m)}:${pad(s)}`;
-      }
-      return `${pad(m)}:${pad(s)}`;
-    }
-
-    function toggleFullScreen() {
-      const container = document.getElementById('videoContainer');
-      if (!document.fullscreenElement) {
-        container.requestFullscreen().catch(() => {});
-      } else {
-        document.exitFullscreen().catch(() => {});
-      }
-    }
-
-    function closePlayer() {
-      document.getElementById('playerSection').classList.add('hidden');
-      if (ytPlayer && ytPlayer.stopVideo) {
-        ytPlayer.stopVideo();
-      }
-      clearInterval(updateInterval);
-      activeVidId = null;
-    }
-
-    function filterCat(cat) {
-      currentCat = cat;
-      document.querySelectorAll('.cat-btn').forEach(b => {
-        if (b.innerText === cat) {
-          b.className = "cat-btn px-3.5 py-1.5 rounded-lg bg-white text-black font-semibold transition";
+        header.classList.remove("hidden");
+        const isAdmin = user && (user.identifier.toLowerCase() === ADMIN_EMAIL || user.isAdmin === true);
+        if (isAdmin) {
+          headerAdminBtn.classList.remove("hidden");
+          menuAdminLink.classList.remove("hidden");
         } else {
-          b.className = "cat-btn px-3.5 py-1.5 rounded-lg bg-neutral-800 text-neutral-300 hover:bg-neutral-700 transition";
+          headerAdminBtn.classList.add("hidden");
+          menuAdminLink.classList.add("hidden");
+        }
+        if (screen === "admin") bottomNav.classList.add("hidden");
+        else {
+          bottomNav.classList.remove("hidden");
+          updateNavIcons(screen);
+        }
+        refreshCurrentScreen(screen);
+      }
+      window.scrollTo(0, 0);
+    }
+
+    function updateNavIcons(activeScreen) {
+      ["home", "plans", "watch", "deposit", "withdraw"].forEach(item => {
+        const btn = document.getElementById(`nav-btn-${item}`);
+        if (!btn) return;
+        if (item === activeScreen) {
+          btn.classList.add("text-orange-600");
+          btn.classList.remove("text-slate-400");
+        } else {
+          btn.classList.remove("text-orange-600");
+          btn.classList.add("text-slate-400");
         }
       });
-      renderVideos();
     }
 
-    function searchVideos() {
-      renderVideos();
-    }
+    function setAuthMode(mode) {
+      authMode = mode;
+      const tabLogin = document.getElementById("auth-tab-login");
+      const tabRegister = document.getElementById("auth-tab-register");
+      const fullNameField = document.getElementById("auth-fullname-field");
+      const referralField = document.getElementById("auth-referral-field");
+      const submitBtn = document.getElementById("auth-submit-btn");
 
-    function copyShareLink() {
-      if (activeVidId) {
-        navigator.clipboard.writeText(window.location.origin + '?v=' + activeVidId);
-        alert('ویڈیو لنک کاپی ہو گیا!');
+      if (mode === "login") {
+        tabLogin.className = "flex-1 py-2.5 text-xs font-bold rounded-lg bg-white text-orange-600 shadow-sm transition";
+        tabRegister.className = "flex-1 py-2.5 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition";
+        fullNameField.classList.add("hidden");
+        if (referralField) referralField.classList.add("hidden");
+        submitBtn.innerHTML = `<span>Sign In</span><i class="fa-solid fa-arrow-right text-xs"></i>`;
+      } else {
+        tabRegister.className = "flex-1 py-2.5 text-xs font-bold rounded-lg bg-white text-orange-600 shadow-sm transition";
+        tabLogin.className = "flex-1 py-2.5 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition";
+        fullNameField.classList.remove("hidden");
+        if (referralField) referralField.classList.remove("hidden");
+        submitBtn.innerHTML = `<span>Create Free Account ($0.00 Balance)</span><i class="fa-solid fa-user-plus text-xs"></i>`;
       }
     }
 
-    renderVideos();
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const identifier = document.getElementById("auth-identifier").value.trim();
+      const password = document.getElementById("auth-password").value.trim();
+      const fullName = document.getElementById("auth-fullname").value.trim();
 
-    window.addEventListener('storage', () => {
-      renderVideos();
+      const users = getUsers();
+      const isTryingAdmin = identifier.toLowerCase() === ADMIN_EMAIL;
+
+      if (authMode === "login") {
+        const user = users.find(u => u.identifier.toLowerCase() === identifier.toLowerCase());
+        if (!user) return showToast("No account found with this email/phone", "error");
+        if (user.password !== password) return showToast("Incorrect password. Please verify credentials.", "error");
+
+        localStorage.setItem("pi_current_user_id", user.id.toString());
+        if (isTryingAdmin || user.isAdmin === true) {
+          showToast("Admin authenticated! Redirecting to Admin Panel...", "success");
+          switchScreen("admin");
+        } else {
+          showToast(`Welcome back, ${user.fullName}!`, "success");
+          switchScreen("home");
+        }
+      } else {
+        if (!fullName) return showToast("Please enter your full name", "error");
+        if (users.find(u => u.identifier.toLowerCase() === identifier.toLowerCase())) {
+          return showToast("Account already exists. Please sign in.", "error");
+        }
+
+        const refInput = document.getElementById("auth-referral-code");
+        const refCodeRaw = refInput ? refInput.value.trim().toUpperCase() : "";
+        let validReferredBy = null;
+        if (refCodeRaw) {
+          const referrer = users.find(u => u.referralCode && u.referralCode.toUpperCase() === refCodeRaw);
+          if (referrer && referrer.identifier.toLowerCase() !== identifier.toLowerCase()) {
+            validReferredBy = referrer.referralCode;
+          }
+        }
+
+        let uniqueCode = "PI-" + Math.floor(100000 + Math.random() * 900000);
+
+        const newUser = {
+          id: Date.now(),
+          identifier,
+          fullName,
+          password,
+          balanceUsd: 0.0,
+          balancePkr: 0.0,
+          activePlanId: null,
+          activePlanName: null,
+          planDailyAdLimit: 0,
+          adsWatchedToday: 0,
+          lastAdWatchTimestamp: 0,
+          isAdmin: isTryingAdmin,
+          referralCode: isTryingAdmin ? "ADMIN01" : uniqueCode,
+          referredByCode: validReferredBy,
+          referralCount: 0,
+          referralEarningsUsd: 0.0,
+          hasCompletedFirstDeposit: false
+        };
+
+        users.push(newUser);
+        saveUsers(users);
+        localStorage.setItem("pi_current_user_id", newUser.id.toString());
+
+        if (isTryingAdmin) {
+          showToast("Admin registered! Loading Admin Panel...", "success");
+          switchScreen("admin");
+        } else {
+          showToast(`Account created with clean $0.00 balance!`, "success");
+          switchScreen("home");
+        }
+      }
+    }
+
+    function handleLogout() {
+      localStorage.removeItem("pi_current_user_id");
+      closeUserMenu();
+      showToast("Logged out successfully");
+      switchScreen("auth");
+    }
+
+    function toggleUserMenu() { document.getElementById("user-menu-dropdown").classList.toggle("hidden"); }
+    function closeUserMenu() { document.getElementById("user-menu-dropdown").classList.add("hidden"); }
+    function togglePasswordVisibility(id) {
+      const el = document.getElementById(id);
+      el.type = el.type === "password" ? "text" : "password";
+    }
+
+    function copyReferralCode() {
+      const user = getCurrentUser();
+      if (!user) return;
+      const code = user.referralCode || ("PI-" + (user.id % 900000 + 100000));
+      navigator.clipboard.writeText(code).then(() => showToast(`Referral code ${code} copied!`, "success")).catch(() => showToast(`Referral: ${code}`));
+    }
+
+    function shareReferralLink() {
+      const user = getCurrentUser();
+      if (!user) return;
+      const code = user.referralCode || ("PI-" + (user.id % 900000 + 100000));
+      const url = window.location.origin + window.location.pathname + "?ref=" + code;
+      if (navigator.share) {
+        navigator.share({ title: "Join Passive Income", text: `Use code ${code} to start earning!`, url }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(url).then(() => showToast("Invite link copied!", "success")).catch(() => showToast(`Link: ${url}`));
+      }
+    }
+
+    function refreshCurrentScreen(screen) {
+      const user = getCurrentUser();
+      if (!user) return;
+
+      document.getElementById("menu-user-name").textContent = user.fullName;
+      document.getElementById("menu-user-id").textContent = user.identifier;
+      const badge = document.getElementById("menu-user-badge");
+      if (user.identifier.toLowerCase() === ADMIN_EMAIL || user.isAdmin) {
+        badge.textContent = "Admin";
+        badge.className = "inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800";
+      } else {
+        badge.textContent = user.activePlanName || "Standard Member";
+        badge.className = "inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700";
+      }
+
+      if (screen === "home") renderHomeScreen(user);
+      if (screen === "plans") renderPlansScreen(user);
+      if (screen === "watch") renderWatchScreen(user);
+      if (screen === "deposit") renderDepositScreen(user);
+      if (screen === "withdraw") renderWithdrawScreen(user);
+      if (screen === "admin") renderAdminScreen();
+    }
+
+    function renderHomeScreen(user) {
+      document.getElementById("home-balance-usd").textContent = `$${user.balanceUsd.toFixed(2)} USD`;
+      document.getElementById("home-balance-pkr").textContent = `≈ ${Math.round(user.balancePkr).toLocaleString()} PKR`;
+      document.getElementById("home-badge-plan").textContent = user.activePlanName || "No Plan";
+
+      const limit = user.planDailyAdLimit || 0;
+      const watched = user.adsWatchedToday || 0;
+      const pct = limit > 0 ? Math.min(100, Math.round((watched / limit) * 100)) : 0;
+
+      document.getElementById("home-ads-progress-text").textContent = `${watched} / ${limit} Ads`;
+      document.getElementById("home-ads-progress-bar").style.width = `${pct}%`;
+
+      if (user.activePlanName) {
+        document.getElementById("home-plan-title").innerHTML = `<i class="fa-solid fa-gem text-orange-500"></i> ${user.activePlanName} Active`;
+        document.getElementById("home-plan-subtitle").textContent = `${limit} Daily Ads unlocked`;
+      } else {
+        document.getElementById("home-plan-title").innerHTML = `<i class="fa-solid fa-gem text-slate-400"></i> No Active VIP Plan`;
+        document.getElementById("home-plan-subtitle").textContent = "Purchase any of the 10 VIP plans to unlock daily ad earnings";
+      }
+
+      const codeEl = document.getElementById("home-referral-code");
+      if (codeEl) codeEl.textContent = user.referralCode || ("PI-" + (user.id % 900000 + 100000));
+    }
+
+    function renderPlansScreen(user) {
+      const container = document.getElementById("plans-container");
+      container.innerHTML = VIP_PLANS.map(plan => {
+        const isCurrent = user.activePlanId === plan.id;
+        return `
+          <div class="bg-white rounded-2xl p-4 border ${isCurrent ? 'border-orange-500 shadow-md ring-2 ring-orange-500/20' : 'border-slate-200'} relative transition">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <span class="text-[10px] font-black tracking-wider uppercase px-2 py-0.5 rounded-full bg-orange-100 text-orange-700">${plan.name}</span>
+                <h3 class="text-base font-black text-slate-900 mt-1">${plan.pricePkr.toLocaleString()} PKR <span class="text-xs text-slate-400 font-normal">($${plan.priceUsd.toFixed(2)} USD)</span></h3>
+              </div>
+              <span class="text-xs font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100">${plan.returnRoi}</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 my-3 p-2.5 bg-slate-50 rounded-xl text-xs border border-slate-100">
+              <div><span class="text-[10px] text-slate-400 block">Daily Ads Limit</span><span class="font-bold text-slate-800">${plan.dailyAds} Ads</span></div>
+              <div><span class="text-[10px] text-slate-400 block">Daily Earnings</span><span class="font-bold text-emerald-600">${plan.dailyIncomePkr} PKR</span></div>
+            </div>
+            <button onclick="handlePurchasePlan(${plan.id})" ${isCurrent ? 'disabled' : ''} class="w-full py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 ${
+              isCurrent ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default' : 'bg-slate-900 hover:bg-orange-600 text-white shadow'
+            }">
+              ${isCurrent ? '<i class="fa-solid fa-circle-check"></i> Currently Active Plan' : '<i class="fa-solid fa-cart-shopping"></i> Activate VIP Plan'}
+            </button>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function handlePurchasePlan(planId) {
+      const user = getCurrentUser();
+      if (!user) return;
+      const plan = VIP_PLANS.find(p => p.id === planId);
+      if (!plan) return;
+
+      if (user.balanceUsd < plan.priceUsd && user.balancePkr < plan.pricePkr) {
+        showToast(`Insufficient balance! You need ${plan.pricePkr} PKR.`, "error");
+        setTimeout(() => switchScreen("deposit"), 1200);
+        return;
+      }
+
+      updateCurrentUser({
+        balanceUsd: Math.max(0, user.balanceUsd - plan.priceUsd),
+        balancePkr: Math.max(0, user.balancePkr - plan.pricePkr),
+        activePlanId: plan.id,
+        activePlanName: plan.name,
+        planDailyAdLimit: plan.dailyAds
+      });
+
+      showToast(`Congratulations! ${plan.name} activated.`, "success");
+      refreshCurrentScreen("plans");
+    }
+
+    let isWatching = false;
+    function renderWatchScreen(user) {
+      const limit = user.planDailyAdLimit || 0;
+      const watched = user.adsWatchedToday || 0;
+      document.getElementById("watch-counter-text").textContent = `${watched} / ${limit} Ads`;
+
+      const startBtn = document.getElementById("ad-start-btn");
+      if (limit === 0) {
+        startBtn.textContent = "Activate a VIP Plan First";
+        startBtn.onclick = () => switchScreen("plans");
+      } else if (watched >= limit) {
+        startBtn.textContent = "Daily Limit Reached";
+        startBtn.disabled = true;
+      } else {
+        startBtn.textContent = "Start Watching Ad";
+        startBtn.disabled = false;
+        startBtn.onclick = startWatchingAd;
+      }
+    }
+
+    function startWatchingAd() {
+      const user = getCurrentUser();
+      if (!user || user.planDailyAdLimit === 0 || user.adsWatchedToday >= user.planDailyAdLimit || isWatching) return;
+
+      isWatching = true;
+      document.getElementById("ad-standby-view").classList.add("hidden");
+      document.getElementById("ad-running-view").classList.remove("hidden");
+
+      let timeLeft = 15;
+      const timerNum = document.getElementById("ad-timer-num");
+      const path = document.getElementById("ad-timer-svg-path");
+
+      const interval = setInterval(() => {
+        timeLeft--;
+        timerNum.textContent = `${timeLeft}s`;
+        path.setAttribute("stroke-dasharray", `${Math.round((timeLeft / 15) * 100)}, 100`);
+
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          updateCurrentUser({
+            adsWatchedToday: (user.adsWatchedToday || 0) + 1,
+            balanceUsd: user.balanceUsd + AD_REWARD_USD,
+            balancePkr: user.balancePkr + (AD_REWARD_USD * USD_TO_PKR),
+            lastAdWatchTimestamp: Date.now()
+          });
+
+          document.getElementById("ad-running-view").classList.add("hidden");
+          document.getElementById("ad-completed-view").classList.remove("hidden");
+          showToast("+$0.05 USD reward credited!", "success");
+
+          setTimeout(() => {
+            document.getElementById("ad-completed-view").classList.add("hidden");
+            document.getElementById("ad-standby-view").classList.remove("hidden");
+            isWatching = false;
+            refreshCurrentScreen("watch");
+          }, 1500);
+        }
+      }, 1000);
+    }
+
+    function selectDepositMethod(method) {
+      selectedDepMethod = method;
+      ["usdt", "jazzcash", "easypaisa"].forEach(m => {
+        const tab = document.getElementById(`dep-tab-${m}`);
+        tab.className = m === method ? "flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold bg-white text-orange-600 shadow-sm transition" : "flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition";
+      });
+
+      const ch = PAYMENT_CHANNELS[method];
+      document.getElementById("deposit-channel-details").innerHTML = `
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-800">${ch.name} Official Account</span>
+          <span class="text-[10px] font-bold bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">${ch.currency}</span>
+        </div>
+        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+          <div class="overflow-hidden mr-2">
+            <p class="font-mono font-bold text-xs text-slate-800 truncate">${ch.address}</p>
+          </div>
+          <button type="button" onclick="copyToClipboard('${ch.address}')" class="px-2.5 py-1.5 bg-white border border-slate-200 text-orange-600 rounded-lg text-xs font-bold">Copy</button>
+        </div>
+      `;
+      document.getElementById("dep-form-currency-label").textContent = ch.currency;
+    }
+
+    function handleScreenshotSelected(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        selectedScreenshotBase64 = ev.target.result;
+        document.getElementById("dep-screenshot-placeholder").classList.add("hidden");
+        document.getElementById("dep-screenshot-preview-box").classList.remove("hidden");
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleDepositSubmit(e) {
+      e.preventDefault();
+      const user = getCurrentUser();
+      if (!user) return;
+
+      const amount = parseFloat(document.getElementById("dep-amount").value);
+      const txId = document.getElementById("dep-txnid").value.trim();
+      const sender = document.getElementById("dep-sender").value.trim();
+
+      if (!amount || amount <= 0) return showToast("Enter a valid amount", "error");
+
+      const channel = PAYMENT_CHANNELS[selectedDepMethod];
+      const creditedUsd = selectedDepMethod === "usdt" ? amount : (amount / USD_TO_PKR);
+      const creditedPkr = selectedDepMethod === "usdt" ? (amount * USD_TO_PKR) : amount;
+
+      const deposits = getDeposits();
+      deposits.push({
+        id: Date.now(),
+        userId: user.id,
+        userIdentifier: user.identifier,
+        method: channel.name,
+        amount,
+        currency: channel.currency,
+        creditedUsd,
+        creditedPkr,
+        txnId: txId,
+        sender,
+        screenshot: selectedScreenshotBase64,
+        status: "PENDING",
+        date: new Date().toLocaleString()
+      });
+      saveDeposits(deposits);
+
+      showToast("Deposit request submitted successfully!", "success");
+      e.target.reset();
+      selectedScreenshotBase64 = null;
+      document.getElementById("dep-screenshot-placeholder").classList.remove("hidden");
+      document.getElementById("dep-screenshot-preview-box").classList.add("hidden");
+      switchScreen("home");
+    }
+
+    function renderDepositScreen(user) { selectDepositMethod(selectedDepMethod); }
+
+    function selectWithdrawMethod(method) {
+      selectedWdMethod = method;
+      ["usdt", "jazzcash", "easypaisa"].forEach(m => {
+        const tab = document.getElementById(`wd-tab-${m}`);
+        tab.className = m === method ? "flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold bg-white text-orange-600 shadow-sm transition" : "flex-1 py-2 px-1 text-center rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition";
+      });
+      document.getElementById("wd-form-currency-label").textContent = method === "usdt" ? "USD" : "PKR";
+    }
+
+    function handleWithdrawSubmit(e) {
+      e.preventDefault();
+      const user = getCurrentUser();
+      if (!user) return;
+
+      const amount = parseFloat(document.getElementById("wd-amount").value);
+      const title = document.getElementById("wd-account-title").value.trim();
+      const iden = document.getElementById("wd-account-identifier").value.trim();
+
+      const minPkrLimit = 12.0 * USD_TO_PKR; // Exactly 3,360 PKR matched to $12 USD
+
+      if (selectedWdMethod === "usdt") {
+        if (amount < 12.0) return showToast("Minimum USDT withdrawal is $12 USD", "error");
+        if (user.balanceUsd < amount) return showToast("Insufficient USD balance", "error");
+        updateCurrentUser({ balanceUsd: user.balanceUsd - amount, balancePkr: Math.max(0, user.balancePkr - (amount * USD_TO_PKR)) });
+      } else {
+        if (amount < minPkrLimit) return showToast(`Minimum withdrawal is ${minPkrLimit} PKR ($12 USD)`, "error");
+        if (user.balancePkr < amount) return showToast("Insufficient PKR balance", "error");
+        updateCurrentUser({ balancePkr: user.balancePkr - amount, balanceUsd: Math.max(0, user.balanceUsd - (amount / USD_TO_PKR)) });
+      }
+
+      const ch = PAYMENT_CHANNELS[selectedWdMethod];
+      const withdrawals = getWithdrawals();
+      withdrawals.push({
+        id: Date.now(),
+        userId: user.id,
+        userIdentifier: user.identifier,
+        method: ch.name,
+        amount,
+        currency: ch.currency,
+        accountTitle: title,
+        accountIdentifier: iden,
+        status: "PENDING",
+        date: new Date().toLocaleString()
+      });
+      saveWithdrawals(withdrawals);
+
+      showToast("Withdrawal placed successfully!", "success");
+      e.target.reset();
+      renderWithdrawScreen(getCurrentUser());
+    }
+
+    function renderWithdrawScreen(user) {
+      selectWithdrawMethod(selectedWdMethod);
+      document.getElementById("wd-current-balance").textContent = `$${user.balanceUsd.toFixed(2)} USD`;
+      const list = getWithdrawals().filter(w => w.userId === user.id).reverse();
+      document.getElementById("user-withdrawal-history").innerHTML = list.length === 0 ? `<p class="text-xs text-slate-400 text-center py-3">No withdrawals yet.</p>` : list.map(w => `
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs">
+          <div>
+            <span class="font-bold text-slate-800">${w.method}</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${w.status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${w.status}</span>
+          </div>
+          <span class="font-black text-rose-600">-${w.amount} ${w.currency}</span>
+        </div>
+      `).join("");
+    }
+
+    function setAdminTab(tab) {
+      ["deposits", "withdrawals", "users"].forEach(t => {
+        const btn = document.getElementById(`admin-tab-${t === 'deposits' ? 'dep' : (t === 'withdrawals' ? 'wd' : 'users')}`);
+        const view = document.getElementById(`admin-panel-${t}`);
+        if (t === tab) {
+          btn.className = "flex-1 py-2.5 text-center rounded-lg bg-white text-orange-600 shadow-sm transition font-bold";
+          view.classList.remove("hidden");
+        } else {
+          btn.className = "flex-1 py-2.5 text-center rounded-lg text-slate-500 hover:text-slate-800 transition font-bold";
+          view.classList.add("hidden");
+        }
+      });
+    }
+
+    function renderAdminScreen() {
+      const deposits = getDeposits();
+      const withdrawals = getWithdrawals();
+      const users = getUsers();
+
+      const pendingDeps = deposits.filter(d => d.status === "PENDING");
+      const pendingWds = withdrawals.filter(w => w.status === "PENDING");
+
+      document.getElementById("admin-badge-dep").textContent = pendingDeps.length;
+      document.getElementById("admin-badge-wd").textContent = pendingWds.length;
+      document.getElementById("admin-badge-users").textContent = users.length;
+      document.getElementById("admin-tab-cnt-dep").textContent = pendingDeps.length;
+      document.getElementById("admin-tab-cnt-wd").textContent = pendingWds.length;
+      document.getElementById("admin-tab-cnt-users").textContent = users.length;
+
+      // Deposits List
+      document.getElementById("admin-deposits-list").innerHTML = deposits.length === 0 ? `<div class="p-4 bg-slate-50 rounded-2xl text-center text-xs text-slate-400">No deposits.</div>` : deposits.slice().reverse().map(d => `
+        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-2">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="font-bold text-slate-900">${d.userIdentifier}</span>
+              <p class="text-[10px] text-slate-500">${d.method} • Ref: ${d.txnId}</p>
+            </div>
+            <div class="text-right">
+              <span class="font-black text-sm text-slate-900">+${d.amount} ${d.currency}</span>
+              <span class="block text-[10px] font-bold ${d.status === 'APPROVED' ? 'text-emerald-600' : 'text-amber-600'}">${d.status}</span>
+            </div>
+          </div>
+          ${d.screenshot ? `<button onclick="previewReceipt('${d.screenshot}')" class="text-xs text-orange-600 font-bold underline">Inspect Receipt</button>` : ''}
+          ${d.status === 'PENDING' ? `<div class="grid grid-cols-2 gap-2 pt-2"><button onclick="adminApproveDeposit(${d.id})" class="py-2 bg-emerald-600 text-white font-bold rounded-xl text-xs">Approve</button><button onclick="adminRejectDeposit(${d.id})" class="py-2 bg-rose-600 text-white font-bold rounded-xl text-xs">Reject</button></div>` : ''}
+        </div>
+      `).join("");
+
+      // Withdrawals List
+      document.getElementById("admin-withdrawals-list").innerHTML = withdrawals.length === 0 ? `<div class="p-4 bg-slate-50 rounded-2xl text-center text-xs text-slate-400">No payouts.</div>` : withdrawals.slice().reverse().map(w => `
+        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-2">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="font-bold text-slate-900">${w.userIdentifier}</span>
+              <p class="text-[11px] text-slate-800 font-semibold">${w.method}: ${w.accountTitle} (${w.accountIdentifier})</p>
+            </div>
+            <div class="text-right">
+              <span class="font-black text-sm text-rose-600">-${w.amount} ${w.currency}</span>
+              <span class="block text-[10px] font-bold ${w.status === 'COMPLETED' ? 'text-emerald-600' : 'text-amber-600'}">${w.status}</span>
+            </div>
+          </div>
+          ${w.status === 'PENDING' ? `<div class="grid grid-cols-2 gap-2 pt-2"><button onclick="adminCompleteWithdrawal(${w.id})" class="py-2 bg-emerald-600 text-white font-bold rounded-xl text-xs">Complete</button><button onclick="adminRejectWithdrawal(${w.id})" class="py-2 bg-rose-600 text-white font-bold rounded-xl text-xs">Reject</button></div>` : ''}
+        </div>
+      `).join("");
+
+      // Users List (FIXED TO SHOW ALL REGISTERED ACCOUNTS)
+      document.getElementById("admin-users-list").innerHTML = users.map(u => `
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs flex items-center justify-between">
+          <div>
+            <p class="font-bold text-slate-900">${u.fullName} ${u.identifier.toLowerCase() === ADMIN_EMAIL ? '<span class="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-bold">Admin</span>' : ''}</p>
+            <p class="text-[10px] text-slate-500">${u.identifier}</p>
+            <p class="text-[10px] text-orange-600 font-semibold">Plan: ${u.activePlanName || 'None'}</p>
+          </div>
+          <div class="text-right">
+            <span class="font-black text-slate-900 block">$${u.balanceUsd.toFixed(2)} USD</span>
+            <span class="text-[10px] text-slate-500">${Math.round(u.balancePkr).toLocaleString()} PKR</span>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function adminApproveDeposit(id) {
+      let deposits = getDeposits();
+      let dep = deposits.find(d => d.id === id);
+      if (!dep || dep.status !== "PENDING") return;
+      dep.status = "APPROVED";
+      saveDeposits(deposits);
+
+      let users = getUsers();
+      let user = users.find(u => u.id === dep.userId);
+      if (user) {
+        user.balanceUsd += dep.creditedUsd;
+        user.balancePkr += dep.creditedPkr;
+        saveUsers(users);
+      }
+      showToast("Deposit approved successfully!", "success");
+      renderAdminScreen();
+    }
+
+    function adminRejectDeposit(id) {
+      let deposits = getDeposits();
+      let dep = deposits.find(d => d.id === id);
+      if (!dep) return;
+      dep.status = "REJECTED";
+      saveDeposits(deposits);
+      showToast("Deposit rejected", "error");
+      renderAdminScreen();
+    }
+
+    function adminCompleteWithdrawal(id) {
+      let withdrawals = getWithdrawals();
+      let wd = withdrawals.find(w => w.id === id);
+      if (!wd) return;
+      wd.status = "COMPLETED";
+      saveWithdrawals(withdrawals);
+      showToast("Withdrawal completed", "success");
+      renderAdminScreen();
+    }
+
+    function adminRejectWithdrawal(id) {
+      let withdrawals = getWithdrawals();
+      let wd = withdrawals.find(w => w.id === id);
+      if (!wd) return;
+      wd.status = "REJECTED";
+      saveWithdrawals(withdrawals);
+      showToast("Withdrawal rejected & refunded", "success");
+      renderAdminScreen();
+    }
+
+    function previewReceipt(src) {
+      document.getElementById("receipt-modal-img").src = src;
+      document.getElementById("receipt-modal").classList.remove("hidden");
+    }
+
+    function closeReceiptModal() {
+      document.getElementById("receipt-modal").classList.add("hidden");
+    }
+
+    function showToast(message, type = "info") {
+      const toast = document.getElementById("toast");
+      document.getElementById("toast-message").textContent = message;
+      toast.classList.remove("hidden");
+      setTimeout(() => toast.classList.add("hidden"), 3000);
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => showToast("Copied!", "success"));
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const user = getCurrentUser();
+      if (user) {
+        if (user.identifier.toLowerCase() === ADMIN_EMAIL || user.isAdmin) {
+          switchScreen("admin");
+        } else {
+          switchScreen("home");
+        }
+      } else {
+        switchScreen("auth");
+      }
     });
   </script>
 </body>
