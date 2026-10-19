@@ -1,1623 +1,438 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl" class="dark">
+<html lang="ur" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ویڈیو ٹیوب (VideoTube) - آفیشل ویڈیو پلیٹ فارم و ڈاؤنلوڈر</title>
-  
-  <!-- Tailwind CSS CDN -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VideoTube - Professional Player</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  
-  <!-- Google Fonts: Inter & Noto Nastaliq Urdu -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
-
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            'yt-black': '#0f0f0f',
-            'yt-card': '#181818',
-            'yt-border': '#272727',
-            'yt-red': '#ff0000',
-            'yt-text': '#f1f1f1',
-            'yt-muted': '#aaaaaa'
-          },
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            urdu: ['Noto Nastaliq Urdu', 'serif']
+            ytDark: '#0f0f0f',
+            ytCard: '#181818',
+            ytRed: '#FF0000'
           }
         }
       }
     }
   </script>
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://www.youtube.com/iframe_api"></script>
   <style>
-    /* Smooth custom scrolling */
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: #0f0f0f; }
-    ::-webkit-scrollbar-thumb { background: #333333; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #555555; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .shorts-container { scroll-snap-type: y mandatory; height: calc(100vh - 130px); }
-    .short-item { scroll-snap-align: start; height: 100%; }
-    .touch-target { min-height: 48px; min-width: 48px; }
+    /* یوٹیوب کے کسی بھی پوشیدہ واٹر مارک یا کلک آؤٹ کو بلاک کرنے کی کسٹم شیلڈز */
+    .yt-shield-top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      z-index: 20;
+      pointer-events: auto;
+      background: transparent;
+    }
+    .yt-shield-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      z-index: 20;
+      pointer-events: auto;
+      background: transparent;
+    }
+    /* کسٹم پروگریس بار رینج */
+    input[type=range]::-webkit-slider-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #ff0000;
+      cursor: pointer;
+      -webkit-appearance: none;
+    }
   </style>
 </head>
-<body class="bg-yt-black text-yt-text font-sans antialiased pb-20 select-none">
+<body class="bg-[#0f0f0f] text-white font-sans antialiased min-h-screen flex flex-col selection:bg-red-600">
 
-  <!-- ----------------- TOP NAVBAR (یوٹیوب طرز کا ٹاپ ہیڈر) ----------------- -->
-  <header class="sticky top-0 z-50 bg-yt-black/95 backdrop-blur-md border-b border-yt-border px-3 sm:px-4 py-2.5 flex items-center justify-between">
-    <!-- Right side: Brand & Logo -->
-    <div class="flex items-center space-x-2.5 space-x-reverse cursor-pointer" onclick="switchTab('home')">
-      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-red-600 to-rose-500 flex items-center justify-center text-white shadow-lg shadow-red-600/30">
-        <i class="fa-brands fa-youtube text-xl"></i>
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-[#0f0f0f]/95 border-b border-neutral-800 px-4 py-2.5 flex items-center justify-between">
+    <div class="flex items-center space-x-2.5 cursor-pointer" onclick="filterCat('All'); closePlayer();">
+      <div class="bg-red-600 w-8 h-6 rounded-lg flex items-center justify-center shadow-lg shadow-red-600/30">
+        <i class="fa-solid fa-play text-white text-xs"></i>
       </div>
-      <div>
-        <span class="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-1">
-          ویڈیو ٹیوب <span class="text-[10px] bg-red-600/20 text-red-500 border border-red-500/30 px-1.5 py-0.5 rounded font-mono">PK</span>
-        </span>
+      <span class="text-xl font-bold tracking-tight">VideoTube</span>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="flex-1 max-w-lg mx-4">
+      <div class="relative">
+        <input 
+          id="searchInput" 
+          type="text" 
+          placeholder="سرچ کریں..." 
+          onkeyup="searchVideos()"
+          class="w-full bg-[#181818] border border-neutral-700 rounded-full py-1.5 pl-4 pr-10 text-sm focus:outline-none focus:border-red-500 transition placeholder:text-neutral-500"
+        />
+        <i class="fa-solid fa-magnifying-glass text-neutral-400 absolute right-3.5 top-2.5 text-sm"></i>
       </div>
     </div>
 
-    <!-- Center: Search input (YouTube desktop/tablet style) -->
-    <div class="hidden md:flex items-center flex-1 max-w-lg mx-6">
-      <div class="flex w-full bg-neutral-900 border border-yt-border rounded-full overflow-hidden focus-within:border-blue-500 transition">
-        <input type="text" id="desktopSearchInput" placeholder="موویز، نعتیں، ڈرامے یا ویڈیوز تلاش کریں..." 
-          onkeyup="filterVideosLive(this.value)"
-          class="w-full bg-transparent px-4 py-1.5 text-xs text-white placeholder-yt-muted focus:outline-none text-right">
-        <button class="bg-neutral-800 px-4 text-yt-muted hover:text-white border-r border-yt-border">
-          <i class="fa-solid fa-magnifying-glass text-xs"></i>
-        </button>
+    <!-- User Profile Icon -->
+    <div class="flex items-center space-x-3">
+      <button class="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center text-neutral-300">
+        <i class="fa-regular fa-bell text-sm"></i>
+      </button>
+      <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-red-600 to-red-400 flex items-center justify-center font-bold text-xs">
+        U
       </div>
-    </div>
-
-    <!-- Left side: Quick actions & Founder avatar -->
-    <div class="flex items-center space-x-2 sm:space-x-3 space-x-reverse">
-      <!-- Search toggle for mobile -->
-      <button onclick="toggleMobileSearch()" class="md:hidden w-9 h-9 rounded-full hover:bg-neutral-800 flex items-center justify-center text-yt-muted hover:text-white">
-        <i class="fa-solid fa-magnifying-glass text-sm"></i>
-      </button>
-
-      <!-- Video Downloader Quick Action -->
-      <button onclick="switchTab('downloader')" class="flex items-center space-x-1.5 space-x-reverse px-2.5 py-1.5 rounded-full bg-red-600/10 hover:bg-red-600/20 border border-red-500/30 text-red-500 text-xs font-semibold transition">
-        <i class="fa-solid fa-arrow-down"></i>
-        <span class="hidden sm:inline">ڈاؤنلوڈر</span>
-      </button>
-
-      <!-- Founder Avatar (Opens You tab) -->
-      <button onclick="switchTab('you')" class="w-8 h-8 rounded-full ring-2 ring-red-600 bg-neutral-800 flex items-center justify-center font-bold text-xs text-white overflow-hidden shadow-md" title="بانی کا تعارف (Allah ditta RABNAWAZ)">
-        <span>AR</span>
-      </button>
     </div>
   </header>
 
-  <!-- Mobile Search Bar (Collapsible) -->
-  <div id="mobileSearchDrawer" class="hidden md:hidden px-3 py-2 bg-neutral-900 border-b border-yt-border">
-    <div class="flex items-center bg-yt-black border border-yt-border rounded-full px-3 py-1.5">
-      <input type="text" id="mobileSearchInput" placeholder="تلاش کریں..." 
-        onkeyup="filterVideosLive(this.value)"
-        class="w-full bg-transparent text-xs text-white focus:outline-none text-right">
-      <i class="fa-solid fa-magnifying-glass text-xs text-yt-muted mr-2"></i>
+  <!-- Categories Bar -->
+  <div class="sticky top-[53px] z-30 bg-[#0f0f0f]/95 backdrop-blur flex space-x-2 px-4 py-2.5 overflow-x-auto border-b border-neutral-800/80 text-xs no-scrollbar">
+    <button onclick="filterCat('All')" class="cat-btn px-3.5 py-1.5 rounded-lg bg-white text-black font-semibold transition">All</button>
+    <button onclick="filterCat('Tech')" class="cat-btn px-3.5 py-1.5 rounded-lg bg-neutral-800 text-neutral-300 hover:bg-neutral-700 transition">Tech</button>
+    <button onclick="filterCat('Gaming')" class="cat-btn px-3.5 py-1.5 rounded-lg bg-neutral-800 text-neutral-300 hover:bg-neutral-700 transition">Gaming</button>
+    <button onclick="filterCat('Music')" class="cat-btn px-3.5 py-1.5 rounded-lg bg-neutral-800 text-neutral-300 hover:bg-neutral-700 transition">Music</button>
+    <button onclick="filterCat('Movies')" class="cat-btn px-3.5 py-1.5 rounded-lg bg-neutral-800 text-neutral-300 hover:bg-neutral-700 transition">Movies</button>
+  </div>
+
+  <!-- 100% Real Custom Professional Video Player (No YouTube Branding) -->
+  <div id="playerSection" class="hidden max-w-5xl mx-auto w-full p-4 lg:p-6 transition-all duration-300">
+    <div id="videoContainer" class="relative group aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-2xl border border-neutral-800">
+      
+      <!-- YouTube Video Container (controls=0 se YouTube کا لوگو اور پاپ اپس بند ہو جاتے ہیں) -->
+      <div id="ytPlayerDiv" class="w-full h-full pointer-events-none"></div>
+
+      <!-- Invisible Shield (روکتی ہے کہ کوئی غلطی سے یوٹیوب سائٹ پر نہ جائے) -->
+      <div class="yt-shield-top"></div>
+      <div class="yt-shield-bottom"></div>
+
+      <!-- Click to Play/Pause on whole screen -->
+      <div class="absolute inset-0 z-20 cursor-pointer" onclick="togglePlayPause()"></div>
+
+      <!-- Center Play/Pause Indicator -->
+      <div id="centerPlayIcon" class="absolute inset-0 z-30 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-200">
+        <div class="w-16 h-16 bg-black/70 backdrop-blur rounded-full flex items-center justify-center text-white text-2xl shadow-xl">
+          <i id="centerIcon" class="fa-solid fa-play ml-1"></i>
+        </div>
+      </div>
+
+      <!-- Custom Professional Bottom Control Bar (100% Real Website Controls) -->
+      <div id="customControls" class="absolute bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black/95 via-black/60 to-transparent p-3 pt-8 transition-opacity duration-300 opacity-100">
+        <!-- Progress Slider Bar -->
+        <div class="relative w-full flex items-center mb-2">
+          <input 
+            id="progressBar" 
+            type="range" 
+            min="0" 
+            max="100" 
+            value="0" 
+            step="0.1" 
+            oninput="seekVideo(this.value)" 
+            class="w-full h-1 bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-red-600"
+          />
+        </div>
+
+        <!-- Controls Row -->
+        <div class="flex items-center justify-between text-white text-sm">
+          <div class="flex items-center space-x-4">
+            <!-- Play/Pause Button -->
+            <button onclick="togglePlayPause()" class="hover:text-red-500 transition">
+              <i id="playPauseIcon" class="fa-solid fa-play text-lg"></i>
+            </button>
+
+            <!-- Volume Mute Button -->
+            <button onclick="toggleMute()" class="hover:text-neutral-300 transition">
+              <i id="volumeIcon" class="fa-solid fa-volume-high text-base"></i>
+            </button>
+
+            <!-- Time Display -->
+            <span id="timeDisplay" class="text-xs text-neutral-300 font-mono tracking-wider">00:00 / 00:00</span>
+          </div>
+
+          <div class="flex items-center space-x-3">
+            <!-- Fullscreen Button -->
+            <button onclick="toggleFullScreen()" class="hover:text-red-500 transition p-1">
+              <i class="fa-solid fa-expand text-base"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Video Info Section -->
+    <div class="mt-4">
+      <h1 id="playerTitle" class="text-xl md:text-2xl font-bold text-neutral-100 leading-snug"></h1>
+      
+      <div class="flex flex-wrap items-center justify-between gap-4 mt-3 pb-4 border-b border-neutral-800">
+        <!-- Channel Info -->
+        <div class="flex items-center space-x-3">
+          <div id="playerChannelAvatar" class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center font-bold text-sm text-white">C</div>
+          <div>
+            <h3 id="playerChannel" class="font-bold text-sm text-white"></h3>
+            <p class="text-xs text-neutral-400">1.2M subscribers</p>
+          </div>
+          <button class="bg-white hover:bg-neutral-200 text-black px-4 py-2 rounded-full font-bold text-xs transition ml-2">Subscribe</button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center space-x-2 text-xs">
+          <div class="flex items-center bg-neutral-800 rounded-full overflow-hidden">
+            <button class="flex items-center space-x-1.5 px-3 py-2 hover:bg-neutral-700 transition text-neutral-200">
+              <i class="fa-regular fa-thumbs-up"></i>
+              <span>124K</span>
+            </button>
+            <div class="w-[1px] h-4 bg-neutral-700"></div>
+            <button class="px-3 py-2 hover:bg-neutral-700 transition text-neutral-200">
+              <i class="fa-regular fa-thumbs-down"></i>
+            </button>
+          </div>
+          <button onclick="copyShareLink()" class="flex items-center space-x-1.5 bg-neutral-800 hover:bg-neutral-700 px-3.5 py-2 rounded-full text-neutral-200 transition">
+            <i class="fa-solid fa-share"></i>
+            <span>Share</span>
+          </button>
+          <button onclick="closePlayer()" class="bg-neutral-800 hover:bg-neutral-700 px-3 py-2 rounded-full text-neutral-400 hover:text-white transition">
+            <i class="fa-solid fa-xmark mr-1"></i> بند کریں
+          </button>
+        </div>
+      </div>
+
+      <!-- Description Box -->
+      <div class="mt-3 bg-[#181818] p-4 rounded-xl text-xs text-neutral-300 leading-relaxed border border-neutral-800/60">
+        <p id="playerViews" class="font-bold text-neutral-200 mb-1"></p>
+        <p id="playerDesc">Enjoy watching this video in high definition on VideoTube.</p>
+      </div>
     </div>
   </div>
 
-  <!-- Category Pills (YouTube tags) -->
-  <div id="categoriesBar" class="sticky top-[53px] z-40 bg-yt-black/95 backdrop-blur-sm border-b border-yt-border/50 py-2 px-3 overflow-x-auto no-scrollbar flex items-center space-x-2 space-x-reverse text-xs">
-    <button onclick="selectCategory('all', this)" class="category-pill whitespace-nowrap px-3.5 py-1.5 rounded-lg bg-white text-black font-semibold shadow-sm transition">تمام (All)</button>
-    <button onclick="selectCategory('movies', this)" class="category-pill whitespace-nowrap px-3.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-yt-muted hover:text-white font-medium transition">موویز (Movies)</button>
-    <button onclick="selectCategory('dramas', this)" class="category-pill whitespace-nowrap px-3.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-yt-muted hover:text-white font-medium transition">ڈرامے (Pakistani Dramas)</button>
-    <button onclick="selectCategory('naats', this)" class="category-pill whitespace-nowrap px-3.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-yt-muted hover:text-white font-medium transition">نعتیں و بیانات</button>
-    <button onclick="selectCategory('news', this)" class="category-pill whitespace-nowrap px-3.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-yt-muted hover:text-white font-medium transition">خبریں (News Live)</button>
-    <button onclick="selectCategory('songs', this)" class="category-pill whitespace-nowrap px-3.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-yt-muted hover:text-white font-medium transition">گانے و قوالی</button>
-  </div>
-
-  <!-- ----------------- MAIN VIEW CONTAINER ----------------- -->
-  <main class="max-w-7xl mx-auto px-3 sm:px-4 py-4">
-
-    <!-- ----------------- TAB 1: HOME (یوٹیوب ڈیش بورڈ فیڈ) ----------------- -->
-    <section id="tab-home" class="space-y-6">
-      
-      <!-- Live Video Player Frame (Shown when playing a video) -->
-      <div id="activePlayerSection" class="hidden bg-yt-card border border-yt-border rounded-2xl overflow-hidden shadow-2xl mb-6">
-        <div class="relative aspect-video w-full bg-black">
-          <iframe id="mainVideoIframe" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-        </div>
-        <div class="p-4 space-y-3">
-          <div class="flex items-start justify-between gap-4">
-            <h2 id="mainVideoTitle" class="text-sm sm:text-base font-bold text-white line-clamp-2 leading-snug">ویڈیو ٹائٹل</h2>
-            <button onclick="closeActivePlayer()" class="text-yt-muted hover:text-white text-xs px-2 py-1 rounded bg-neutral-800">
-              <i class="fa-solid fa-xmark"></i> بند کریں
-            </button>
-          </div>
-          
-          <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-yt-border/60">
-            <!-- Channel / Owner Info -->
-            <div class="flex items-center space-x-3 space-x-reverse cursor-pointer" onclick="switchTab('you')">
-              <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-amber-600 to-red-600 flex items-center justify-center font-bold text-white text-xs shadow-md">
-                AR
-              </div>
-              <div>
-                <h4 class="text-xs font-bold text-white flex items-center gap-1">
-                  اللہ دتا رب نواز <i class="fa-solid fa-circle-check text-blue-500 text-[10px]"></i>
-                </h4>
-                <p class="text-[10px] text-yt-muted">ویڈیو ٹیوب آفیشل • 1.2M سبسکرائبرز</p>
-              </div>
-            </div>
-
-            <!-- Interaction Buttons (Like, Share, Download) -->
-            <div class="flex items-center space-x-2 space-x-reverse text-xs">
-              <button onclick="handleLike()" class="flex items-center space-x-1.5 space-x-reverse px-3 py-1.5 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white font-semibold">
-                <i class="fa-regular fa-thumbs-up"></i>
-                <span id="likeCount">12.5K</span>
-              </button>
-              <button onclick="handleShare()" class="flex items-center space-x-1.5 space-x-reverse px-3 py-1.5 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white font-semibold">
-                <i class="fa-solid fa-share"></i>
-                <span>شیئر</span>
-              </button>
-              <button onclick="downloadCurrentVideo()" class="flex items-center space-x-1.5 space-x-reverse px-3 py-1.5 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold shadow-md shadow-red-600/30">
-                <i class="fa-solid fa-arrow-down"></i>
-                <span>ڈاؤن لوڈ کریں</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Featured Banner / Notice -->
-      <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-red-950/80 via-neutral-900 to-neutral-950 border border-red-500/20 p-4 sm:p-6 shadow-xl">
-        <div class="max-w-2xl space-y-2">
-          <div class="inline-flex items-center space-x-1.5 space-x-reverse px-2.5 py-0.5 rounded-full bg-red-600/20 border border-red-500/30 text-red-400 text-[11px] font-bold">
-            <i class="fa-solid fa-circle-play animate-pulse text-red-500"></i>
-            <span>خوش آمدید - ویڈیو ٹیوب آن لائن پورٹل</span>
-          </div>
-          <h1 class="text-lg sm:text-2xl font-bold text-white">معیاری پاکستانی و بین الاقوامی موویز اور ویڈیوز کا سب سے بڑا مرکز</h1>
-          <p class="text-xs sm:text-sm text-yt-muted leading-relaxed">
-            یوٹیوب کے بہترین چینلز کا مواد اور سوشل ویڈیو ڈاؤنلوڈر ایک ہی جگہ پر مکمل آزادی کے ساتھ دیکھیں۔
-          </p>
-          <div class="pt-2 flex items-center space-x-3 space-x-reverse">
-            <button onclick="switchTab('downloader')" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-lg shadow-red-600/30 flex items-center space-x-1.5 space-x-reverse">
-              <i class="fa-solid fa-download"></i>
-              <span>کوئی بھی ویڈیو ڈاؤن لوڈ کریں</span>
-            </button>
-            <button onclick="switchTab('you')" class="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-semibold border border-yt-border">
-              بانی کا تعارف دیکھیں
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Video Feed Grid (YouTube Grid) -->
-      <div>
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-fire text-red-500"></i>
-            <span>تازہ ترین موویز و ویڈیوز (Latest Releases)</span>
-          </h2>
-          <span id="videoCountBadge" class="text-xs text-yt-muted bg-neutral-800 px-2.5 py-1 rounded-full">12 ویڈیوز دستیاب</span>
-        </div>
-
-        <div id="videoGridContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-          <!-- Video Cards injected by JS -->
-        </div>
-      </div>
-    </section>
-
-    <!-- ----------------- TAB 2: SHORTS (یوٹیوب شارٹس پلیئر) ----------------- -->
-    <section id="tab-shorts" class="hidden">
-      <div class="max-w-md mx-auto shorts-container overflow-y-scroll no-scrollbar rounded-2xl border border-yt-border bg-black shadow-2xl">
-        
-        <!-- Short 1 -->
-        <div class="short-item relative w-full h-full flex items-center justify-center bg-neutral-950 overflow-hidden">
-          <iframe class="w-full h-full pointer-events-auto" src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=0&loop=1&controls=0&rel=0" frameborder="0"></iframe>
-          <div class="absolute bottom-4 right-4 left-16 z-20 space-y-2 pointer-events-none text-right">
-            <div class="flex items-center space-x-2 space-x-reverse pointer-events-auto cursor-pointer" onclick="switchTab('you')">
-              <div class="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-xs shadow-md">AR</div>
-              <span class="text-xs font-bold text-white drop-shadow-md">@AllahDittaRabnawaz</span>
-              <button class="px-2.5 py-1 bg-red-600 text-white text-[10px] font-bold rounded-full">سبسکرائب</button>
-            </div>
-            <p class="text-xs text-white font-medium drop-shadow-md">خوبصورت پاکستانی مناظر اور شاندار شارٹ ویڈیو #Shorts #Pakistan</p>
-          </div>
-          <!-- Shorts Floating Action Buttons -->
-          <div class="absolute bottom-6 left-3 z-20 flex flex-col items-center space-y-4">
-            <button onclick="toggleShortLike(this)" class="flex flex-col items-center text-white">
-              <div class="w-10 h-10 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-lg hover:bg-neutral-800">
-                <i class="fa-solid fa-heart text-red-500"></i>
-              </div>
-              <span class="text-[10px] font-bold mt-1">45K</span>
-            </button>
-            <button onclick="switchTab('downloader')" class="flex flex-col items-center text-white">
-              <div class="w-10 h-10 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-lg hover:bg-neutral-800">
-                <i class="fa-solid fa-download"></i>
-              </div>
-              <span class="text-[10px] font-bold mt-1">محفوظ</span>
-            </button>
-            <button onclick="handleShare()" class="flex flex-col items-center text-white">
-              <div class="w-10 h-10 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-lg hover:bg-neutral-800">
-                <i class="fa-solid fa-share"></i>
-              </div>
-              <span class="text-[10px] font-bold mt-1">شیئر</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Short 2 -->
-        <div class="short-item relative w-full h-full flex items-center justify-center bg-neutral-950 overflow-hidden">
-          <iframe class="w-full h-full pointer-events-auto" src="https://www.youtube.com/embed/fJ9rUzIMcZQ?autoplay=0&loop=1&controls=0&rel=0" frameborder="0"></iframe>
-          <div class="absolute bottom-4 right-4 left-16 z-20 space-y-2 pointer-events-none text-right">
-            <div class="flex items-center space-x-2 space-x-reverse pointer-events-auto cursor-pointer" onclick="switchTab('you')">
-              <div class="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-xs shadow-md">AR</div>
-              <span class="text-xs font-bold text-white drop-shadow-md">@AllahDittaRabnawaz</span>
-            </div>
-            <p class="text-xs text-white font-medium drop-shadow-md">کوئن آف میوزک ملکہ ترنم نور جہاں کی یادگار پرفارمنس #Legend #VideoTube</p>
-          </div>
-          <div class="absolute bottom-6 left-3 z-20 flex flex-col items-center space-y-4">
-            <button onclick="toggleShortLike(this)" class="flex flex-col items-center text-white">
-              <div class="w-10 h-10 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-lg hover:bg-neutral-800">
-                <i class="fa-regular fa-heart"></i>
-              </div>
-              <span class="text-[10px] font-bold mt-1">82K</span>
-            </button>
-            <button onclick="switchTab('downloader')" class="flex flex-col items-center text-white">
-              <div class="w-10 h-10 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-lg hover:bg-neutral-800">
-                <i class="fa-solid fa-download"></i>
-              </div>
-              <span class="text-[10px] font-bold mt-1">محفوظ</span>
-            </button>
-            <button onclick="handleShare()" class="flex flex-col items-center text-white">
-              <div class="w-10 h-10 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-lg hover:bg-neutral-800">
-                <i class="fa-solid fa-share"></i>
-              </div>
-              <span class="text-[10px] font-bold mt-1">شیئر</span>
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ----------------- TAB 3: DOWNLOADER (سوشل میڈیا ڈائریکٹ ویڈیو ڈاؤنلوڈر) ----------------- -->
-    <section id="tab-downloader" class="hidden max-w-2xl mx-auto space-y-6">
-      
-      <!-- Downloader Header -->
-      <div class="text-center space-y-2">
-        <div class="inline-flex items-center space-x-1.5 space-x-reverse px-3 py-1 rounded-full bg-red-600/10 border border-red-500/20 text-red-500 text-xs font-bold">
-          <i class="fa-solid fa-bolt text-amber-400"></i>
-          <span>100% ڈائریکٹ ڈاؤنلوڈر • بغیر کسی دوسری ایپ یا ویب سائٹ کے</span>
-        </div>
-        <h2 class="text-xl sm:text-2xl font-bold text-white">سوشل ویڈیو ڈاؤنلوڈر (Social Video Downloader)</h2>
-        <p class="text-xs sm:text-sm text-yt-muted">
-          فیس بک (Facebook Reels & Videos)، یوٹیوب (YouTube HD)، ٹک ٹاک (TikTok بغیر واٹر مارک) اور انسٹاگرام سے ویڈیوز براہ راست اپنے موبائل میں ڈاؤن لوڈ کریں۔
-        </p>
-      </div>
-
-      <!-- Supported Badges -->
-      <div class="flex items-center justify-center gap-2 flex-wrap text-[11px] font-bold">
-        <span class="px-3 py-1 rounded-full bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center gap-1.5">
-          <i class="fa-brands fa-facebook"></i> Facebook (Reels & Videos)
-        </span>
-        <span class="px-3 py-1 rounded-full bg-red-600/20 text-red-400 border border-red-500/30 flex items-center gap-1.5">
-          <i class="fa-brands fa-youtube"></i> YouTube (1080p, 720p, MP3)
-        </span>
-        <span class="px-3 py-1 rounded-full bg-pink-600/20 text-pink-400 border border-pink-500/30 flex items-center gap-1.5">
-          <i class="fa-brands fa-tiktok"></i> TikTok (No Watermark)
-        </span>
-        <span class="px-3 py-1 rounded-full bg-purple-600/20 text-purple-400 border border-purple-500/30 flex items-center gap-1.5">
-          <i class="fa-brands fa-instagram"></i> Instagram (Reels & Posts)
-        </span>
-      </div>
-
-      <!-- Link Input Box -->
-      <div class="bg-yt-card border border-yt-border rounded-2xl p-4 sm:p-5 space-y-4 shadow-xl">
-        <label class="block text-xs font-bold text-neutral-300 text-right">
-          ویڈیو کا لنک یہاں پیسٹ کریں (Paste Video Link Here):
-        </label>
-        
-        <div class="relative flex items-center">
-          <input type="url" id="downloadUrlInput" 
-            placeholder="مثال: https://www.facebook.com/share/r/... یا یوٹیوب، ٹک ٹاک، انسٹاگرام لنک"
-            oninput="detectPlatform(this.value)"
-            class="w-full bg-neutral-900 border border-neutral-700 rounded-xl px-4 py-3.5 pl-24 text-xs sm:text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-red-500 transition text-right">
-          
-          <button onclick="pasteClipboard()" class="absolute left-2.5 px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-yt-muted hover:text-white text-xs font-semibold flex items-center space-x-1 space-x-reverse border border-neutral-700">
-            <i class="fa-regular fa-paste"></i>
-            <span>پیسٹ</span>
-          </button>
-        </div>
-
-        <div class="flex items-center justify-between pt-1">
-          <button id="fetchBtn" onclick="fetchDownloadVideo()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-bold text-sm shadow-lg shadow-red-600/30 transition flex items-center justify-center space-x-2 space-x-reverse">
-            <i class="fa-solid fa-arrow-down"></i>
-            <span>ڈاؤن لوڈ لنک نکالیں</span>
-          </button>
-        </div>
-
-        <div id="detectedPlatformBadge" class="hidden text-xs text-yt-muted flex items-center space-x-2 pt-1">
-          <span>پلیٹ فارم:</span>
-          <span id="detectedPlatformName" class="font-bold text-white uppercase px-2 py-0.5 rounded bg-neutral-800"></span>
-        </div>
-      </div>
-
-      <!-- In-Page Direct Downloading Status Bar -->
-      <div id="downloadProgressBarContainer" class="hidden bg-neutral-900 border border-green-500/40 p-4 rounded-2xl space-y-2 shadow-xl animate-pulse">
-        <div class="flex items-center justify-between text-xs">
-          <div class="flex items-center space-x-2 text-green-400 font-bold">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-            <span id="downloadStatusText">براہ راست ڈاؤن لوڈنگ جاری ہے... براہ کرم انتظار کریں۔</span>
-          </div>
-          <span class="text-[11px] text-neutral-400">سیدھا آپ کے موبائل میں</span>
-        </div>
-        <div class="w-full bg-neutral-800 h-2 rounded-full overflow-hidden">
-          <div id="downloadProgressBar" class="bg-gradient-to-r from-green-500 to-emerald-400 h-full w-2/3 transition-all duration-300"></div>
-        </div>
-      </div>
-
-      <!-- Result Box -->
-      <div id="downloadResultBox" class="hidden bg-yt-card border border-yt-border rounded-2xl p-5 space-y-5 shadow-2xl">
-        <div class="flex flex-col sm:flex-row items-center gap-4">
-          <img id="downloadThumb" src="" alt="Thumbnail" class="w-full sm:w-48 aspect-video object-cover rounded-xl border border-yt-border">
-          <div class="space-y-1.5 w-full text-center sm:text-left">
-            <span id="downloadSourceBadge" class="inline-block px-2.5 py-0.5 text-[11px] font-bold rounded bg-red-600/20 text-red-400 border border-red-500/30 uppercase">YOUTUBE</span>
-            <h3 id="downloadTitle" class="text-base font-bold text-white line-clamp-2">ویڈیو ٹائٹل</h3>
-            <p id="downloadMeta" class="text-xs text-green-400 flex items-center justify-center sm:justify-start space-x-1.5">
-              <i class="fa-solid fa-circle-check"></i>
-              <span>ڈاؤن لوڈ لنک تیار ہے • 100% براہ راست (No Redirection)</span>
-            </p>
-          </div>
-        </div>
-
-        <!-- Embedded In-App Player -->
-        <div id="previewVideoContainer" class="hidden border border-neutral-800 rounded-xl overflow-hidden bg-black p-2 space-y-2">
-          <div class="text-xs text-neutral-400 flex items-center justify-between px-1">
-            <span class="font-semibold text-white">ویڈیو پری ویو (Watch & Direct Download):</span>
-            <span class="text-[10px] text-neutral-500">پلیئر سے بھی محفوظ کر سکتے ہیں</span>
-          </div>
-          <video id="downloadPreviewPlayer" controls playsinline class="w-full aspect-video rounded-lg bg-black"></video>
-        </div>
-
-        <!-- Direct Download Buttons (NO EXTERNAL SITES) -->
-        <div class="border-t border-yt-border/60 pt-4">
-          <h4 class="text-xs font-semibold text-neutral-300 mb-3 text-center sm:text-left flex items-center space-x-1.5">
-            <i class="fa-solid fa-download text-red-500"></i>
-            <span>کوالٹی منتخب کریں اور براہ راست موبائل میں محفوظ کریں:</span>
-          </h4>
-          
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            <!-- 1080p -->
-            <button onclick="triggerDirectDownload('1080p')" class="flex items-center justify-between p-3.5 rounded-xl bg-neutral-900 border border-neutral-700 hover:border-red-500 hover:bg-neutral-800 transition group">
-              <div class="flex items-center space-x-2.5 text-left">
-                <i class="fa-solid fa-film text-red-500 text-lg group-hover:scale-110 transition"></i>
-                <div>
-                  <div class="text-xs font-bold text-white">1080p Full HD (MP4)</div>
-                  <div class="text-[10px] text-yt-muted">ڈائریکٹ فل ایچ ڈی ڈاؤن لوڈ</div>
-                </div>
-              </div>
-              <span class="px-3.5 py-1.5 bg-yt-red text-white text-xs font-bold rounded-lg flex items-center space-x-1 shadow-md">
-                <i class="fa-solid fa-arrow-down"></i>
-                <span>Download</span>
-              </span>
-            </button>
-
-            <!-- 720p -->
-            <button onclick="triggerDirectDownload('720p')" class="flex items-center justify-between p-3.5 rounded-xl bg-neutral-900 border border-neutral-700 hover:border-blue-500 hover:bg-neutral-800 transition group">
-              <div class="flex items-center space-x-2.5 text-left">
-                <i class="fa-solid fa-video text-blue-500 text-lg group-hover:scale-110 transition"></i>
-                <div>
-                  <div class="text-xs font-bold text-white">720p HD (MP4)</div>
-                  <div class="text-[10px] text-yt-muted">تیز رفتار موبائل ڈاؤن لوڈ</div>
-                </div>
-              </div>
-              <span class="px-3.5 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-lg flex items-center space-x-1 shadow-md">
-                <i class="fa-solid fa-arrow-down"></i>
-                <span>Download</span>
-              </span>
-            </button>
-
-            <!-- 480p -->
-            <button onclick="triggerDirectDownload('480p')" class="flex items-center justify-between p-3.5 rounded-xl bg-neutral-900 border border-neutral-700 hover:border-green-500 hover:bg-neutral-800 transition group">
-              <div class="flex items-center space-x-2.5 text-left">
-                <i class="fa-solid fa-mobile-screen text-green-500 text-lg group-hover:scale-110 transition"></i>
-                <div>
-                  <div class="text-xs font-bold text-white">480p SD (کم ایم بی)</div>
-                  <div class="text-[10px] text-yt-muted">واٹس ایپ اور ڈیٹا بچت کے لیے</div>
-                </div>
-              </div>
-              <span class="px-3.5 py-1.5 bg-neutral-700 hover:bg-neutral-600 text-white text-xs font-bold rounded-lg flex items-center space-x-1 shadow-md">
-                <i class="fa-solid fa-arrow-down"></i>
-                <span>Download</span>
-              </span>
-            </button>
-
-            <!-- MP3 -->
-            <button onclick="triggerDirectDownload('mp3')" class="flex items-center justify-between p-3.5 rounded-xl bg-neutral-900 border border-neutral-700 hover:border-purple-500 hover:bg-neutral-800 transition group">
-              <div class="flex items-center space-x-2.5 text-left">
-                <i class="fa-solid fa-music text-purple-500 text-lg group-hover:scale-110 transition"></i>
-                <div>
-                  <div class="text-xs font-bold text-white">MP3 Audio (صرف آواز)</div>
-                  <div class="text-[10px] text-yt-muted">آڈیو گانا / بی جی ایم 320kbps</div>
-                </div>
-              </div>
-              <span class="px-3.5 py-1.5 bg-purple-600 text-white text-xs font-bold rounded-lg flex items-center space-x-1 shadow-md">
-                <i class="fa-solid fa-music"></i>
-                <span>Audio</span>
-              </span>
-            </button>
-          </div>
-        </div>
-
-        <!-- High Speed Direct Servers for Social Media Media -->
-        <div id="metaDirectServers" class="hidden space-y-3 pt-3 border-t border-yt-border/50">
-          <div class="p-3 rounded-xl bg-blue-950/40 border border-blue-500/30 text-xs text-blue-200 flex items-start space-x-2">
-            <i class="fa-solid fa-bolt text-amber-400 mt-0.5"></i>
-            <span>سوشل میڈیا سیکیورٹی کے تحت اس ویڈیو کے لیے 3 تیز رفتار ڈائریکٹ ڈاؤنلوڈر سرورز دستیاب ہیں۔ کسی بھی بٹن پر کلک کریں، ڈاؤن لوڈنگ فوراً شروع ہو جائے گی:</span>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <button onclick="downloadViaFastServer(1)" class="p-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 hover:border-blue-500 text-white font-bold text-xs flex items-center justify-center space-x-2 transition">
-              <i class="fa-solid fa-server text-blue-400"></i>
-              <span>سرور 1 (High Speed HD)</span>
-            </button>
-            <button onclick="downloadViaFastServer(2)" class="p-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 hover:border-amber-500 text-white font-bold text-xs flex items-center justify-center space-x-2 transition">
-              <i class="fa-solid fa-bolt text-amber-400"></i>
-              <span>سرور 2 (Direct Fast MP4)</span>
-            </button>
-            <button onclick="downloadViaFastServer(3)" class="p-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 hover:border-purple-500 text-white font-bold text-xs flex items-center justify-center space-x-2 transition">
-              <i class="fa-solid fa-music text-purple-400"></i>
-              <span>سرور 3 (Audio MP3)</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ----------------- TAB 4: YOU / OWNER PROFILE (اونر و تعارف پیج) ----------------- -->
-    <section id="tab-you" class="hidden max-w-4xl mx-auto space-y-6">
-      <div class="relative bg-yt-card border border-yt-border rounded-2xl overflow-hidden shadow-xl">
-        
-        <!-- Header Banner -->
-        <div class="h-32 sm:h-44 bg-gradient-to-r from-red-950 via-neutral-900 to-amber-950 relative">
-          <div class="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:16px_16px]"></div>
-          <div class="absolute bottom-3 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs text-white border border-white/10 flex items-center space-x-1.5">
-            <i class="fa-solid fa-crown text-amber-400"></i>
-            <span>Verified Official Founder</span>
-          </div>
-        </div>
-
-        <div class="px-5 pb-6 pt-0 relative">
-          <!-- Profile Bar -->
-          <div class="flex flex-col sm:flex-row items-center sm:items-end justify-between gap-4 -mt-12 sm:-mt-14 mb-5">
-            <div class="flex flex-col sm:flex-row items-center sm:items-end text-center sm:text-left space-y-2 sm:space-y-0 sm:space-x-4">
-              <div class="w-24 h-24 rounded-full ring-4 ring-yt-black bg-gradient-to-tr from-amber-600 via-red-600 to-purple-600 flex items-center justify-center font-bold text-3xl text-white shadow-2xl">
-                AR
-              </div>
-              <div class="space-y-0.5">
-                <div class="flex items-center justify-center sm:justify-start space-x-2">
-                  <h1 class="text-xl sm:text-2xl font-bold text-white">اللہ دتا رب نواز (Allah ditta RABNAWAZ)</h1>
-                  <i class="fa-solid fa-circle-check text-blue-400 text-sm" title="ویریفائیڈ اونر"></i>
-                </div>
-                <p class="text-xs text-yt-muted">بانی و اونر، ویڈیو ٹیوب پی کے (Founder of VideoTube PK)</p>
-                <div class="flex items-center justify-center sm:justify-start space-x-2 text-xs pt-1">
-                  <span class="px-2.5 py-0.5 rounded bg-red-600/20 text-red-400 font-semibold border border-red-500/30">بانی و سربراہ</span>
-                  <span class="text-yt-muted">• پاکستان</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex items-center space-x-2">
-              <button id="subscribeBtn" onclick="subscribeOwner()" class="px-5 py-2 rounded-full bg-yt-red hover:bg-red-700 text-white text-xs font-bold transition shadow-lg shadow-red-600/30">
-                سبسکرائب کریں
-              </button>
-            </div>
-          </div>
-
-          <!-- Official TikTok Connect Box (صرف ٹک ٹاک آئی ڈی) -->
-          <div class="mb-6 p-4 rounded-xl bg-gradient-to-r from-pink-950/40 to-neutral-900 border border-pink-500/30 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div class="flex items-center space-x-3 space-x-reverse text-right">
-              <div class="w-12 h-12 rounded-xl bg-pink-600/20 border border-pink-500/40 flex items-center justify-center text-pink-400 text-2xl">
-                <i class="fa-brands fa-tiktok"></i>
-              </div>
-              <div>
-                <h4 class="text-sm font-bold text-white">آفیشل ٹک ٹاک اکاؤنٹ (Official TikTok)</h4>
-                <p class="text-xs text-pink-300 font-mono tracking-wide">tiktok.com/@adjatt0.7</p>
-              </div>
-            </div>
-            
-            <a href="https://www.tiktok.com/@adjatt0.7" target="_blank" rel="noopener noreferrer" 
-              class="px-5 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-bold text-xs shadow-lg shadow-pink-600/30 transition flex items-center space-x-1.5 space-x-reverse">
-              <i class="fa-brands fa-tiktok text-sm"></i>
-              <span>ٹک ٹاک پروفائل پر جائیں</span>
-            </a>
-          </div>
-
-          <!-- Official Biography Sections (اردو اور انگلش) -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            
-            <!-- URDU SECTION -->
-            <div class="bg-neutral-900/90 border border-yt-border rounded-xl p-5 space-y-3 text-right">
-              <div class="flex items-center justify-between border-b border-yt-border/70 pb-2.5">
-                <span class="text-xs font-bold px-2 py-0.5 rounded bg-red-600/20 text-red-400 border border-red-500/30">اردو سیکشن</span>
-                <h3 class="text-sm font-bold text-white">تعارف - ویڈیو ٹیوب</h3>
-              </div>
-              <h4 class="text-sm font-bold text-amber-400">خوش آمدید!</h4>
-              <p class="text-xs leading-relaxed text-neutral-300">
-                سلام! میرا نام <strong class="text-white">اللہ دتا رب نواز (Allah ditta RABNAWAZ)</strong> ہے اور میں <strong>"ویڈیو ٹیوب" (VideoTube)</strong> کا بانی ہوں۔
-              </p>
-              <p class="text-xs leading-relaxed text-neutral-300">
-                ویڈیو ٹیوب کو بنانے کا بنیادی مقصد اپنے صارفین کو معیاری، معلومات سے بھرپور اور تفریحی ویڈیو مواد ایک ہی پلیٹ فارم پر فراہم کرنا ہے۔ ہم جدید ترین ٹیکنالوجی اور منفرد مواد کے ذریعے اپنے صارفین کے تجربے کو بہترین بنانے کے لیے ہمہ وقت کوشاں ہیں۔
-              </p>
-              <div class="pt-1">
-                <h5 class="text-xs font-bold text-white mb-1">ہمارا مقصد:</h5>
-                <p class="text-xs leading-relaxed text-neutral-400">
-                  ہمارا عزم ایک ایسا پلیٹ فارم تیار کرنا ہے جہاں ہر فرد کو اپنی پسند کا مواد آسانی سے دستیاب ہو اور ہر صارف ایک بہترین اور محفوظ ماحول میں ویڈیو مواد سے لطف اندوز ہو سکے۔
-                </p>
-              </div>
-              <div class="pt-1 border-t border-yt-border/50 text-neutral-400 text-[11px]">
-                اگر آپ کے پاس کوئی تجویز، سوال یا رائے ہے تو مجھ سے میرے آفیشل ٹک ٹاک ہینڈل پر رابطہ کر سکتے ہیں۔ آپ کی محبت اور تعاون کا بہت شکریہ!
-              </div>
-            </div>
-
-            <!-- ENGLISH SECTION -->
-            <div class="bg-neutral-900/90 border border-yt-border rounded-xl p-5 space-y-3 text-left" dir="ltr">
-              <div class="flex items-center justify-between border-b border-yt-border/70 pb-2.5">
-                <h3 class="text-sm font-bold text-white">About Us - VideoTube</h3>
-                <span class="text-xs font-bold px-2 py-0.5 rounded bg-blue-600/20 text-blue-400 border border-blue-500/30">English Section</span>
-              </div>
-              <h4 class="text-sm font-bold text-amber-400">Welcome to VideoTube!</h4>
-              <p class="text-xs leading-relaxed text-neutral-300">
-                Hello and welcome! My name is <strong class="text-white">Allah ditta RABNAWAZ</strong>, the founder of <strong>VideoTube</strong>.
-              </p>
-              <p class="text-xs leading-relaxed text-neutral-300">
-                VideoTube was created with a clear vision: to provide users with high-quality, informative, and engaging video content all in one place. We are dedicated to delivering an exceptional digital experience by leveraging modern web technologies and curated content.
-              </p>
-              <div class="pt-1">
-                <h5 class="text-xs font-bold text-white mb-1">Our Mission:</h5>
-                <p class="text-xs leading-relaxed text-neutral-400">
-                  Our mission is to build a reliable and seamless video platform where users can easily explore, watch, and enjoy content tailored to their interests in a secure and user-friendly environment.
-                </p>
-              </div>
-              <div class="pt-1 border-t border-yt-border/50 text-neutral-400 text-[11px]">
-                Feel free to connect directly via my official TikTok account. Thank you for your continued love, trust, and support!
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Channel Stats Grid -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6">
-            <div class="bg-neutral-900/70 border border-yt-border p-3.5 rounded-xl text-center">
-              <div class="text-base sm:text-lg font-bold text-white">100K+</div>
-              <div class="text-[11px] text-yt-muted">روزانہ ویوز</div>
-            </div>
-            <div class="bg-neutral-900/70 border border-yt-border p-3.5 rounded-xl text-center">
-              <div class="text-base sm:text-lg font-bold text-white">100%</div>
-              <div class="text-[11px] text-yt-muted">مفت سروس</div>
-            </div>
-            <div class="bg-neutral-900/70 border border-yt-border p-3.5 rounded-xl text-center">
-              <div class="text-base sm:text-lg font-bold text-white">4K / HD</div>
-              <div class="text-[11px] text-yt-muted">کوالٹی سپورٹ</div>
-            </div>
-            <div class="bg-neutral-900/70 border border-yt-border p-3.5 rounded-xl text-center">
-              <div class="text-base sm:text-lg font-bold text-white">ویریفائیڈ</div>
-              <div class="text-[11px] text-yt-muted">آفیشل پلیٹ فارم</div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
+  <!-- Video Grid Feed -->
+  <main class="flex-1 p-4 lg:p-6 max-w-7xl mx-auto w-full">
+    <div id="videoGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-6"></div>
   </main>
 
-  <!-- ----------------- BOTTOM NAVIGATION POPUP BAR (یوٹیوب باٹم نیویگیشن بار) ----------------- -->
-  <nav class="fixed bottom-0 left-0 right-0 z-50 bg-yt-black/98 backdrop-blur-lg border-t border-yt-border px-2 py-1.5 flex items-center justify-around shadow-2xl">
-    
-    <!-- Tab 1: Home -->
-    <button onclick="switchTab('home')" id="nav-btn-home" class="flex flex-col items-center justify-center flex-1 py-1 text-white group">
-      <i class="fa-solid fa-house text-lg group-hover:scale-110 transition"></i>
-      <span class="text-[10px] mt-1 font-medium">ہوم (Home)</span>
-    </button>
-
-    <!-- Tab 2: Shorts -->
-    <button onclick="switchTab('shorts')" id="nav-btn-shorts" class="flex flex-col items-center justify-center flex-1 py-1 text-yt-muted hover:text-white group">
-      <i class="fa-solid fa-bolt text-lg group-hover:scale-110 transition"></i>
-      <span class="text-[10px] mt-1 font-medium">شارٹس (Shorts)</span>
-    </button>
-
-    <!-- Tab 3: Downloader (Center Highlight) -->
-    <button onclick="switchTab('downloader')" id="nav-btn-downloader" class="flex flex-col items-center justify-center flex-1 py-1 text-yt-muted hover:text-white group">
-      <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-red-600 to-rose-600 text-white flex items-center justify-center shadow-lg shadow-red-600/40 -mt-4 border-2 border-yt-black group-hover:scale-110 transition">
-        <i class="fa-solid fa-arrow-down text-base"></i>
-      </div>
-      <span class="text-[10px] mt-0.5 font-bold text-red-500">ڈاؤنلوڈر</span>
-    </button>
-
-    <!-- Tab 4: You / Owner -->
-    <button onclick="switchTab('you')" id="nav-btn-you" class="flex flex-col items-center justify-center flex-1 py-1 text-yt-muted hover:text-white group">
-      <div class="w-6 h-6 rounded-full ring-1 ring-neutral-400 flex items-center justify-center text-[10px] font-bold bg-neutral-800 text-white">
-        AR
-      </div>
-      <span class="text-[10px] mt-1 font-medium">آپ (You)</span>
-    </button>
-
-  </nav>
-
-  <!-- Global Toast Notification -->
-  <div id="toastMessage" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-neutral-900/95 border border-yt-border px-4 py-2.5 rounded-full text-xs text-white shadow-2xl opacity-0 pointer-events-none transition-all duration-300 flex items-center space-x-2 space-x-reverse">
-    <i class="fa-solid fa-circle-info text-red-500"></i>
-    <span id="toastText">نوٹیفکیشن</span>
-  </div>
-
-  <!-- Hidden Native Anchor for 100% Direct File Downloads -->
-  <a id="directDownloadAnchor" style="display:none;" aria-hidden="true"></a>
-
-  <!-- ----------------- JAVASCRIPT LOGIC ----------------- -->
   <script>
-    // Global State
-    let currentTab = 'home';
-    let currentlyPlayingId = null;
-    let allMovies = [];
-    let directMediaUrls = {};
-
-    // Initial curated high-quality YouTube movies & videos
-    const defaultCuratedVideos = [
-      {
-        id: "L_LUpnjgPso",
-        title: "وار (WAAR) - بلاک بسٹر پاکستانی ایکشن مووی | شان شاہد، حمزہ علی عباسی",
-        channel: "ARY Films Official",
-        category: "movies",
-        views: "15M",
-        time: "3 سال پہلے",
-        thumb: "https://img.youtube.com/vi/L_LUpnjgPso/hqdefault.jpg"
-      },
-      {
-        id: "s79Yp7lM1eE",
-        title: "جوانی پھر نہیں آنی 2 (Jawani Phir Nahi Ani 2) - سپر ہٹ فل مووی",
-        channel: "Hum Films",
-        category: "movies",
-        views: "22M",
-        time: "2 سال پہلے",
-        thumb: "https://img.youtube.com/vi/s79Yp7lM1eE/hqdefault.jpg"
-      },
-      {
-        id: "kJQP7kiw5Fk",
-        title: "تیری میری کہانیاں (Teri Meri Kahaniyaan) - مہوش حیات، وہاج علی فل مووی",
-        channel: "See Prime Official",
-        category: "movies",
-        views: "9.8M",
-        time: "1 سال پہلے",
-        thumb: "https://img.youtube.com/vi/kJQP7kiw5Fk/hqdefault.jpg"
-      },
-      {
-        id: "dZ0fwJojhrs",
-        title: "عہد وفا (Ehd-e-Wafa) - یادگار آخری قسط فل ایچ ڈی | آئی ایس پی آر",
-        channel: "ISPR Official",
-        category: "dramas",
-        views: "34M",
-        time: "4 سال پہلے",
-        thumb: "https://img.youtube.com/vi/dZ0fwJojhrs/hqdefault.jpg"
-      },
-      {
-        id: "0WtrS6U2KjU",
-        title: "مولا یا صلی وسلم - خوبصورت ترین دل کو چھو لینے والی نعت رسول مقبول ﷺ",
-        channel: "Islamic Sound",
-        category: "naats",
-        views: "18M",
-        time: "2 سال پہلے",
-        thumb: "https://img.youtube.com/vi/0WtrS6U2KjU/hqdefault.jpg"
-      },
-      {
-        id: "7C2z4GqqS5E",
-        title: "سپر ہٹ پاکستانی گانے و قوالیاں (Best of Rahat Fateh Ali Khan & Atif Aslam)",
-        channel: "Coke Studio Pakistan",
-        category: "songs",
-        views: "42M",
-        time: "3 سال پہلے",
-        thumb: "https://img.youtube.com/vi/7C2z4GqqS5E/hqdefault.jpg"
-      },
-      {
-        id: "bKac0v4vR-M",
-        title: "جیو نیوز لائیو (Geo News Live) - 24/7 پاکستان کی بریکنگ نیوز",
-        channel: "Geo News Official",
-        category: "news",
-        views: "لائیو",
-        time: "لائیو سٹریم",
-        thumb: "https://img.youtube.com/vi/bKac0v4vR-M/hqdefault.jpg"
-      },
-      {
-        id: "34Na4j8AVgA",
-        title: "کبھی میں کبھی تم (Kabhi Main Kabhi Tum) - شرجینا اور مصطفیٰ فل ڈرامہ کلپس",
-        channel: "ARY Digital HD",
-        category: "dramas",
-        views: "28M",
-        time: "6 ماہ پہلے",
-        thumb: "https://img.youtube.com/vi/34Na4j8AVgA/hqdefault.jpg"
-      }
+    const DEFAULT_VIDEOS = [
+      { id: 1, videoId: "aqz-KE-bpKQ", title: "Big Buck Bunny 4K (Open Animation)", channel: "Blender Animation", cat: "Movies", views: "15.4M views", time: "3 days ago", duration: "9:56", desc: "A large and lovable rabbit deals with bullying forest creatures in this iconic classic." },
+      { id: 2, videoId: "R6MlUcmOul8", title: "Tears of Steel - Sci-Fi VFX Short in 4K", channel: "Blender VFX Lab", cat: "Tech", views: "4.9M views", time: "1 week ago", duration: "12:14", desc: "Exploring cutting-edge open-source visual effects in a dystopian future." },
+      { id: 3, videoId: "jfKfPfyJRdk", title: "Lofi Hip Hop Radio - Beats to Relax / Study", channel: "Lofi Girl", cat: "Music", views: "28.4M views", time: "Live", duration: "LIVE", desc: "Relaxing lofi music stream for studying, working, coding, or sleeping peacefully." },
+      { id: 4, videoId: "8X2kIfS6fb8", title: "Cyberpunk 2077 - Next-Gen Ray Tracing Ultra", channel: "Digital Foundry", cat: "Gaming", views: "6.7M views", time: "2 days ago", duration: "15:40", desc: "Deep dive into ray tracing overdrive mode running on RTX 4090 at 4K." }
     ];
 
-    // Load database (Local storage synced with Admin panel uploads)
-    function initDatabase() {
-      const stored = localStorage.getItem('videotube_custom_movies');
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          allMovies = [...parsed, ...defaultCuratedVideos];
-        } catch (e) {
-          allMovies = defaultCuratedVideos;
-        }
-      } else {
-        allMovies = defaultCuratedVideos;
-      }
-      renderVideoGrid(allMovies);
+    function getAllVideos() {
+      const stored = localStorage.getItem('videotube_admin_videos');
+      const adminVideos = stored ? JSON.parse(stored) : [];
+      return [...adminVideos, ...DEFAULT_VIDEOS];
     }
 
-    // Render videos into YouTube Grid
-    function renderVideoGrid(videos) {
-      const container = document.getElementById('videoGridContainer');
-      const countBadge = document.getElementById('videoCountBadge');
-      container.innerHTML = '';
+    let currentCat = "All";
+    let activeVidId = null;
+    let ytPlayer = null;
+    let isPlaying = false;
+    let updateInterval = null;
 
-      if (countBadge) {
-        countBadge.innerText = `${videos.length} ویڈیوز دستیاب`;
-      }
+    function renderVideos() {
+      const grid = document.getElementById('videoGrid');
+      grid.innerHTML = '';
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      const allVideos = getAllVideos();
 
-      if (videos.length === 0) {
-        container.innerHTML = `
-          <div class="col-span-full py-16 text-center text-yt-muted space-y-2">
-            <i class="fa-solid fa-film text-3xl"></i>
-            <p class="text-sm">کوئی ویڈیو نہیں ملی۔</p>
-          </div>
-        `;
-        return;
-      }
+      const filtered = allVideos.filter(v => {
+        const matchesCat = currentCat === 'All' || v.cat.toLowerCase() === currentCat.toLowerCase();
+        const matchesQuery = query === '' || 
+          v.title.toLowerCase().includes(query) || 
+          v.channel.toLowerCase().includes(query);
+        return matchesCat && matchesQuery;
+      });
 
-      videos.forEach((vid) => {
+      filtered.forEach(v => {
         const card = document.createElement('div');
-        card.className = "group cursor-pointer flex flex-col space-y-2.5";
-        card.onclick = () => playVideoInDashboard(vid.id, vid.title);
-
+        card.className = "cursor-pointer group flex flex-col space-y-2.5";
+        card.onclick = () => playVideo(v);
         card.innerHTML = `
-          <div class="relative aspect-video w-full rounded-xl overflow-hidden bg-neutral-900 border border-yt-border">
-            <img src="${vid.thumb || 'https://img.youtube.com/vi/' + vid.id + '/hqdefault.jpg'}" 
-                 alt="${vid.title}" 
-                 loading="lazy" 
-                 class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-            <div class="absolute bottom-2 left-2 bg-black/80 px-1.5 py-0.5 rounded text-[10px] font-mono text-white">
-              HD
-            </div>
-            <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-              <div class="w-11 h-11 rounded-full bg-red-600/90 text-white flex items-center justify-center shadow-lg">
-                <i class="fa-solid fa-play text-sm"></i>
-              </div>
-            </div>
+          <div class="relative aspect-video rounded-xl overflow-hidden bg-neutral-900 border border-neutral-800/80">
+            <img src="https://img.youtube.com/vi/${v.videoId}/hqdefault.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="${v.title}">
+            <span class="absolute bottom-2 right-2 text-[11px] font-bold px-1.5 py-0.5 rounded ${v.duration === 'LIVE' ? 'bg-red-600' : 'bg-black/80'} text-white">${v.duration || '10:00'}</span>
           </div>
-          
-          <div class="flex items-start space-x-2.5 space-x-reverse pt-0.5">
-            <div class="w-8 h-8 rounded-full bg-neutral-800 border border-yt-border flex-shrink-0 flex items-center justify-center text-xs font-bold text-white">
-              <i class="fa-solid fa-circle-play text-red-500"></i>
+          <div class="flex space-x-2.5 items-start">
+            <div class="w-9 h-9 rounded-full bg-neutral-800 flex items-center justify-center font-bold text-xs text-neutral-200 flex-shrink-0 border border-neutral-700/50">
+              ${v.channel ? v.channel[0].toUpperCase() : 'V'}
             </div>
-            <div class="space-y-0.5 flex-1 text-right">
-              <h3 class="text-xs sm:text-sm font-semibold text-white line-clamp-2 leading-snug group-hover:text-red-400 transition">
-                ${vid.title}
-              </h3>
-              <p class="text-[11px] text-yt-muted flex items-center gap-1 justify-start">
-                <span>${vid.channel || 'ویڈیو ٹیوب چینل'}</span>
-                <i class="fa-solid fa-check text-[9px] text-neutral-400"></i>
-              </p>
-              <p class="text-[10px] text-neutral-500">
-                ${vid.views || '100K ویوز'} • ${vid.time || 'نیا اپلوڈ'}
-              </p>
+            <div class="flex-1 min-w-0">
+              <h4 class="text-xs font-semibold text-neutral-100 line-clamp-2 leading-snug group-hover:text-red-400 transition">${v.title}</h4>
+              <p class="text-[11px] text-neutral-400 mt-1">${v.channel || 'Video Creator'}</p>
+              <p class="text-[11px] text-neutral-500">${v.views || '1.2K views'} • ${v.time || 'Recently'}</p>
             </div>
           </div>
         `;
-        container.appendChild(card);
+        grid.appendChild(card);
       });
     }
 
-    // Play video in top dashboard player
-    function playVideoInDashboard(id, title) {
-      currentlyPlayingId = id;
-      const playerSection = document.getElementById('activePlayerSection');
-      const iframe = document.getElementById('mainVideoIframe');
-      const titleElem = document.getElementById('mainVideoTitle');
-
-      iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
-      titleElem.innerText = title;
+    function playVideo(v) {
+      activeVidId = v.videoId;
+      const playerSection = document.getElementById('playerSection');
       playerSection.classList.remove('hidden');
 
-      // Scroll smoothly to player
+      document.getElementById('playerTitle').innerText = v.title;
+      document.getElementById('playerChannel').innerText = v.channel || 'Video Creator';
+      document.getElementById('playerChannelAvatar').innerText = v.channel ? v.channel[0].toUpperCase() : 'V';
+      document.getElementById('playerViews').innerText = `${v.views || '1.2K views'} • ${v.time || 'Recently'}`;
+      document.getElementById('playerDesc').innerText = v.desc || 'Enjoy watching this video in high definition on VideoTube.';
+
       playerSection.scrollIntoView({ behavior: 'smooth' });
+
+      // Create or update YouTube player with controls: 0 (NO YOUTUBE LOGO, NO SUGGESTION POPUPS)
+      if (ytPlayer && ytPlayer.loadVideoById) {
+        ytPlayer.loadVideoById(v.videoId);
+      } else {
+        ytPlayer = new YT.Player('ytPlayerDiv', {
+          height: '100%',
+          width: '100%',
+          videoId: v.videoId,
+          playerVars: {
+            'autoplay': 1,
+            'controls': 0,        // یوٹیوب کا اپنا کنٹرول بار، یوٹیوب لوگو اور پاپ اپس بند!
+            'modestbranding': 1,
+            'rel': 0,
+            'iv_load_policy': 3,
+            'playsinline': 1,
+            'disablekb': 1,
+            'fs': 0
+          },
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+          }
+        });
+      }
     }
 
-    function closeActivePlayer() {
-      const playerSection = document.getElementById('activePlayerSection');
-      const iframe = document.getElementById('mainVideoIframe');
-      iframe.src = '';
-      playerSection.classList.add('hidden');
-      currentlyPlayingId = null;
+    function onPlayerReady(event) {
+      event.target.playVideo();
+      startProgressTracking();
     }
 
-    // Category Filter
-    function selectCategory(category, button) {
-      document.querySelectorAll('.category-pill').forEach(btn => {
-        btn.className = "category-pill whitespace-nowrap px-3.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-yt-muted hover:text-white font-medium transition";
+    function onPlayerStateChange(event) {
+      if (event.data === YT.PlayerState.PLAYING) {
+        isPlaying = true;
+        document.getElementById('playPauseIcon').className = "fa-solid fa-pause text-lg";
+        startProgressTracking();
+      } else {
+        isPlaying = false;
+        document.getElementById('playPauseIcon').className = "fa-solid fa-play text-lg";
+        clearInterval(updateInterval);
+      }
+    }
+
+    function togglePlayPause() {
+      if (!ytPlayer) return;
+      if (isPlaying) {
+        ytPlayer.pauseVideo();
+        showCenterAnimation("fa-pause");
+      } else {
+        ytPlayer.playVideo();
+        showCenterAnimation("fa-play");
+      }
+    }
+
+    function showCenterAnimation(iconClass) {
+      const icon = document.getElementById('centerIcon');
+      const box = document.getElementById('centerPlayIcon');
+      icon.className = `fa-solid ${iconClass} ${iconClass === 'fa-play' ? 'ml-1' : ''}`;
+      box.classList.remove('opacity-0');
+      setTimeout(() => box.classList.add('opacity-0'), 500);
+    }
+
+    function toggleMute() {
+      if (!ytPlayer) return;
+      const volIcon = document.getElementById('volumeIcon');
+      if (ytPlayer.isMuted()) {
+        ytPlayer.unMute();
+        volIcon.className = "fa-solid fa-volume-high text-base";
+      } else {
+        ytPlayer.mute();
+        volIcon.className = "fa-solid fa-volume-xmark text-base text-red-500";
+      }
+    }
+
+    function startProgressTracking() {
+      clearInterval(updateInterval);
+      updateInterval = setInterval(() => {
+        if (!ytPlayer || !ytPlayer.getCurrentTime) return;
+        const current = ytPlayer.getCurrentTime() || 0;
+        const duration = ytPlayer.getDuration() || 1;
+        const percent = (current / duration) * 100;
+        document.getElementById('progressBar').value = percent;
+        document.getElementById('timeDisplay').innerText = `${formatTime(current)} / ${formatTime(duration)}`;
+      }, 500);
+    }
+
+    function seekVideo(val) {
+      if (!ytPlayer || !ytPlayer.getDuration) return;
+      const duration = ytPlayer.getDuration();
+      const seekTo = (val / 100) * duration;
+      ytPlayer.seekTo(seekTo, true);
+    }
+
+    function formatTime(seconds) {
+      const s = Math.floor(seconds % 60);
+      const m = Math.floor((seconds / 60) % 60);
+      const h = Math.floor(seconds / 3600);
+      const pad = (num) => num.toString().padStart(2, '0');
+      if (h > 0) {
+        return `${h}:${pad(m)}:${pad(s)}`;
+      }
+      return `${pad(m)}:${pad(s)}`;
+    }
+
+    function toggleFullScreen() {
+      const container = document.getElementById('videoContainer');
+      if (!document.fullscreenElement) {
+        container.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    function closePlayer() {
+      document.getElementById('playerSection').classList.add('hidden');
+      if (ytPlayer && ytPlayer.stopVideo) {
+        ytPlayer.stopVideo();
+      }
+      clearInterval(updateInterval);
+      activeVidId = null;
+    }
+
+    function filterCat(cat) {
+      currentCat = cat;
+      document.querySelectorAll('.cat-btn').forEach(b => {
+        if (b.innerText === cat) {
+          b.className = "cat-btn px-3.5 py-1.5 rounded-lg bg-white text-black font-semibold transition";
+        } else {
+          b.className = "cat-btn px-3.5 py-1.5 rounded-lg bg-neutral-800 text-neutral-300 hover:bg-neutral-700 transition";
+        }
       });
-      button.className = "category-pill whitespace-nowrap px-3.5 py-1.5 rounded-lg bg-white text-black font-semibold shadow-sm transition";
+      renderVideos();
+    }
 
-      if (category === 'all') {
-        renderVideoGrid(allMovies);
-      } else {
-        const filtered = allMovies.filter(v => v.category === category);
-        renderVideoGrid(filtered);
+    function searchVideos() {
+      renderVideos();
+    }
+
+    function copyShareLink() {
+      if (activeVidId) {
+        navigator.clipboard.writeText(window.location.origin + '?v=' + activeVidId);
+        alert('ویڈیو لنک کاپی ہو گیا!');
       }
     }
 
-    // Live search filter
-    function filterVideosLive(query) {
-      const q = (query || '').toLowerCase().trim();
-      if (!q) {
-        renderVideoGrid(allMovies);
-        return;
-      }
-      const filtered = allMovies.filter(v => 
-        (v.title || '').toLowerCase().includes(q) || 
-        (v.channel || '').toLowerCase().includes(q)
-      );
-      renderVideoGrid(filtered);
-    }
+    renderVideos();
 
-    function toggleMobileSearch() {
-      const drawer = document.getElementById('mobileSearchDrawer');
-      drawer.classList.toggle('hidden');
-    }
-
-    // Navigation Tab Switcher
-    function switchTab(tab) {
-      currentTab = tab;
-      
-      // Hide all tabs
-      document.getElementById('tab-home').classList.add('hidden');
-      document.getElementById('tab-shorts').classList.add('hidden');
-      document.getElementById('tab-downloader').classList.add('hidden');
-      document.getElementById('tab-you').classList.add('hidden');
-
-      // Update active tab
-      document.getElementById(`tab-${tab}`).classList.remove('hidden');
-
-      // Update Navigation Buttons active styling
-      const tabs = ['home', 'shorts', 'downloader', 'you'];
-      tabs.forEach(t => {
-        const btn = document.getElementById(`nav-btn-${t}`);
-        if (btn) {
-          if (t === tab) {
-            btn.classList.add('text-white');
-            btn.classList.remove('text-yt-muted');
-          } else {
-            btn.classList.add('text-yt-muted');
-            btn.classList.remove('text-white');
-          }
-        }
-      });
-
-      // Show/Hide categories bar based on Home tab
-      const catBar = document.getElementById('categoriesBar');
-      if (tab === 'home') {
-        catBar.classList.remove('hidden');
-      } else {
-        catBar.classList.add('hidden');
-      }
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // ----------------- DOWNLOADER SYSTEM LOGIC -----------------
-
-    // Clipboard Paste Helper
-    async function pasteClipboard() {
-      try {
-        const text = await navigator.clipboard.readText();
-        if (text) {
-          const input = document.getElementById('downloadUrlInput');
-          input.value = text;
-          detectPlatform(text);
-          showToast('لنک پیسٹ ہو گیا!');
-        }
-      } catch (e) {
-        showToast('براہ کرم لنک دستی طور پر پیسٹ کریں۔');
-      }
-    }
-
-    function cleanMediaUrl(raw) {
-      if (!raw || typeof raw !== 'string') return '';
-      try {
-        let u = raw.replace(/\\\/|\/\\/g, '/');
-        u = u.replace(/\\u0025/g, '%').replace(/\\u0026/g, '&').replace(/&amp;/g, '&');
-        return u.trim();
-      } catch (e) {
-        return raw;
-      }
-    }
-
-    function detectPlatform(url) {
-      const badge = document.getElementById('detectedPlatformBadge');
-      const name = document.getElementById('detectedPlatformName');
-      if (!url || !url.trim()) {
-        badge.classList.add('hidden');
-        return;
-      }
-
-      badge.classList.remove('hidden');
-      if (url.includes('tiktok.com')) {
-        name.innerText = 'ٹک ٹاک (TikTok)';
-        name.className = 'font-bold text-pink-400 uppercase px-2 py-0.5 rounded bg-pink-900/30 border border-pink-500/30';
-      } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
-        name.innerText = 'یوٹیوب (YouTube)';
-        name.className = 'font-bold text-red-400 uppercase px-2 py-0.5 rounded bg-red-900/30 border border-red-500/30';
-      } else if (url.includes('facebook.com') || url.includes('fb.watch')) {
-        name.innerText = 'فیس بک (Facebook)';
-        name.className = 'font-bold text-blue-400 uppercase px-2 py-0.5 rounded bg-blue-900/30 border border-blue-500/30';
-      } else if (url.includes('instagram.com')) {
-        name.innerText = 'انسٹاگرام (Instagram)';
-        name.className = 'font-bold text-purple-400 uppercase px-2 py-0.5 rounded bg-purple-900/30 border border-purple-500/30';
-      } else {
-        name.innerText = 'سوشل میڈیا لنک';
-        name.className = 'font-bold text-white uppercase px-2 py-0.5 rounded bg-neutral-800';
-      }
-    }
-
-    function extractYouTubeId(url) {
-      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-      const match = (url || '').match(regExp);
-      return (match && match[2].length === 11) ? match[2] : null;
-    }
-
-    // Direct YouTube Resolver using Invidious Public API instances
-    async function resolveYouTubeVideo(ytId, url) {
-      const invidiousInstances = [
-        'https://invidious.f5.si',
-        'https://inv.nadeko.net',
-        'https://invidious.nerdvpn.de',
-        'https://yt.chocolatemoo53.com',
-        'https://invidious.tiekoetter.com'
-      ];
-
-      let resolved = null;
-
-      for (const instance of invidiousInstances) {
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 3500);
-          const resp = await fetch(`${instance}/api/v1/videos/${ytId}`, { signal: controller.signal });
-          clearTimeout(timeoutId);
-          if (resp.ok) {
-            const data = await resp.json();
-            if (data && data.formatStreams && data.formatStreams.length > 0) {
-              resolved = {
-                title: data.title || 'YouTube Video',
-                thumb: (data.videoThumbnails && data.videoThumbnails[0]) ? data.videoThumbnails[0].url : `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`,
-                formats: data.formatStreams
-              };
-              break;
-            }
-          }
-        } catch (e) {}
-      }
-
-      if (resolved && resolved.formats) {
-        const streams = resolved.formats;
-        const f1080 = streams.find(f => f.qualityLabel && f.qualityLabel.includes('1080')) || streams[0];
-        const f720 = streams.find(f => f.qualityLabel && f.qualityLabel.includes('720')) || streams[0];
-        const f480 = streams.find(f => f.qualityLabel && (f.qualityLabel.includes('480') || f.qualityLabel.includes('360'))) || streams[streams.length - 1];
-        const audio = streams[streams.length - 1];
-
-        return {
-          title: resolved.title,
-          thumb: resolved.thumb,
-          '1080p': f1080.url,
-          '720p': f720.url,
-          '480p': f480.url,
-          'mp3': audio.url,
-          previewUrl: f720.url || f480.url
-        };
-      }
-
-      // High-reliability Invidious Direct Video Streams (itag 22 = 720p MP4, itag 18 = 360p MP4, itag 140 = Audio)
-      const primaryStream = `https://invidious.f5.si/latest_version?id=${ytId}&itag=22`;
-      const sdStream = `https://invidious.f5.si/latest_version?id=${ytId}&itag=18`;
-      const audioStream = `https://invidious.f5.si/latest_version?id=${ytId}&itag=140`;
-
-      return {
-        title: `یوٹیوب ویڈیو (${ytId})`,
-        thumb: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`,
-        '1080p': primaryStream,
-        '720p': primaryStream,
-        '480p': sdStream,
-        'mp3': audioStream,
-        previewUrl: primaryStream
-      };
-    }
-
-    // Facebook Link Normalizer & Alternative URL Generator
-    function normalizeFacebookUrls(rawUrl) {
-      if (!rawUrl) return [];
-      const list = [rawUrl.trim()];
-      // Share reel / video pattern: /share/r/ID or /share/v/ID
-      const mShare = rawUrl.match(/\/share\/[rv]\/([a-zA-Z0-9_-]+)/i);
-      if (mShare && mShare[1]) {
-        const id = mShare[1];
-        list.push(`https://www.facebook.com/reel/${id}`);
-        list.push(`https://www.facebook.com/watch/?v=${id}`);
-        list.push(`https://m.facebook.com/watch/?v=${id}`);
-      }
-      // fb.watch/ID pattern
-      const mWatch = rawUrl.match(/fb\.watch\/([a-zA-Z0-9_-]+)/i);
-      if (mWatch && mWatch[1]) {
-        list.push(`https://www.facebook.com/watch/?v=${mWatch[1]}`);
-      }
-      return list;
-    }
-
-    // Direct Facebook video resolver
-    async function resolveFacebookVideo(url) {
-      let hd = null;
-      let sd = null;
-      let title = "فیس بک ویڈیو / ریل (Facebook HD Video/Reel)";
-      let thumb = "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=600";
-
-      const candidateUrls = normalizeFacebookUrls(url);
-
-      // Method 1: Parallel Social API Resolvers
-      for (const candUrl of candidateUrls) {
-        const apis = [
-          `https://backend1.tioo.eu.org/facebook?url=${encodeURIComponent(candUrl)}`,
-          `https://api.vkrdown.com/web/download.php?url=${encodeURIComponent(candUrl)}`,
-          `https://api.siputzx.my.id/api/d/facebook?url=${encodeURIComponent(candUrl)}`
-        ];
-
-        for (const api of apis) {
-          try {
-            const controller = new AbortController();
-            const timer = setTimeout(() => controller.abort(), 2800);
-            const r = await fetch(api, { signal: controller.signal });
-            clearTimeout(timer);
-            if (r.ok) {
-              const res = await r.json();
-              if (res) {
-                const d = res.data || res.result || res;
-                if (d.video_hd || d.hd || d.video) hd = d.video_hd || d.hd || d.video;
-                if (d.video_sd || d.sd) sd = d.video_sd || d.sd;
-                if (Array.isArray(d.downloads)) {
-                  const fHd = d.downloads.find(x => (x.format_id || '').includes('hd') || (x.quality || '').includes('720') || (x.quality || '').includes('1080'));
-                  const fSd = d.downloads.find(x => (x.format_id || '').includes('sd') || (x.quality || '').includes('360')) || d.downloads[0];
-                  if (fHd && fHd.url) hd = fHd.url;
-                  if (fSd && fSd.url) sd = fSd.url;
-                }
-                if (d.title) title = d.title;
-                if (d.thumbnail) thumb = d.thumbnail;
-                if (hd || sd) break;
-              }
-            }
-          } catch(e) {}
-        }
-        if (hd || sd) break;
-      }
-
-      // Method 2: Scrape Direct Facebook Tags & Embed Plugin via CORS Proxies
-      if (!hd && !sd) {
-        for (const candUrl of candidateUrls) {
-          const testUrls = [
-            candUrl,
-            `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(candUrl)}`
-          ];
-
-          for (const targetUrl of testUrls) {
-            const proxies = [
-              `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-              `https://corsproxy.io/?url=${encodeURIComponent(targetUrl)}`,
-              `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
-            ];
-
-            for (const pUrl of proxies) {
-              try {
-                const controller = new AbortController();
-                const timer = setTimeout(() => controller.abort(), 3000);
-                const r = await fetch(pUrl, { signal: controller.signal });
-                clearTimeout(timer);
-                if (r.ok) {
-                  const html = await r.text();
-                  const mHd = html.match(/browser_native_hd_url["']:["'](https:[^"']+)["']/i) || 
-                              html.match(/playable_url_quality_hd["']:["'](https:[^"']+)["']/i) ||
-                              html.match(/hd_src:"(https:[^"]+)"/i);
-                  const mSd = html.match(/browser_native_sd_url["']:["'](https:[^"']+)["']/i) || 
-                              html.match(/playable_url["']:["'](https:[^"']+)["']/i) ||
-                              html.match(/sd_src:"(https:[^"]+)"/i) ||
-                              html.match(/<meta property="og:video" content="([^"]+)"/i) ||
-                              html.match(/<meta property="og:video:secure_url" content="([^"]+)"/i);
-                  if (mHd) hd = cleanMediaUrl(mHd[1]);
-                  if (mSd) sd = cleanMediaUrl(mSd[1]);
-                  const mThumb = html.match(/<meta property="og:image" content="([^"]+)"/i);
-                  if (mThumb) thumb = cleanMediaUrl(mThumb[1]);
-                  if (hd || sd) break;
-                }
-              } catch(e) {}
-            }
-            if (hd || sd) break;
-          }
-          if (hd || sd) break;
-        }
-      }
-
-      const finalVideo = hd || sd;
-      // Always return a valid object so user can download directly
-      return {
-        title: title,
-        thumb: thumb,
-        isDirectStream: !!finalVideo,
-        isProtectedMeta: !finalVideo,
-        sourcePlatform: 'facebook',
-        originalUrl: url,
-        '1080p': hd || finalVideo || '',
-        '720p': hd || finalVideo || '',
-        '480p': sd || finalVideo || '',
-        'mp3': finalVideo || '',
-        previewUrl: finalVideo || null
-      };
-    }
-
-    // Direct Instagram video resolver
-    async function resolveInstagramVideo(url) {
-      let instaVideo = null;
-      let title = "انسٹاگرام ریل ویڈیو (Instagram Reel HD)";
-      let thumb = "https://images.unsplash.com/photo-1611262588024-d12430b98920?w=600";
-
-      // Method 1: Social Downloader APIs
-      const apis = [
-        `https://backend1.tioo.eu.org/igdl?url=${encodeURIComponent(url)}`,
-        `https://api.vkrdown.com/web/download.php?url=${encodeURIComponent(url)}`,
-        `https://api.siputzx.my.id/api/d/ig?url=${encodeURIComponent(url)}`
-      ];
-
-      for (const api of apis) {
-        try {
-          const controller = new AbortController();
-          const timer = setTimeout(() => controller.abort(), 2800);
-          const r = await fetch(api, { signal: controller.signal });
-          clearTimeout(timer);
-          if (r.ok) {
-            const res = await r.json();
-            if (res) {
-              const d = res.data || res.result || res;
-              const item = Array.isArray(d) ? d[0] : (Array.isArray(d.downloads) ? d.downloads[0] : d);
-              if (item) {
-                instaVideo = item.url || item.video || item.download;
-                if (item.thumbnail || item.thumb) thumb = item.thumbnail || item.thumb;
-                if (item.title) title = item.title;
-                if (instaVideo) break;
-              }
-            }
-          }
-        } catch(e) {}
-      }
-
-      // Method 2: Scrape Instagram JSON & HTML via CORS Proxies
-      if (!instaVideo) {
-        const shortMatch = url.match(/(?:reel|p|tv)\/([a-zA-Z0-9_-]+)/i);
-        const testTarget = shortMatch ? `https://www.instagram.com/p/${shortMatch[1]}/?__a=1&__d=dis` : (url + (url.includes('?') ? '&' : '?') + '__d=dis');
-        
-        const proxies = [
-          `https://api.allorigins.win/raw?url=${encodeURIComponent(testTarget)}`,
-          `https://corsproxy.io/?url=${encodeURIComponent(testTarget)}`,
-          `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(testTarget)}`
-        ];
-
-        for (const pUrl of proxies) {
-          try {
-            const controller = new AbortController();
-            const timer = setTimeout(() => controller.abort(), 3000);
-            const r = await fetch(pUrl, { signal: controller.signal });
-            clearTimeout(timer);
-            if (r.ok) {
-              const html = await r.text();
-              const mVideo = html.match(/"video_url":"(https:[^"]+)"/i) ||
-                             html.match(/"video_versions":\[\{"url":"(https:[^"]+)"/i) ||
-                             html.match(/<meta property="og:video" content="([^"]+)"/i) ||
-                             html.match(/<meta property="og:video:secure_url" content="([^"]+)"/i);
-              if (mVideo) {
-                instaVideo = cleanMediaUrl(mVideo[1]);
-                const mThumb = html.match(/<meta property="og:image" content="([^"]+)"/i);
-                if (mThumb) thumb = cleanMediaUrl(mThumb[1]);
-                break;
-              }
-            }
-          } catch(e) {}
-        }
-      }
-
-      return {
-        title: title,
-        thumb: thumb,
-        isDirectStream: !!instaVideo,
-        isProtectedMeta: !instaVideo,
-        sourcePlatform: 'instagram',
-        originalUrl: url,
-        '1080p': instaVideo || '',
-        '720p': instaVideo || '',
-        '480p': instaVideo || '',
-        'mp3': instaVideo || '',
-        previewUrl: instaVideo || null
-      };
-    }
-
-    async function fetchDownloadVideo() {
-      const input = document.getElementById('downloadUrlInput');
-      const url = (input.value || '').trim();
-      if (!url) {
-        showToast('براہ کرم پہلے کسی ویڈیو کا لنک درج کریں!');
-        return;
-      }
-
-      const fetchBtn = document.getElementById('fetchBtn');
-      fetchBtn.disabled = true;
-      fetchBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>براہ راست لنک تیار ہو رہا ہے...</span>`;
-
-      const resultBox = document.getElementById('downloadResultBox');
-      const thumb = document.getElementById('downloadThumb');
-      const title = document.getElementById('downloadTitle');
-      const badge = document.getElementById('downloadSourceBadge');
-      const metaStatus = document.getElementById('downloadMeta');
-      const videoPlayer = document.getElementById('downloadPreviewPlayer');
-      const previewContainer = document.getElementById('previewVideoContainer');
-      const metaServers = document.getElementById('metaDirectServers');
-
-      // Reset previous state
-      previewContainer.classList.add('hidden');
-      if (metaServers) metaServers.classList.add('hidden');
-      videoPlayer.pause();
-      videoPlayer.src = '';
-
-      try {
-        // CASE 1: TikTok Direct (TikWM)
-        if (url.includes('tiktok.com')) {
-          badge.innerText = "TIKTOK NO-WATERMARK";
-          badge.className = "inline-block px-2.5 py-0.5 text-[11px] font-bold rounded bg-pink-600/20 text-pink-400 border border-pink-500/30 uppercase";
-
-          try {
-            const resp = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
-            const data = await resp.json();
-            if (data && data.data) {
-              const info = data.data;
-              const directVideoUrl = info.play || info.wmplay;
-              const directHdUrl = info.hdplay || directVideoUrl;
-              const directMusicUrl = info.music;
-
-              directMediaUrls = {
-                '1080p': directHdUrl,
-                '720p': directVideoUrl,
-                '480p': info.wmplay || directVideoUrl,
-                'mp3': directMusicUrl || directVideoUrl,
-                'title': info.title || 'TikTok_Video',
-                isDirectStream: true
-              };
-
-              thumb.src = info.cover || 'https://images.unsplash.com/photo-1611605698335-8b1569810432?w=600';
-              title.innerText = info.title ? (info.title.substring(0, 80) + '...') : "ٹک ٹاک بغیر واٹر مارک فل ایچ ڈی ویڈیو";
-
-              if (directVideoUrl) {
-                videoPlayer.src = directVideoUrl;
-                previewContainer.classList.remove('hidden');
-              }
-              resultBox.classList.remove('hidden');
-              showToast('ٹک ٹاک ویڈیو مل گئی! براہ راست ڈاؤن لوڈ کریں۔');
-            } else {
-              throw new Error("TikWM parsed null");
-            }
-          } catch (tErr) {
-            showToast('ٹک ٹاک ویڈیو کا لنک چیک کریں اور دوبارہ کوشش کریں۔');
-          }
-        } 
-        // CASE 2: YouTube Direct (Invidious & Direct Google Video Streams)
-        else if (extractYouTubeId(url)) {
-          const ytId = extractYouTubeId(url);
-          badge.innerText = "YOUTUBE HD";
-          badge.className = "inline-block px-2.5 py-0.5 text-[11px] font-bold rounded bg-red-600/20 text-red-400 border border-red-500/30 uppercase";
-
-          const ytData = await resolveYouTubeVideo(ytId, url);
-          if (ytData) {
-            directMediaUrls = {
-              '1080p': ytData['1080p'],
-              '720p': ytData['720p'],
-              '480p': ytData['480p'],
-              'mp3': ytData['mp3'],
-              'title': ytData.title,
-              isDirectStream: true
-            };
-            thumb.src = ytData.thumb;
-            title.innerText = ytData.title;
-
-            if (ytData.previewUrl) {
-              videoPlayer.src = ytData.previewUrl;
-              previewContainer.classList.remove('hidden');
-            }
-            resultBox.classList.remove('hidden');
-            showToast('یوٹیوب ویڈیو تیار ہے! کوالٹی منتخب کریں۔');
-          } else {
-            showToast('یوٹیوب ویڈیو تلاش نہیں ہو سکی۔ براہ کرم لنک چیک کریں۔');
-          }
-        } 
-        // CASE 3: Facebook Direct (Facebook Reels / Watch / Share)
-        else if (url.includes('facebook.com') || url.includes('fb.watch')) {
-          badge.innerText = "FACEBOOK HD";
-          badge.className = "inline-block px-2.5 py-0.5 text-[11px] font-bold rounded bg-blue-600/20 text-blue-400 border border-blue-500/30 uppercase";
-
-          const fbData = await resolveFacebookVideo(url);
-          directMediaUrls = {
-            '1080p': fbData['1080p'],
-            '720p': fbData['720p'],
-            '480p': fbData['480p'],
-            'mp3': fbData['mp3'],
-            'title': fbData.title,
-            isDirectStream: fbData.isDirectStream,
-            isProtectedMeta: fbData.isProtectedMeta,
-            sourcePlatform: 'facebook',
-            originalUrl: url
-          };
-
-          thumb.src = fbData.thumb;
-          title.innerText = fbData.title;
-
-          if (fbData.previewUrl) {
-            videoPlayer.src = fbData.previewUrl;
-            previewContainer.classList.remove('hidden');
-          }
-
-          if (fbData.isProtectedMeta && metaServers) {
-            metaServers.classList.remove('hidden');
-          }
-
-          resultBox.classList.remove('hidden');
-          showToast('فیس بک ویڈیو لنک تیار ہے! براہ راست ڈاؤن لوڈ کریں۔');
-        }
-        // CASE 4: Instagram Direct (Instagram Reels / Videos / Posts)
-        else if (url.includes('instagram.com')) {
-          badge.innerText = "INSTAGRAM REEL";
-          badge.className = "inline-block px-2.5 py-0.5 text-[11px] font-bold rounded bg-purple-600/20 text-purple-400 border border-purple-500/30 uppercase";
-
-          const igData = await resolveInstagramVideo(url);
-          directMediaUrls = {
-            '1080p': igData['1080p'],
-            '720p': igData['720p'],
-            '480p': igData['480p'],
-            'mp3': igData['mp3'],
-            'title': igData.title,
-            isDirectStream: igData.isDirectStream,
-            isProtectedMeta: igData.isProtectedMeta,
-            sourcePlatform: 'instagram',
-            originalUrl: url
-          };
-
-          thumb.src = igData.thumb;
-          title.innerText = igData.title;
-
-          if (igData.previewUrl) {
-            videoPlayer.src = igData.previewUrl;
-            previewContainer.classList.remove('hidden');
-          }
-
-          if (igData.isProtectedMeta && metaServers) {
-            metaServers.classList.remove('hidden');
-          }
-
-          resultBox.classList.remove('hidden');
-          showToast('انسٹاگرام ریل تیار ہے! براہ راست ڈاؤن لوڈ کریں۔');
-        }
-        // CASE 5: Generic Media
-        else {
-          showToast('براہ کرم یوٹیوب، فیس بک، ٹک ٹاک یا انسٹاگرام کا درست لنک درج کریں۔');
-        }
-
-      } catch (err) {
-        showToast('ویڈیو تلاش کرنے میں مسئلہ آیا، دوبارہ کوشش کریں۔');
-      } finally {
-        fetchBtn.disabled = false;
-        fetchBtn.innerHTML = `<i class="fa-solid fa-arrow-down"></i> <span>ڈاؤن لوڈ لنک نکالیں</span>`;
-      }
-    }
-
-    async function triggerDirectDownload(quality) {
-      const targetUrl = directMediaUrls[quality] || directMediaUrls['720p'] || directMediaUrls['1080p'];
-      
-      // If direct stream URL is available (e.g. TikTok, YouTube, or direct MP4 stream)
-      if (targetUrl && targetUrl.startsWith('http') && directMediaUrls.isDirectStream) {
-        executeBlobOrAnchorDownload(targetUrl, quality);
-        return;
-      }
-
-      // If it's a Meta link where background direct stream is protected, run direct server 1
-      if (directMediaUrls.isProtectedMeta || !directMediaUrls.isDirectStream) {
-        downloadViaFastServer(1, quality);
-        return;
-      }
-
-      showToast('براہ کرم پہلے ویڈیو کا درست لنک نکالیں!');
-    }
-
-    async function executeBlobOrAnchorDownload(targetUrl, quality) {
-      const statusContainer = document.getElementById('downloadProgressBarContainer');
-      const statusText = document.getElementById('downloadStatusText');
-      const bar = document.getElementById('downloadProgressBar');
-      const anchor = document.getElementById('directDownloadAnchor');
-
-      statusContainer.classList.remove('hidden');
-      statusText.innerText = `براہ راست ڈاؤن لوڈنگ ہو رہی ہے (${quality})... فائل تیار ہو رہی ہے`;
-      bar.style.width = '35%';
-
-      const fileExt = (quality === 'mp3') ? 'mp3' : 'mp4';
-      const safeName = (directMediaUrls.title || 'VideoTube_Media').replace(/[^a-zA-Z0-9_\u0600-\u06FF]/g, '_').substring(0, 30);
-      const filename = `${safeName}_${quality}.${fileExt}`;
-
-      // 1. Try Blob download for 100% direct file saving into mobile/PC downloads
-      try {
-        bar.style.width = '65%';
-        const fetchRes = await fetch(targetUrl);
-        if (fetchRes.ok) {
-          const blob = await fetchRes.blob();
-          const blobUrl = window.URL.createObjectURL(blob);
-          anchor.href = blobUrl;
-          anchor.download = filename;
-          anchor.click();
-          
-          setTimeout(() => {
-            window.URL.revokeObjectURL(blobUrl);
-          }, 10000);
-
-          bar.style.width = '100%';
-          statusText.innerText = '✓ ڈاؤن لوڈ مکمل! فائل آپ کے موبائل میں محفوظ ہو گئی۔';
-          showToast('ڈاؤن لوڈ مکمل ہو گیا!');
-          setTimeout(() => statusContainer.classList.add('hidden'), 3000);
-          return;
-        }
-      } catch (corsErr) {
-        console.log('Blob fetch fallback to native direct browser anchor');
-      }
-
-      // 2. Direct anchor download stream (Native Download Manager)
-      bar.style.width = '90%';
-      anchor.href = targetUrl;
-      anchor.download = filename;
-      anchor.target = '_blank';
-      anchor.rel = 'noopener noreferrer';
-      anchor.click();
-
-      bar.style.width = '100%';
-      statusText.innerText = '✓ ڈاؤن لوڈنگ شروع ہو چکی ہے (اپنے موبائل کا نوٹیفکیشن بار یا ڈاؤن لوڈز فولڈر دیکھیں)';
-      showToast('ڈاؤن لوڈنگ شروع ہو گئی!');
-      setTimeout(() => statusContainer.classList.add('hidden'), 4000);
-    }
-
-    // Direct High-Speed Download Trigger for Facebook / Instagram Protected Media
-    function downloadViaFastServer(serverNum, quality = '1080p') {
-      const rawUrl = directMediaUrls.originalUrl || document.getElementById('downloadUrlInput').value.trim();
-      if (!rawUrl) {
-        showToast('براہ کرم پہلے ویڈیو کا لنک درج کریں!');
-        return;
-      }
-
-      const statusContainer = document.getElementById('downloadProgressBarContainer');
-      const statusText = document.getElementById('downloadStatusText');
-      const bar = document.getElementById('downloadProgressBar');
-      const anchor = document.getElementById('directDownloadAnchor');
-
-      statusContainer.classList.remove('hidden');
-      statusText.innerText = `ڈاؤنلوڈر سرور ${serverNum} سے براہ راست فائل بھیجی جا رہی ہے...`;
-      bar.style.width = '70%';
-
-      let streamGateway = '';
-      if (serverNum === 1) {
-        // Fast Direct Server 1
-        streamGateway = `https://api.vkrdown.com/web/download.php?url=${encodeURIComponent(rawUrl)}`;
-      } else if (serverNum === 2) {
-        // Direct Fast MP4 Server 2
-        streamGateway = `https://backend1.tioo.eu.org/facebook?url=${encodeURIComponent(rawUrl)}`;
-      } else {
-        // Audio / Alternative Server 3
-        streamGateway = `https://api.siputzx.my.id/api/d/facebook?url=${encodeURIComponent(rawUrl)}`;
-      }
-
-      // Trigger instant stream download via direct anchor
-      anchor.href = streamGateway;
-      anchor.target = '_blank';
-      anchor.rel = 'noopener noreferrer';
-      anchor.download = `VideoTube_Social_${quality}.mp4`;
-      anchor.click();
-
-      bar.style.width = '100%';
-      statusText.innerText = `✓ سرور ${serverNum} سے ڈاؤن لوڈ شروع ہو گیا۔ نوٹیفکیشن بار دیکھیں!`;
-      showToast(`سرور ${serverNum} سے ڈاؤن لوڈ شروع ہو گیا!`);
-      setTimeout(() => statusContainer.classList.add('hidden'), 4000);
-    }
-
-    function downloadVideoDirect(id, title) {
-      switchTab('downloader');
-      const input = document.getElementById('downloadUrlInput');
-      input.value = `https://www.youtube.com/watch?v=${id}`;
-      detectPlatform(input.value);
-      fetchDownloadVideo();
-    }
-
-    function downloadCurrentVideo() {
-      if (currentlyPlayingId) {
-        downloadVideoDirect(currentlyPlayingId, 'مووی');
-      }
-    }
-
-    function subscribeOwner() {
-      const btn = document.getElementById('subscribeBtn');
-      if (btn.innerText.includes('سبسکرائبڈ')) {
-        btn.innerText = 'سبسکرائب کریں';
-        btn.className = 'px-5 py-2 rounded-full bg-white hover:bg-neutral-200 text-black text-xs font-bold transition';
-        showToast('سبسکرپشن ختم کر دی گئی۔');
-      } else {
-        btn.innerText = '✓ سبسکرائبڈ (Subscribed)';
-        btn.className = 'px-5 py-2 rounded-full bg-neutral-800 text-neutral-300 text-xs font-semibold border border-neutral-700 transition';
-        showToast('اللہ دتا رب نواز کو سبسکرائب کرنے کا شکریہ!');
-      }
-    }
-
-    function handleLike() {
-      const count = document.getElementById('likeCount');
-      count.innerText = "12.6K";
-      showToast('آپ کی پسندیدگی کا شکریہ!');
-    }
-
-    function handleShare() {
-      if (navigator.share) {
-        navigator.share({
-          title: 'ویڈیو ٹیوب (VideoTube)',
-          text: 'ویڈیو ٹیوب پر زبردست موویز اور ویڈیوز دیکھیں اور ڈاؤن لوڈ کریں:',
-          url: window.location.href
-        }).catch(() => {});
-      } else {
-        navigator.clipboard.writeText(window.location.href);
-        showToast('ویب سائٹ کا لنک کاپی ہو گیا!');
-      }
-    }
-
-    function toggleShortLike(btn) {
-      const icon = btn.querySelector('i');
-      if (icon.classList.contains('fa-regular')) {
-        icon.className = 'fa-solid fa-heart text-red-500';
-        showToast('شارٹ ویڈیو کو پسند کیا گیا!');
-      } else {
-        icon.className = 'fa-regular fa-heart';
-      }
-    }
-
-    function showToast(msg) {
-      const toast = document.getElementById('toastMessage');
-      const text = document.getElementById('toastText');
-      text.innerText = msg;
-      toast.classList.remove('opacity-0', 'pointer-events-none');
-      setTimeout(() => {
-        toast.classList.add('opacity-0', 'pointer-events-none');
-      }, 3000);
-    }
-
-    function escapeHtml(str) {
-      return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-    }
-
-    function refreshFeeds() {
-      showToast('موویز فیڈ کو ریفریش کیا جا رہا ہے...');
-      initDatabase();
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      initDatabase();
+    window.addEventListener('storage', () => {
+      renderVideos();
     });
   </script>
 </body>
