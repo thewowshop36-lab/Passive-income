@@ -1,716 +1,508 @@
-# NaseebZone - Complete Multi-Page Full-Stack App
-**Stack:** Next.js 14 App Router + TypeScript + TailwindCSS + Lucide Icons
-**Architecture:** Public Panel `( / , /draws, /winners, /account, /contact )` completely separated from Secure Admin Panel `( /admin/* )`
-
-> Production-ready structure. Runs instantly with local persistent DB layer (`lib/store.tsx`). Swap to Postgres/Prisma + S3 in production - interfaces are ready.
-
-### 1. Project Structure & Routing
-
-```
-naseebzone/
-├── package.json
-├── next.config.js
-├── tailwind.config.js
-├── postcss.config.js
-├── app/
-│   ├── globals.css
-│   ├── layout.tsx              # Root + StoreProvider + Public Shell
-│   ├── page.tsx                # / Home
-│   ├── draws/page.tsx          # /draws
-│   ├── winners/page.tsx        # /winners
-│   ├── account/page.tsx        # /account - Wallet, Deposit, Tickets, Referral
-│   ├── contact/page.tsx        # /contact
-│   └── admin/
-│       ├── layout.tsx          # Secure Guard + Sidebar
-│       ├── page.tsx            # /admin Overview Analytics
-│       ├── finances/page.tsx   # /admin/finances Deposits & Withdrawals
-│       ├── draws/page.tsx      # /admin/draws Plan Creator
-│       ├── draws/active/page.tsx # /admin/draws/active Winner Selection
-│       ├── players/page.tsx    # /admin/players + Referral Claims
-│       └── media/page.tsx      # /admin/media Banners & Proofs
-├── components/
-│   ├── Navbar.tsx
-│   ├── Footer.tsx
-│   ├── HeroSlider.tsx
-│   ├── Countdown.tsx
-│   └── DrawCard.tsx
-└── lib/
-    ├── store.tsx               # Global DB, Auth, Wallet, Draw Engine
-    └── utils.ts
-```
-
-**Setup:**
-```bash
-npx create-next-app@14 naseebzone --typescript --tailwind --app
-cd naseebzone && npm i lucide-react
-# copy files below
-npm run dev
-```
-**Login:** User Demo: `03001234567 / 123456` | Admin: `/admin` -> `admin@naseebzone.com / admin123`
-**Payments:** Easypaisa & JazzCash: `03137648720`
-
----
-### 2. Config Files
-
-```json
-// package.json
-{
-  "name": "naseebzone",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": { "dev": "next dev", "build": "next build", "start": "next start" },
-  "dependencies": { "next": "14.1.0", "react": "^18", "react-dom": "^18", "lucide-react": "^0.453.0" },
-  "devDependencies": { "typescript": "^5", "@types/node": "^20", "@types/react": "^18", "tailwindcss": "^3.4", "postcss": "^8", "autoprefixer": "^10" }
-}
-```
-
-```js
-// tailwind.config.js
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: ["./app/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
-  theme: {
-    extend: {
-      colors: { neon: "#00D4FF", gold: "#FACC15", dark: "#060A17", card: "#0B1226" },
-    },
-  },
-  plugins: [],
-};
-```
-
-```css
-/* app/globals.css */
-@tailwind base; @tailwind components; @tailwind utilities;
-body { background: #060A17; color: white; }
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 8px; }
-.glass { background: rgba(11,18,38,0.8); backdrop-filter: blur(12px); }
-.gold-text { background: linear-gradient(90deg,#FACC15,#F59E0B); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.neon-text { color: #00D4FF; text-shadow: 0 0 20px rgba(0,212,255,.5); }
-```
-
-```ts
-// lib/utils.ts
-export const formatPKR = (n:number) => `Rs ${Number(n||0).toLocaleString()}`;
-export const uid = (p:string) => `${p}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,7)}`;
-export const genTicketId = () => `NZ-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,7).toUpperCase()}`;
-export const genRefCode = () => `NZ-${Math.random().toString(36).slice(2,8).toUpperCase()}`;
-export const ADMIN_ACCOUNT = "03137648720";
-export const timeLeft = (end:string) => {
-  const diff = new Date(end).getTime() - Date.now();
-  if(diff<=0) return {d:0,h:0,m:0,s:0,expired:true};
-  return { d: Math.floor(diff/86400000), h: Math.floor(diff/3600000)%24, m: Math.floor(diff/60000)%60, s: Math.floor(diff/1000)%60, expired:false };
-};
-```
-
----
-### 3. Core Backend / Database Layer
-
-```tsx
-// lib/store.tsx
-"use client";
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { uid, genTicketId, genRefCode } from "./utils";
-
-export type User = { id:string; name:string; phone:string; password:string; balance:number; totalSpent:number; totalWinnings:number; referralCode:string; referredBy?:string; referralsValid:number; hasBoughtFirst:boolean; freeCredits:number; createdAt:string };
-export type Draw = { id:string; title:string; prize:string; prizeValue:number; ticketPrice:number; totalTickets:number; image:string; startTime:string; endTime:string; status:"active"|"upcoming"|"completed"|"locked"; winnerTicketId?:string; winnerUserId?:string };
-export type Ticket = { id:string; drawId:string; userId:string; userName:string; date:string; status:"active"|"won"|"lost"; isFree:boolean };
-export type Deposit = { id:string; userId:string; userName:string; amount:number; method:string; trxId:string; screenshot:string; status:"pending"|"approved"|"rejected"; date:string };
-export type Withdraw = { id:string; userId:string; userName:string; amount:number; method:string; account:string; status:"pending"|"approved"|"rejected"; date:string };
-export type Winner = { id:string; drawId:string; drawTitle:string; prize:string; winnerName:string; ticketId:string; date:string };
-export type Media = { id:string; type:"image"|"video"; url:string; title:string; subtitle?:string };
-export type RefClaim = { id:string; userId:string; userName:string; drawId:string; count:number; status:"pending"|"approved"|"rejected"; date:string };
-
-type DB = { users:User[]; draws:Draw[]; tickets:Ticket[]; deposits:Deposit[]; withdraws:Withdraw[]; winners:Winner[]; banners:Media[]; proofs:Media[]; refClaims:RefClaim[]; currentUserId:string|null; isAdmin:boolean };
-
-const seed = ():DB => ({
-  users: [{ id:"u_demo", name:"Demo User", phone:"03001234567", password:"123456", balance:5000, totalSpent:1000, totalWinnings:0, referralCode:"NZ-DEMO01", referralsValid:4, hasBoughtFirst:true, freeCredits:0, createdAt:new Date().toISOString() }],
-  draws: [
-    { id:"d1", title:"iPhone 15 Pro Max Lucky Draw", prize:"iPhone 15 Pro Max 256GB", prizeValue:550000, ticketPrice:500, totalTickets:50, image:"https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800", startTime:new Date().toISOString(), endTime:new Date(Date.now()+3*86400000).toISOString(), status:"active" },
-    { id:"d2", title:"Honda CG 125 Mega Draw", prize:"Brand New Honda CG 125", prizeValue:250000, ticketPrice:1000, totalTickets:100, image:"https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800", startTime:new Date().toISOString(), endTime:new Date(Date.now()+7*86400000).toISOString(), status:"active" },
-    { id:"d3", title:"Rs 50,000 Cash Draw", prize:"Rs 50,000 Cash Prize", prizeValue:50000, ticketPrice:2000, totalTickets:10, image:"https://images.unsplash.com/photo-1580519542036-c47de6196ba5?w=800", startTime:new Date().toISOString(), endTime:new Date(Date.now()+1*86400000).toISOString(), status:"active" },
-  ],
-  tickets: [], deposits: [], withdraws: [], refClaims: [],
-  winners: [
-    { id:"w1", drawId:"OLD-101", drawTitle:"Samsung S24 Draw", prize:"Samsung S24 Ultra", winnerName:"Ahmed Raza", ticketId:"NZ-KX2P9A-QW12T", date:new Date(Date.now()-7*86400000).toISOString() },
-    { id:"w2", drawId:"OLD-102", drawTitle:"Cash 25K Draw", prize:"Rs 25,000 Cash", winnerName:"Fatima Khan", ticketId:"NZ-MN3Q8B-ZX45Y", date:new Date(Date.now()-14*86400000).toISOString() },
-  ],
-  banners: [
-    { id:"b1", type:"image", url:"https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200", title:"WIN iPhone 15 Pro Max", subtitle:"Only Rs 500 per ticket - 50 tickets only!" },
-    { id:"b2", type:"image", url:"https://images.unsplash.com/photo-1513151233558-d860c5398176?w=1200", title:"100% Transparent Live Draws", subtitle:"Verifiable Ticket IDs & Public Winners Ledger" },
-  ],
-  proofs: [
-    { id:"p1", type:"image", url:"https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=600", title:"Ahmed received iPhone" },
-    { id:"p2", type:"image", url:"https://images.unsplash.com/photo-1527529482837-4698179dc6ce?w=600", title:"Fatima cash prize handover" },
-  ],
-  currentUserId: null, isAdmin: false
-});
-
-const Ctx = createContext<any>(null);
-export const useApp = () => useContext(Ctx);
-
-export function StoreProvider({children}:{children:React.ReactNode}){
-  const [db,setDb] = useState<DB>(seed());
-  const [loaded,setLoaded] = useState(false);
-
-  useEffect(()=>{ const r=localStorage.getItem("naseebzone_v1"); if(r){ try{ setDb(JSON.parse(r)); }catch{} } setLoaded(true); },[]);
-  useEffect(()=>{ if(loaded) localStorage.setItem("naseebzone_v1", JSON.stringify(db)); },[db,loaded]);
-
-  const update = (fn:(d:DB)=>DB) => setDb(p=>fn({...p}));
-  const me = db.users.find(u=>u.id===db.currentUserId) || null;
-  const soldCount = (drawId:string) => db.tickets.filter(t=>t.drawId===drawId).length;
-
-  const actions = {
-    me, db, soldCount,
-    register:(name:string,phone:string,pass:string,ref?:string)=>{
-      if(db.users.find(u=>u.phone===phone)) return "Phone already registered";
-      const referrer = db.users.find(u=>u.referralCode===ref);
-      const nu:User = { id:uid("u"), name, phone, password:pass, balance:0, totalSpent:0, totalWinnings:0, referralCode:genRefCode(), referredBy:referrer?.id, referralsValid:0, hasBoughtFirst:false, freeCredits:0, createdAt:new Date().toISOString() };
-      update(d=>({...d, users:[...d.users,nu], currentUserId:nu.id })); return "ok";
-    },
-    login:(phone:string,pass:string)=>{
-      const u=db.users.find(x=>x.phone===phone&&x.password===pass);
-      if(!u) return "Invalid credentials";
-      update(d=>({...d, currentUserId:u.id })); return "ok";
-    },
-    logout:()=>update(d=>({...d, currentUserId:null})),
-    adminLogin:(e:string,p:string)=>{ if(e==="admin@naseebzone.com"&&p==="admin123"){ update(d=>({...d,isAdmin:true})); return "ok"; } return "Wrong admin credentials"; },
-    adminLogout:()=>update(d=>({...d,isAdmin:false})),
-    buyTicket:(drawId:string)=>{
-      if(!me) return "Login required";
-      const draw=db.draws.find(d=>d.id===drawId); if(!draw||draw.status!=="active") return "Draw not active";
-      if(soldCount(drawId)>=draw.totalTickets) return "Sold out";
-      if(me.balance<draw.ticketPrice) return "Insufficient balance. Please deposit.";
-      const tid=genTicketId();
-      const t:Ticket={id:tid,drawId,userId:me.id,userName:me.name,date:new Date().toISOString(),status:"active",isFree:false};
-      update(d=>{
-        let users=d.users.map(u=>u.id===me.id?{...u,balance:u.balance-draw.ticketPrice,totalSpent:u.totalSpent+draw.ticketPrice,hasBoughtFirst:true}:u);
-        const buyer=d.users.find(u=>u.id===me.id);
-        if(buyer && !buyer.hasBoughtFirst && buyer.referredBy){
-          users=users.map(u=>u.id===buyer.referredBy?{...u,referralsValid:u.referralsValid+1}:u);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NaseebZone - Pakistan's Trusted Lucky Draws</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { neon: "#00D4FF", gold: "#FACC15", dark: "#060A17", card: "#0B1226" },
+                }
+            }
         }
-        return {...d, users, tickets:[...d.tickets,t]};
-      });
-      return `Ticket Purchased! ID: ${tid}`;
-    },
-    createDeposit:(amount:number,method:string,trxId:string,screenshot:string)=>{
-      if(!me) return "Login required";
-      update(d=>({...d, deposits:[...d.deposits,{id:uid("dep"),userId:me.id,userName:me.name,amount,method,trxId,screenshot,status:"pending",date:new Date().toISOString()}] }));
-      return "ok";
-    },
-    approveDeposit:(id:string)=>update(d=>{
-      const dep=d.deposits.find(x=>x.id===id); if(!dep||dep.status!=="pending") return d;
-      return {...d, deposits:d.deposits.map(x=>x.id===id?{...x,status:"approved"}:x), users:d.users.map(u=>u.id===dep.userId?{...u,balance:u.balance+dep.amount}:u)};
-    }),
-    rejectDeposit:(id:string)=>update(d=>({...d, deposits:d.deposits.map(x=>x.id===id?{...x,status:"rejected"}:x)})),
-    createWithdraw:(amount:number,method:string,account:string)=>{
-      if(!me) return "Login required";
-      if(amount>me.balance) return "Insufficient balance";
-      update(d=>({...d, withdraws:[...d.withdraws,{id:uid("wd"),userId:me.id,userName:me.name,amount,method,account,status:"pending",date:new Date().toISOString()}], users:d.users.map(u=>u.id===me.id?{...u,balance:u.balance-amount}:u)}));
-      return "ok";
-    },
-    approveWithdraw:(id:string)=>update(d=>({...d, withdraws:d.withdraws.map(x=>x.id===id?{...x,status:"approved"}:x)})),
-    rejectWithdraw:(id:string)=>update(d=>{
-      const w=d.withdraws.find(x=>x.id===id); if(!w) return d;
-      return {...d, withdraws:d.withdraws.map(x=>x.id===id?{...x,status:"rejected"}:x), users:d.users.map(u=>u.id===w.userId?{...u,balance:u.balance+w.amount}:u)};
-    }),
-    createDraw:(v:any)=>update(d=>({...d, draws:[...d.draws,{id:uid("d"),...v,status:new Date(v.startTime)>new Date()?"upcoming":"active"}]})),
-    pickWinner:(drawId:string,ticketId:string)=>update(d=>{
-      const draw=d.draws.find(x=>x.id===drawId); const tic=d.tickets.find(x=>x.id===ticketId); if(!draw||!tic) return d;
-      return {...d,
-        draws:d.draws.map(x=>x.id===drawId?{...x,status:"completed",winnerTicketId:ticketId,winnerUserId:tic.userId}:x),
-        tickets:d.tickets.map(t=>t.drawId===drawId?(t.id===ticketId?{...t,status:"won"}:{...t,status:"lost"}):t),
-        users:d.users.map(u=>u.id===tic.userId?{...u,balance:u.balance+draw.prizeValue,totalWinnings:u.totalWinnings+draw.prizeValue}:u),
-        winners:[...d.winners,{id:uid("w"),drawId:draw.id,drawTitle:draw.title,prize:draw.prize,winnerName:tic.userName,ticketId,date:new Date().toISOString()}]
-      };
-    }),
-    autoWinner:(drawId:string)=>{
-      const parts=db.tickets.filter(t=>t.drawId===drawId); if(!parts.length) return "No participants";
-      const win=parts[Math.floor(Math.random()*parts.length)];
-      actions.pickWinner(drawId,win.id); return `Winner: ${win.userName} (${win.id})`;
-    },
-    claimFree:(drawId:string)=>{
-      if(!me) return "Login required";
-      if(me.referralsValid<10) return "Need 10 valid referrals";
-      if(db.refClaims.find(c=>c.userId===me.id&&c.status==="pending")) return "Already pending";
-      update(d=>({...d, refClaims:[...d.refClaims,{id:uid("rc"),userId:me.id,userName:me.name,drawId,count:me.referralsValid,status:"pending",date:new Date().toISOString()}]}));
-      return "ok";
-    },
-    approveClaim:(id:string)=>update(d=>{
-      const c=d.refClaims.find(x=>x.id===id); if(!c) return d;
-      const t:Ticket={id:genTicketId(),drawId:c.drawId,userId:c.userId,userName:c.userName,date:new Date().toISOString(),status:"active",isFree:true};
-      return {...d, refClaims:d.refClaims.map(x=>x.id===id?{...x,status:"approved"}:x), tickets:[...d.tickets,t]};
-    }),
-    rejectClaim:(id:string)=>update(d=>({...d, refClaims:d.refClaims.map(x=>x.id===id?{...x,status:"rejected"}:x)})),
-    addMedia:(kind:"banners"|"proofs",m:Media)=>update(d=>({...d,[kind]:[...d[kind],m]})),
-    delMedia:(kind:"banners"|"proofs",id:string)=>update(d=>({...d,[kind]:d[kind].filter(x=>x.id!==id)})),
-  };
-  return <Ctx.Provider value={actions}>{children}</Ctx.Provider>;
-}
-```
+    </script>
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { background: #060A17; color: white; font-family: system-ui, -apple-system, sans-serif; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 8px; }
+        .glass { background: rgba(11,18,38,0.8); backdrop-filter: blur(12px); }
+        .gold-text { background: linear-gradient(90deg,#FACC15,#F59E0B); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .neon-text { color: #00D4FF; text-shadow: 0 0 20px rgba(0,212,255,.5); }
+    </style>
+</head>
+<body class="bg-dark min-h-screen">
+    <div id="root"></div>
 
----
-### 4. Root Layout + Public Components
+    <script type="text/babel">
+        const { useState, useEffect, useContext, createContext } = React;
 
-```tsx
-// app/layout.tsx
-import "./globals.css";
-import { StoreProvider } from "@/lib/store";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-export const metadata = { title:"NaseebZone - Lucky Draws", description:"Pakistan's Trusted Lucky Draw Platform" };
-export default function RootLayout({children}:{children:React.ReactNode}){
-  return <html lang="en"><body className="bg-dark min-h-screen">
-    <StoreProvider><Navbar/>{children}<Footer/></StoreProvider>
-  </body></html>;
-}
-```
+        // --- UTILS ---
+        const formatPKR = (n) => `Rs ${Number(n||0).toLocaleString()}`;
+        const uid = (p) => `${p}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,7)}`;
+        const genTicketId = () => `NZ-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,7).toUpperCase()}`;
+        const genRefCode = () => `NZ-${Math.random().toString(36).slice(2,8).toUpperCase()}`;
+        const ADMIN_ACCOUNT = "03137648720";
 
-```tsx
-// components/Navbar.tsx
-"use client";
-import Link from "next/link"; import { usePathname } from "next/navigation";
-import { useApp } from "@/lib/store"; import { Wallet, Menu, X, Sparkles } from "lucide-react";
-import { useState } from "react"; import { formatPKR } from "@/lib/utils";
-export default function Navbar(){
-  const { me } = useApp(); const path=usePathname(); const [o,setO]=useState(false);
-  if(path.startsWith("/admin")) return null;
-  const links=[["/","Home"],["/draws","Draws"],["/winners","Winners"],["/account","Account"],["/contact","Contact"]];
-  return <header className="sticky top-0 z-50 glass border-b border-white/10">
-    <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-      <Link href="/" className="flex items-center gap-2 text-2xl font-black"><Sparkles className="text-gold"/><span>Naseeb<span className="neon-text">Zone</span></span></Link>
-      <nav className="hidden md:flex gap-6">{links.map(([h,l])=><Link key={h} href={h} className={`hover:text-neon ${path===h?"text-neon":"text-gray-300"}`}>{l}</Link>)}</nav>
-      <div className="hidden md:flex items-center gap-3">
-        {me ? <div className="flex items-center gap-2 bg-white/5 border border-gold/30 px-3 py-1.5 rounded-full text-sm"><Wallet size={16} className="text-gold"/>{formatPKR(me.balance)}</div>
-        : <Link href="/account" className="bg-neon text-black font-bold px-4 py-2 rounded-lg">Login</Link>}
-      </div>
-      <button className="md:hidden" onClick={()=>setO(!o)}>{o?<X/>:<Menu/>}</button>
-    </div>
-    {o && <div className="md:hidden p-4 space-y-3 bg-card border-t border-white/10">{links.map(([h,l])=><Link key={h} href={h} onClick={()=>setO(false)} className="block py-2">{l}</Link>)}
-      {me && <div className="text-gold">{formatPKR(me.balance)}</div>}</div>}
-  </header>;
-}
-```
+        // --- STORE CONTEXT ---
+        const StoreContext = createContext(null);
+        const useApp = () => useContext(StoreContext);
 
-```tsx
-// components/Footer.tsx
-"use client";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-export default function Footer(){
-  if(usePathname().startsWith("/admin")) return null;
-  return <footer className="border-t border-white/10 bg-black/40 mt-12">
-    <div className="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-3 gap-8">
-      <div><h3 className="text-xl font-black">Naseeb<span className="text-neon">Zone</span></h3><p className="text-gray-400 text-sm mt-2">Pakistan's most transparent lucky draw platform. Verifiable tickets, live draws, instant payouts.</p></div>
-      <div><h4 className="font-bold text-gold mb-3">Quick Links</h4><div className="space-y-2 text-sm text-gray-300"><Link href="/draws" className="block">Active Draws</Link><Link href="/winners" className="block">Winners Ledger</Link><Link href="/account" className="block">My Wallet</Link><Link href="/contact" className="block">Support</Link></div></div>
-      <div><h4 className="font-bold text-gold mb-3">Support</h4><p className="text-sm text-gray-300">Easypaisa / JazzCash: 03137648720<br/>Email: support@naseebzone.com<br/>Timing: 9AM - 11PM PKT</p></div>
-    </div>
-    <div className="text-center text-xs text-gray-500 pb-6">© 2026 NaseebZone. Play responsibly. 18+ only.</div>
-  </footer>;
-}
-```
+        const seedDB = () => ({
+            users: [{ id:"u_demo", name:"Demo User", phone:"03001234567", password:"123456", balance:5000, totalSpent:1000, totalWinnings:0, referralCode:"NZ-DEMO01", referralsValid:4, hasBoughtFirst:true, freeCredits:0, createdAt:new Date().toISOString() }],
+            draws: [
+                { id:"d1", title:"iPhone 15 Pro Max Lucky Draw", prize:"iPhone 15 Pro Max 256GB", prizeValue:550000, ticketPrice:500, totalTickets:50, image:"https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800", startTime:new Date().toISOString(), endTime:new Date(Date.now()+3*86400000).toISOString(), status:"active" },
+                { id:"d2", title:"Honda CG 125 Mega Draw", prize:"Brand New Honda CG 125", prizeValue:250000, ticketPrice:1000, totalTickets:100, image:"https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800", startTime:new Date().toISOString(), endTime:new Date(Date.now()+7*86400000).toISOString(), status:"active" },
+                { id:"d3", title:"Rs 50,000 Cash Draw", prize:"Rs 50,000 Cash Prize", prizeValue:50000, ticketPrice:2000, totalTickets:10, image:"https://images.unsplash.com/photo-1580519542036-c47de6196ba5?w=800", startTime:new Date().toISOString(), endTime:new Date(Date.now()+1*86400000).toISOString(), status:"active" },
+            ],
+            tickets: [], deposits: [], withdraws: [], refClaims: [],
+            winners: [
+                { id:"w1", drawId:"OLD-101", drawTitle:"Samsung S24 Draw", prize:"Samsung S24 Ultra", winnerName:"Ahmed Raza", ticketId:"NZ-KX2P9A-QW12T", date:new Date(Date.now()-7*86400000).toISOString() },
+            ],
+            banners: [
+                { id:"b1", type:"image", url:"https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200", title:"WIN iPhone 15 Pro Max", subtitle:"Only Rs 500 per ticket - 50 tickets only!" }
+            ],
+            proofs: [
+                { id:"p1", type:"image", url:"https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=600", title:"Ahmed received iPhone" }
+            ],
+            currentUserId: null, isAdmin: false, currentRoute: "home"
+        });
 
-```tsx
-// components/HeroSlider.tsx
-"use client"; import { useEffect, useState } from "react"; import { ChevronLeft, ChevronRight } from "lucide-react"; import Link from "next/link";
-export default function HeroSlider({banners}:{banners:any[]}){
-  const [i,setI]=useState(0);
-  useEffect(()=>{ if(banners.length<2) return; const t=setInterval(()=>setI(v=>(v+1)%banners.length),5000); return ()=>clearInterval(t); },[banners.length]);
-  if(!banners.length) return null;
-  const b=banners[i];
-  return <div className="relative h-[420px] md:h-[500px] overflow-hidden rounded-2xl border border-white/10">
-    {b.type==="video" ? <video src={b.url} autoPlay muted loop className="absolute inset-0 w-full h-full object-cover"/> : <img src={b.url} className="absolute inset-0 w-full h-full object-cover"/>}
-    <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent flex items-center">
-      <div className="p-8 md:p-14 max-w-xl"><h1 className="text-3xl md:text-5xl font-black leading-tight">{b.title}</h1><p className="mt-3 text-gray-200">{b.subtitle}</p>
-      <Link href="/draws" className="inline-block mt-6 bg-gold text-black font-bold px-6 py-3 rounded-xl">Buy Tickets Now</Link></div>
-    </div>
-    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">{banners.map((_,k)=><button key={k} onClick={()=>setI(k)} className={`h-2 rounded-full ${k===i?"w-8 bg-neon":"w-2 bg-white/40"}`}/>)}</div>
-    <button onClick={()=>setI((i-1+banners.length)%banners.length)} className="absolute left-3 top-1/2 bg-black/50 p-2 rounded-full"><ChevronLeft/></button>
-    <button onClick={()=>setI((i+1)%banners.length)} className="absolute right-3 top-1/2 bg-black/50 p-2 rounded-full"><ChevronRight/></button>
-  </div>;
-}
-```
+        function StoreProvider({children}) {
+            const [db, setDb] = useState(seedDB());
+            useEffect(() => {
+                const saved = localStorage.getItem("naseebzone_single_v1");
+                if(saved) try { setDb(JSON.parse(saved)); } catch(e){}
+            }, []);
+            useEffect(() => {
+                localStorage.setItem("naseebzone_single_v1", JSON.stringify(db));
+            }, [db]);
 
-```tsx
-// components/Countdown.tsx
-"use client"; import { useEffect, useState } from "react"; import { timeLeft } from "@/lib/utils";
-export default function Countdown({end}:{end:string}){
-  const [t,setT]=useState(timeLeft(end));
-  useEffect(()=>{ const x=setInterval(()=>setT(timeLeft(end)),1000); return ()=>clearInterval(x); },[end]);
-  if(t.expired) return <span className="text-red-400 font-bold">ENDED</span>;
-  return <div className="flex gap-2 text-center">{[[t.d,"Days"],[t.h,"Hrs"],[t.m,"Min"],[t.s,"Sec"]].map(([v,l]:any)=><div key={l} className="bg-black/60 border border-neon/30 rounded-lg px-2 py-1 min-w-[52px]"><div className="font-black text-neon">{String(v).padStart(2,"0")}</div><div className="text-[10px] text-gray-400">{l}</div></div>)}</div>;
-}
-```
+            const update = (fn) => setDb(p => fn({...p}));
+            const me = db.users.find(u => u.id === db.currentUserId) || null;
+            const soldCount = (drawId) => db.tickets.filter(t => t.drawId === drawId).length;
 
-```tsx
-// components/DrawCard.tsx
-"use client"; import Link from "next/link"; import Countdown from "./Countdown"; import { useApp } from "@/lib/store"; import { formatPKR } from "@/lib/utils";
-export default function DrawCard({draw}:{draw:any}){
-  const { soldCount } = useApp(); const sold=soldCount(draw.id); const pct=Math.round(sold/draw.totalTickets*100);
-  return <div className="bg-card border border-white/10 rounded-2xl overflow-hidden hover:border-neon/50 transition">
-    <img src={draw.image} className="h-48 w-full object-cover"/>
-    <div className="p-5 space-y-3">
-      <div className="flex justify-between items-start"><h3 className="font-bold text-lg">{draw.title}</h3><span className={`text-xs px-2 py-1 rounded-full ${draw.status==="active"?"bg-green-500/20 text-green-300":"bg-yellow-500/20 text-yellow-300"}`}>{draw.status.toUpperCase()}</span></div>
-      <p className="text-gold text-sm font-semibold">🎁 {draw.prize}</p>
-      <Countdown end={draw.endTime}/>
-      <div><div className="flex justify-between text-xs text-gray-400 mb-1"><span>{sold}/{draw.totalTickets} Tickets Sold</span><span>{pct}%</span></div>
-        <div className="h-2 bg-white/10 rounded-full"><div className="h-full bg-gradient-to-r from-neon to-gold rounded-full" style={{width:`${pct}%`}}/></div></div>
-      <div className="flex justify-between items-center pt-2"><span className="font-black text-xl">{formatPKR(draw.ticketPrice)}</span><Link href="/draws" className="bg-neon text-black font-bold px-4 py-2 rounded-lg text-sm">Buy Ticket</Link></div>
-    </div>
-  </div>;
-}
-```
+            const actions = {
+                me, db, soldCount,
+                navigate: (route) => update(d => ({...d, currentRoute: route})),
+                register: (name, phone, pass, ref) => {
+                    if(db.users.find(u => u.phone === phone)) return "Phone already registered";
+                    const referrer = db.users.find(u => u.referralCode === ref);
+                    const nu = { id: uid("u"), name, phone, password: pass, balance: 0, totalSpent: 0, totalWinnings: 0, referralCode: genRefCode(), referredBy: referrer?.id, referralsValid: 0, hasBoughtFirst: false, freeCredits: 0, createdAt: new Date().toISOString() };
+                    update(d => ({...d, users: [...d.users, nu], currentUserId: nu.id })); return "ok";
+                },
+                login: (phone, pass) => {
+                    const u = db.users.find(x => x.phone === phone && x.password === pass);
+                    if(!u) return "Invalid credentials";
+                    update(d => ({...d, currentUserId: u.id })); return "ok";
+                },
+                logout: () => update(d => ({...d, currentUserId: null})),
+                adminLogin: (e, p) => { if(e==="admin@naseebzone.com" && p==="admin123"){ update(d => ({...d, isAdmin: true})); return "ok"; } return "Wrong admin credentials"; },
+                adminLogout: () => update(d => ({...d, isAdmin: false})),
+                buyTicket: (drawId) => {
+                    if(!me) return "Login required";
+                    const draw = db.draws.find(d => d.id === drawId); if(!draw || draw.status !== "active") return "Draw not active";
+                    if(soldCount(drawId) >= draw.totalTickets) return "Sold out";
+                    if(me.balance < draw.ticketPrice) return "Insufficient balance. Please deposit.";
+                    const tid = genTicketId();
+                    const t = { id: tid, drawId, userId: me.id, userName: me.name, date: new Date().toISOString(), status: "active", isFree: false };
+                    update(d => {
+                        let users = d.users.map(u => u.id === me.id ? {...u, balance: u.balance - draw.ticketPrice, totalSpent: u.totalSpent + draw.ticketPrice, hasBoughtFirst: true} : u);
+                        const buyer = d.users.find(u => u.id === me.id);
+                        if(buyer && !buyer.hasBoughtFirst && buyer.referredBy){
+                            users = users.map(u => u.id === buyer.referredBy ? {...u, referralsValid: u.referralsValid + 1} : u);
+                        }
+                        return {...d, users, tickets: [...d.tickets, t]};
+                    });
+                    return `Ticket Purchased! ID: ${tid}`;
+                },
+                createDeposit: (amount, method, trxId, screenshot) => {
+                    if(!me) return "Login required";
+                    update(d => ({...d, deposits: [...d.deposits, { id: uid("dep"), userId: me.id, userName: me.name, amount, method, trxId, screenshot, status: "pending", date: new Date().toISOString() }] }));
+                    return "ok";
+                },
+                approveDeposit: (id) => update(d => {
+                    const dep = d.deposits.find(x => x.id === id); if(!dep || dep.status !== "pending") return d;
+                    return {...d, deposits: d.deposits.map(x => x.id === id ? {...x, status: "approved"} : x), users: d.users.map(u => u.id === dep.userId ? {...u, balance: u.balance + dep.amount} : u)};
+                }),
+                rejectDeposit: (id) => update(d => ({...d, deposits: d.deposits.map(x => x.id === id ? {...x, status: "rejected"} : x)})),
+                createWithdraw: (amount, method, account) => {
+                    if(!me) return "Login required";
+                    if(amount > me.balance) return "Insufficient balance";
+                    update(d => ({...d, withdraws: [...d.withdraws, { id: uid("wd"), userId: me.id, userName: me.name, amount, method, account, status: "pending", date: new Date().toISOString() }], users: d.users.map(u => u.id === me.id ? {...u, balance: u.balance - amount} : u)}));
+                    return "ok";
+                },
+                approveWithdraw: (id) => update(d => ({...d, withdraws: d.withdraws.map(x => x.id === id ? {...x, status: "approved"} : x)})),
+                rejectWithdraw: (id) => update(d => {
+                    const w = d.withdraws.find(x => x.id === id); if(!w) return d;
+                    return {...d, withdraws: d.withdraws.map(x => x.id === id ? {...x, status: "rejected"} : x), users: d.users.map(u => u.id === w.userId ? {...u, balance: u.balance + w.amount} : u)};
+                }),
+                createDraw: (v) => update(d => ({...d, draws: [...d.draws, { id: uid("d"), ...v, status: new Date(v.startTime) > new Date() ? "upcoming" : "active" }]})),
+                pickWinner: (drawId, ticketId) => update(d => {
+                    const draw = d.draws.find(x => x.id === drawId); const tic = d.tickets.find(x => x.id === ticketId); if(!draw || !tic) return d;
+                    return {...d,
+                        draws: d.draws.map(x => x.id === drawId ? {...x, status: "completed", winnerTicketId: ticketId, winnerUserId: tic.userId} : x),
+                        tickets: d.tickets.map(t => t.drawId === drawId ? (t.id === ticketId ? {...t, status: "won"} : {...t, status: "lost"}) : t),
+                        users: d.users.map(u => u.id === tic.userId ? {...u, balance: u.balance + draw.prizeValue, totalWinnings: u.totalWinnings + draw.prizeValue} : u),
+                        winners: [...d.winners, { id: uid("w"), drawId: draw.id, drawTitle: draw.title, prize: draw.prize, winnerName: tic.userName, ticketId, date: new Date().toISOString() }]
+                    };
+                }),
+                autoWinner: (drawId) => {
+                    const parts = db.tickets.filter(t => t.drawId === drawId); if(!parts.length) return "No participants";
+                    const win = parts[Math.floor(Math.random() * parts.length)];
+                    actions.pickWinner(drawId, win.id); return `Winner: ${win.userName} (${win.id})`;
+                },
+                claimFree: (drawId) => {
+                    if(!me) return "Login required";
+                    if(me.referralsValid < 10) return "Need 10 valid referrals";
+                    if(db.refClaims.find(c => c.userId === me.id && c.status === "pending")) return "Already pending";
+                    update(d => ({...d, refClaims: [...d.refClaims, { id: uid("rc"), userId: me.id, userName: me.name, drawId, count: me.referralsValid, status: "pending", date: new Date().toISOString() }]}));
+                    return "ok";
+                },
+                approveClaim: (id) => update(d => {
+                    const c = d.refClaims.find(x => x.id === id); if(!c) return d;
+                    const t = { id: genTicketId(), drawId: c.drawId, userId: c.userId, userName: c.userName, date: new Date().toISOString(), status: "active", isFree: true };
+                    return {...d, refClaims: d.refClaims.map(x => x.id === id ? {...x, status: "approved"} : x), tickets: [...d.tickets, t]};
+                }),
+                rejectClaim: (id) => update(d => ({...d, refClaims: d.refClaims.map(x => x.id === id ? {...x, status: "rejected"} : x)})),
+                addMedia: (kind, m) => update(d => ({...d, [kind]: [...d[kind], m]})),
+                delMedia: (kind, id) => update(d => ({...d, [kind]: d[kind].filter(x => x.id !== id)})),
+            };
 
----
-### 5. PUBLIC PAGES
+            return <StoreContext.Provider value={actions}>{children}</StoreContext.Provider>;
+        }
 
-```tsx
-// app/page.tsx
-"use client";
-import HeroSlider from "@/components/HeroSlider"; import DrawCard from "@/components/DrawCard"; import { useApp } from "@/lib/store"; import { ShieldCheck, Ticket, Trophy, BadgeCheck } from "lucide-react";
-export default function Home(){
-  const { db } = useApp();
-  const active = db.draws.filter((d:any)=>d.status==="active").slice(0,3);
-  return <main className="max-w-7xl mx-auto px-4 space-y-12 py-6">
-    <HeroSlider banners={db.banners}/>
-    <section><div className="flex justify-between items-center mb-4"><h2 className="text-2xl font-black">🔥 Active <span className="gold-text">Prizes & Draws</span></h2><a href="/draws" className="text-neon text-sm">View All →</a></div>
-      <div className="grid md:grid-cols-3 gap-6">{active.map((d:any)=><DrawCard key={d.id} draw={d}/>)}{!active.length && <p className="text-gray-400">No active draws right now.</p>}</div></section>
-    <section className="bg-card border border-white/10 rounded-2xl p-8 grid md:grid-cols-3 gap-6">
-      <div className="text-center"><Ticket className="mx-auto text-neon" size={36}/><h3 className="font-bold mt-2">1. Buy Ticket</h3><p className="text-sm text-gray-400">Deposit via Easypaisa/JazzCash & get unique verifiable Ticket ID.</p></div>
-      <div className="text-center"><ShieldCheck className="mx-auto text-gold" size={36}/><h3 className="font-bold mt-2">2. Fair Live Draw</h3><p className="text-sm text-gray-400">Provably fair random selection or manual live draw. Fully transparent.</p></div>
-      <div className="text-center"><Trophy className="mx-auto text-green-400" size={36}/><h3 className="font-bold mt-2">3. Win & Withdraw</h3><p className="text-sm text-gray-400">Winners published publicly. Cash prizes instantly in wallet.</p></div>
-    </section>
-    <section><h2 className="text-2xl font-black mb-4">🏆 Winner <span className="neon-text">Proofs</span></h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">{db.proofs.map((p:any)=><div key={p.id} className="rounded-xl overflow-hidden border border-white/10"><img src={p.url} className="h-40 w-full object-cover"/><p className="p-2 text-xs flex items-center gap-1"><BadgeCheck size={14} className="text-green-400"/>{p.title}</p></div>)}</div></section>
-  </main>;
-}
-```
+        // --- COMPONENTS ---
+        function Navbar() {
+            const { me, navigate, db } = useApp();
+            const route = db.currentRoute;
+            const links = [["home","Home"],["draws","Draws"],["winners","Winners"],["account","Account"],["contact","Contact"],["admin","Admin Panel"]];
 
-```tsx
-// app/draws/page.tsx
-"use client";
-import { useState } from "react"; import { useApp } from "@/lib/store"; import Countdown from "@/components/Countdown"; import { formatPKR } from "@/lib/utils"; import Link from "next/link";
-export default function Draws(){
-  const { db, me, buyTicket, soldCount } = useApp(); const [msg,setMsg]=useState(""); const [filter,setFilter]=useState("all");
-  const list=db.draws.filter((d:any)=>filter==="all"||d.status===filter);
-  return <main className="max-w-7xl mx-auto px-4 py-8">
-    <h1 className="text-3xl font-black">All <span className="gold-text">Lucky Draws</span></h1>
-    <div className="flex gap-2 my-4">{["all","active","upcoming","completed"].map(f=><button key={f} onClick={()=>setFilter(f)} className={`px-4 py-1.5 rounded-full text-sm capitalize ${filter===f?"bg-neon text-black font-bold":"bg-white/10"}`}>{f}</button>)}</div>
-    {msg && <div className="bg-green-500/10 border border-green-500/30 p-3 rounded-xl mb-4 text-green-300 text-sm">{msg}</div>}
-    {!me && <div className="bg-gold/10 border border-gold/30 p-3 rounded-xl mb-4 text-sm">Please <Link href="/account" className="text-gold font-bold underline">Login</Link> to buy tickets.</div>}
-    <div className="grid md:grid-cols-2 gap-6">{list.map((d:any)=>{ const sold=soldCount(d.id); return (
-      <div key={d.id} className="bg-card border border-white/10 rounded-2xl overflow-hidden flex flex-col md:flex-row">
-        <img src={d.image} className="md:w-56 h-48 md:h-auto object-cover"/>
-        <div className="p-5 flex-1 space-y-2">
-          <h3 className="font-bold text-lg">{d.title}</h3><p className="text-gold text-sm">🎁 {d.prize}</p>
-          <Countdown end={d.endTime}/>
-          <div className="text-xs text-gray-400">{sold}/{d.totalTickets} Sold • Limit: {d.totalTickets} tickets</div>
-          <div className="h-2 bg-white/10 rounded-full"><div className="h-full bg-neon rounded-full" style={{width:`${sold/d.totalTickets*100}%`}}/></div>
-          <div className="flex justify-between items-center pt-2"><span className="font-black">{formatPKR(d.ticketPrice)}</span>
-            <button disabled={d.status!=="active"} onClick={()=>setMsg(buyTicket(d.id))} className="bg-gold text-black font-bold px-5 py-2 rounded-lg text-sm disabled:opacity-40">Buy Ticket</button></div>
-        </div>
-      </div>);})}</div>
-  </main>;
-}
-```
+            return (
+                <header className="sticky top-0 z-50 glass border-b border-white/10">
+                    <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+                        <div onClick={()=>navigate("home")} className="flex items-center gap-2 text-2xl font-black cursor-pointer">
+                            <i data-lucide="sparkles" className="text-gold"></i>
+                            <span>Naseeb<span className="neon-text">Zone</span></span>
+                        </div>
+                        <nav className="hidden md:flex gap-6">
+                            {links.map(([h,l]) => <button key={h} onClick={()=>navigate(h)} className={`hover:text-neon ${route===h?"text-neon font-bold":"text-gray-300"}`}>{l}</button>)}
+                        </nav>
+                        <div className="hidden md:flex items-center gap-3">
+                            {me ? <div className="flex items-center gap-2 bg-white/5 border border-gold/30 px-3 py-1.5 rounded-full text-sm"><i data-lucide="wallet" className="text-gold w-4 h-4"></i>{formatPKR(me.balance)}</div>
+                            : <button onClick={()=>navigate("account")} className="bg-neon text-black font-bold px-4 py-2 rounded-lg text-sm">Login</button>}
+                        </div>
+                    </div>
+                </header>
+            );
+        }
 
-```tsx
-// app/winners/page.tsx
-"use client";
-import { useApp } from "@/lib/store"; import { useState } from "react"; import { Search, BadgeCheck } from "lucide-react";
-export default function Winners(){
-  const { db } = useApp(); const [q,setQ]=useState("");
-  const list=db.winners.filter((w:any)=>w.ticketId.toLowerCase().includes(q.toLowerCase())||w.drawId.toLowerCase().includes(q.toLowerCase())||w.winnerName.toLowerCase().includes(q.toLowerCase()));
-  return <main className="max-w-6xl mx-auto px-4 py-8">
-    <h1 className="text-3xl font-black">Transparent <span className="neon-text">Winners Ledger</span></h1>
-    <p className="text-gray-400 text-sm mt-1">Verify any ticket ID, draw ID or winner name publicly.</p>
-    <div className="flex items-center gap-2 bg-card border border-white/10 rounded-xl px-4 py-2.5 mt-4 max-w-md"><Search size={18} className="text-gray-400"/><input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search Ticket ID / Draw ID / Name..." className="bg-transparent outline-none w-full text-sm"/></div>
-    <div className="mt-6 bg-card border border-white/10 rounded-2xl overflow-x-auto">
-      <table className="w-full text-sm min-w-[700px]"><thead><tr className="text-left text-gray-400 border-b border-white/10"><th className="p-4">Draw ID</th><th>Draw Title</th><th>Prize</th><th>Winner</th><th>Winning Ticket</th><th>Date</th></tr></thead>
-      <tbody>{list.map((w:any)=><tr key={w.id} className="border-b border-white/5 hover:bg-white/5"><td className="p-4 font-mono text-neon">{w.drawId}</td><td>{w.drawTitle}</td><td className="text-gold">{w.prize}</td><td className="flex items-center gap-1">{w.winnerName}<BadgeCheck size={14} className="text-green-400"/></td><td className="font-mono text-xs">{w.ticketId}</td><td className="text-gray-400">{new Date(w.date).toLocaleDateString()}</td></tr>)}</tbody></table>
-      {!list.length && <p className="p-6 text-center text-gray-500">No winners found.</p>}
-    </div>
-  </main>;
-}
-```
+        function Footer() {
+            return (
+                <footer className="border-t border-white/10 bg-black/40 mt-12">
+                    <div className="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-3 gap-8">
+                        <div><h3 className="text-xl font-black">Naseeb<span className="text-neon">Zone</span></h3><p className="text-gray-400 text-sm mt-2">Pakistan's most transparent lucky draw platform. Verifiable tickets, live draws, instant payouts.</p></div>
+                        <div><h4 className="font-bold text-gold mb-3">Quick Support</h4><p className="text-sm text-gray-300">Easypaisa / JazzCash: 03137648720<br/>Email: support@naseebzone.com</p></div>
+                        <div><h4 className="font-bold text-gold mb-3">Timing</h4><p className="text-sm text-gray-300">9AM - 11PM PKT Daily<br/>Play Responsibly. 18+ Only.</p></div>
+                    </div>
+                    <div className="text-center text-xs text-gray-500 pb-6">© 2026 NaseebZone. All rights reserved.</div>
+                </footer>
+            );
+        }
 
-```tsx
-// app/account/page.tsx
-"use client";
-import { useState } from "react"; import { useApp } from "@/lib/store"; import { formatPKR, ADMIN_ACCOUNT } from "@/lib/utils"; import { Copy, Wallet, Upload } from "lucide-react";
-export default function Account(){
-  const a:any = useApp(); const { me, db } = a;
-  const [tab,setTab]=useState("overview"); const [mode,setMode]=useState("login");
-  const [name,setName]=useState(""); const [phone,setPhone]=useState(""); const [pass,setPass]=useState(""); const [ref,setRef]=useState(""); const [err,setErr]=useState("");
-  const [dep,setDep]=useState({amount:"",method:"Easypaisa",trx:"",img:""});
-  const [wd,setWd]=useState({amount:"",method:"Easypaisa",account:""});
-  const [claimDraw,setClaimDraw]=useState("");
+        // --- PUBLIC PAGES ---
+        function HomePage() {
+            const { db, navigate, soldCount } = useApp();
+            const active = db.draws.filter(d => d.status === "active").slice(0,3);
 
-  if(!me) return <main className="max-w-md mx-auto px-4 py-12">
-    <div className="bg-card border border-white/10 rounded-2xl p-6">
-      <h1 className="text-2xl font-black text-center">Welcome to <span className="text-neon">NaseebZone</span></h1>
-      <div className="flex bg-white/5 rounded-lg p-1 mt-4">{["login","register"].map(m=><button key={m} onClick={()=>setMode(m)} className={`flex-1 py-2 rounded-md text-sm font-bold capitalize ${mode===m?"bg-neon text-black":""}`}>{m}</button>)}</div>
-      {err && <p className="text-red-400 text-sm mt-3">{err}</p>}
-      <div className="space-y-3 mt-4">
-        {mode==="register" && <><input placeholder="Full Name" value={name} onChange={e=>setName(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 outline-none"/><input placeholder="Referral Code (optional)" value={ref} onChange={e=>setRef(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 outline-none"/></>}
-        <input placeholder="Phone e.g 03001234567" value={phone} onChange={e=>setPhone(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 outline-none"/>
-        <input type="password" placeholder="Password" value={pass} onChange={e=>setPass(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 outline-none"/>
-        <button onClick={()=>{ const r=mode==="login"?a.login(phone,pass):a.register(name,phone,pass,ref); if(r!=="ok") setErr(r); }} className="w-full bg-gold text-black font-bold py-2.5 rounded-lg">{mode==="login"?"Login":"Create Account"}</button>
-        <p className="text-xs text-gray-500 text-center">Demo: 03001234567 / 123456</p>
-      </div>
-    </div>
-  </main>;
+            return (
+                <div className="max-w-7xl mx-auto px-4 space-y-12 py-6">
+                    <div className="bg-gradient-to-r from-card to-blue-950 border border-white/10 p-8 md:p-14 rounded-2xl">
+                        <h1 className="text-3xl md:text-5xl font-black leading-tight">WIN Big with <span className="gold-text">NaseebZone</span></h1>
+                        <p className="mt-3 text-gray-300 max-w-xl">Pakistan's #1 Fair & Transparent Lucky Draw Platform. Buy tickets securely via Easypaisa or JazzCash.</p>
+                        <button onClick={()=>navigate("draws")} className="mt-6 bg-gold text-black font-bold px-6 py-3 rounded-xl shadow-lg">Explore Active Draws</button>
+                    </div>
 
-  const myTickets=db.tickets.filter((t:any)=>t.userId===me.id);
-  const myDeps=db.deposits.filter((d:any)=>d.userId===me.id);
-  const myWds=db.withdraws.filter((d:any)=>d.userId===me.id);
-  const refLink=`${typeof window!=="undefined"?window.location.origin:""}/account?ref=${me.referralCode}`;
+                    <div>
+                        <div className="flex justify-between items-center mb-4"><h2 className="text-2xl font-black">🔥 Active <span className="gold-text">Draws</span></h2><button onClick={()=>navigate("draws")} className="text-neon text-sm">View All →</button></div>
+                        <div className="grid md:grid-cols-3 gap-6">
+                            {active.map(d => {
+                                const sold = soldCount(d.id);
+                                const pct = Math.round(sold/d.totalTickets*100);
+                                return (
+                                    <div key={d.id} className="bg-card border border-white/10 rounded-2xl overflow-hidden">
+                                        <img src={d.image} className="h-48 w-full object-cover"/>
+                                        <div className="p-5 space-y-3">
+                                            <h3 className="font-bold text-lg">{d.title}</h3>
+                                            <p className="text-gold text-sm font-semibold">🎁 {d.prize}</p>
+                                            <div><div className="flex justify-between text-xs text-gray-400 mb-1"><span>{sold}/{d.totalTickets} Sold</span><span>{pct}%</span></div>
+                                            <div className="h-2 bg-white/10 rounded-full"><div className="h-full bg-neon rounded-full" style={{width:`${pct}%`}}></div></div></div>
+                                            <div className="flex justify-between items-center pt-2"><span className="font-black text-xl">{formatPKR(d.ticketPrice)}</span><button onClick={()=>navigate("draws")} className="bg-neon text-black font-bold px-4 py-2 rounded-lg text-sm">Buy Ticket</button></div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
 
-  const fileToB64=(f:File,cb:(s:string)=>void)=>{ const r=new FileReader(); r.onload=()=>cb(r.result as string); r.readAsDataURL(f); };
+        function DrawsPage() {
+            const { db, me, buyTicket, soldCount } = useApp();
+            const [msg, setMsg] = useState("");
+            return (
+                <div className="max-w-7xl mx-auto px-4 py-8">
+                    <h1 className="text-3xl font-black">All <span className="gold-text">Lucky Draws</span></h1>
+                    {msg && <div className="bg-green-500/10 border border-green-500/30 p-3 rounded-xl my-4 text-green-300 text-sm">{msg}</div>}
+                    {!me && <div className="bg-gold/10 border border-gold/30 p-3 rounded-xl my-4 text-sm">Please login in the Account tab to buy tickets.</div>}
+                    <div className="grid md:grid-cols-2 gap-6 mt-6">
+                        {db.draws.map(d => {
+                            const sold = soldCount(d.id);
+                            return (
+                                <div key={d.id} className="bg-card border border-white/10 rounded-2xl overflow-hidden flex flex-col md:flex-row">
+                                    <img src={d.image} className="md:w-56 h-48 md:h-auto object-cover"/>
+                                    <div className="p-5 flex-1 space-y-2">
+                                        <h3 className="font-bold text-lg">{d.title}</h3>
+                                        <p className="text-gold text-sm">🎁 {d.prize}</p>
+                                        <div className="text-xs text-gray-400">{sold}/{d.totalTickets} Sold</div>
+                                        <div className="flex justify-between items-center pt-4"><span className="font-black">{formatPKR(d.ticketPrice)}</span>
+                                        <button disabled={d.status!=="active"} onClick={()=>setMsg(buyTicket(d.id))} className="bg-gold text-black font-bold px-5 py-2 rounded-lg text-sm disabled:opacity-40">Buy Ticket</button></div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        }
 
-  return <main className="max-w-6xl mx-auto px-4 py-8">
-    <div className="flex justify-between items-center flex-wrap gap-3"><h1 className="text-2xl font-black">My <span className="gold-text">Account</span></h1><button onClick={a.logout} className="text-sm text-red-400 border border-red-400/30 px-4 py-1.5 rounded-lg">Logout ({me.name})</button></div>
-    <div className="grid grid-cols-3 gap-3 mt-4">
-      <div className="bg-card border border-gold/30 rounded-xl p-4"><p className="text-xs text-gray-400 flex gap-1"><Wallet size={14}/>Balance</p><p className="font-black text-lg md:text-2xl text-gold">{formatPKR(me.balance)}</p></div>
-      <div className="bg-card border border-white/10 rounded-xl p-4"><p className="text-xs text-gray-400">Total Spent</p><p className="font-black text-lg md:text-2xl">{formatPKR(me.totalSpent)}</p></div>
-      <div className="bg-card border border-white/10 rounded-xl p-4"><p className="text-xs text-gray-400">Total Winnings</p><p className="font-black text-lg md:text-2xl text-green-400">{formatPKR(me.totalWinnings)}</p></div>
-    </div>
-    <div className="flex gap-2 mt-6 overflow-x-auto">{["overview","deposit","withdraw","tickets","referral"].map(t=><button key={t} onClick={()=>setTab(t)} className={`px-4 py-2 rounded-lg text-sm font-bold capitalize whitespace-nowrap ${tab===t?"bg-neon text-black":"bg-white/10"}`}>{t}</button>)}</div>
+        function WinnersPage() {
+            const { db } = useApp();
+            return (
+                <div className="max-w-6xl mx-auto px-4 py-8">
+                    <h1 className="text-3xl font-black">Transparent <span className="neon-text">Winners Ledger</span></h1>
+                    <div className="mt-6 bg-card border border-white/10 rounded-2xl overflow-x-auto">
+                        <table className="w-full text-sm min-w-[700px]">
+                            <thead><tr className="text-left text-gray-400 border-b border-white/10"><th className="p-4">Draw ID</th><th>Draw Title</th><th>Prize</th><th>Winner</th><th>Winning Ticket</th></tr></thead>
+                            <tbody>
+                                {db.winners.map(w => (
+                                    <tr key={w.id} className="border-b border-white/5">
+                                        <td className="p-4 font-mono text-neon">{w.drawId}</td>
+                                        <td>{w.drawTitle}</td>
+                                        <td className="text-gold">{w.prize}</td>
+                                        <td>{w.winnerName}</td>
+                                        <td className="font-mono text-xs">{w.ticketId}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        }
 
-    {tab==="overview" && <div className="grid md:grid-cols-2 gap-4 mt-4">
-      <div className="bg-card border border-white/10 rounded-xl p-5"><h3 className="font-bold text-gold">Deposit Money</h3><p className="text-sm mt-2">Send to <b>Easypaisa / JazzCash: {ADMIN_ACCOUNT}</b></p><button onClick={()=>setTab("deposit")} className="mt-3 bg-neon text-black text-sm font-bold px-4 py-2 rounded-lg">Deposit Now</button></div>
-      <div className="bg-card border border-white/10 rounded-xl p-5"><h3 className="font-bold">Refer & Earn Free Ticket</h3><p className="text-sm text-gray-400">Valid referrals: <b className="text-neon">{me.referralsValid}/10</b></p><button onClick={()=>setTab("referral")} className="mt-3 bg-gold text-black text-sm font-bold px-4 py-2 rounded-lg">My Referral Link</button></div>
-    </div>}
+        function AccountPage() {
+            const app = useApp();
+            const { me, db } = app;
+            const [mode, setMode] = useState("login");
+            const [phone, setPhone] = useState("");
+            const [pass, setPass] = useState("");
+            const [name, setName] = useState("");
+            const [ref, setRef] = useState("");
+            const [err, setErr] = useState("");
+            const [dep, setDep] = useState({amount:"", method:"Easypaisa", trx:"", img:"https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400"});
+            const [wd, setWd] = useState({amount:"", method:"Easypaisa", account:""});
+            const [tab, setTab] = useState("overview");
 
-    {tab==="deposit" && <div className="bg-card border border-white/10 rounded-xl p-5 mt-4 max-w-xl">
-      <h3 className="font-bold">Deposit via Easypaisa / JazzCash</h3>
-      <div className="bg-black/40 border border-dashed border-gold/40 rounded-lg p-3 mt-3 text-sm">Admin Account: <b className="text-gold text-lg">{ADMIN_ACCOUNT}</b><br/>Account Title: NaseebZone Official</div>
-      <div className="space-y-3 mt-3">
-        <input type="number" placeholder="Amount" value={dep.amount} onChange={e=>setDep({...dep,amount:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5"/>
-        <select value={dep.method} onChange={e=>setDep({...dep,method:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5"><option>Easypaisa</option><option>JazzCash</option></select>
-        <input placeholder="Transaction ID (TRX ID)" value={dep.trx} onChange={e=>setDep({...dep,trx:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5"/>
-        <label className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg p-3 text-sm cursor-pointer"><Upload size={16}/> {dep.img?"Screenshot attached ✓":"Upload Payment Screenshot"}<input type="file" accept="image/*" hidden onChange={e=>e.target.files&&fileToB64(e.target.files[0],s=>setDep({...dep,img:s}))}/></label>
-        <button onClick={()=>{ if(!dep.amount||!dep.trx||!dep.img) return alert("Fill all fields + screenshot"); a.createDeposit(Number(dep.amount),dep.method,dep.trx,dep.img); alert("Deposit submitted for approval!"); setDep({amount:"",method:"Easypaisa",trx:"",img:""});}} className="w-full bg-green-500 font-bold py-2.5 rounded-lg">Submit Deposit</button>
-      </div>
-      <h4 className="font-bold mt-6 mb-2 text-sm">My Deposits</h4>{myDeps.map((d:any)=><div key={d.id} className="flex justify-between text-sm py-2 border-b border-white/5"><span>{formatPKR(d.amount)} • {d.method} • {d.trxId}</span><span className={d.status==="approved"?"text-green-400":d.status==="pending"?"text-yellow-400":"text-red-400"}>{d.status}</span></div>)}
-    </div>}
+            if(!me) return (
+                <div className="max-w-md mx-auto px-4 py-12">
+                    <div className="bg-card border border-white/10 rounded-2xl p-6">
+                        <h1 className="text-2xl font-black text-center">Naseeb<span className="text-neon">Zone</span></h1>
+                        <div className="flex bg-white/5 rounded-lg p-1 mt-4">
+                            <button onClick={()=>setMode("login")} className={`flex-1 py-2 rounded-md text-sm font-bold ${mode==="login"?"bg-neon text-black":""}`}>Login</button>
+                            <button onClick={()=>setMode("register")} className={`flex-1 py-2 rounded-md text-sm font-bold ${mode==="register"?"bg-neon text-black":""}`}>Register</button>
+                        </div>
+                        {err && <p className="text-red-400 text-sm mt-3">{err}</p>}
+                        <div className="space-y-3 mt-4">
+                            {mode==="register" && <>
+                                <input placeholder="Full Name" value={name} onChange={e=>setName(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
+                                <input placeholder="Referral Code (optional)" value={ref} onChange={e=>setRef(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
+                            </>}
+                            <input placeholder="Phone e.g 03001234567" value={phone} onChange={e=>setPhone(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
+                            <input type="password" placeholder="Password" value={pass} onChange={e=>setPass(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
+                            <button onClick={()=>{ const r = mode==="login" ? app.login(phone, pass) : app.register(name, phone, pass, ref); if(r!=="ok") setErr(r); }} className="w-full bg-gold text-black font-bold py-2.5 rounded-lg text-sm">{mode==="login"?"Login":"Create Account"}</button>
+                            <p className="text-xs text-gray-500 text-center">Demo User: 03001234567 / 123456</p>
+                        </div>
+                    </div>
+                </div>
+            );
 
-    {tab==="withdraw" && <div className="bg-card border border-white/10 rounded-xl p-5 mt-4 max-w-xl">
-      <h3 className="font-bold">Withdraw Winnings</h3><p className="text-xs text-gray-400">Available: {formatPKR(me.balance)}</p>
-      <div className="space-y-3 mt-3"><input type="number" placeholder="Amount" value={wd.amount} onChange={e=>setWd({...wd,amount:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5"/>
-      <select value={wd.method} onChange={e=>setWd({...wd,method:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5"><option>Easypaisa</option><option>JazzCash</option></select>
-      <input placeholder="Your Account Number" value={wd.account} onChange={e=>setWd({...wd,account:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5"/>
-      <button onClick={()=>{ const r=a.createWithdraw(Number(wd.amount),wd.method,wd.account); alert(r==="ok"?"Withdrawal requested!":r); }} className="w-full bg-gold text-black font-bold py-2.5 rounded-lg">Request Withdrawal</button></div>
-      <h4 className="font-bold mt-6 mb-2 text-sm">History</h4>{myWds.map((d:any)=><div key={d.id} className="flex justify-between text-sm py-2 border-b border-white/5"><span>{formatPKR(d.amount)} • {d.account}</span><span>{d.status}</span></div>)}
-    </div>}
+            return (
+                <div className="max-w-5xl mx-auto px-4 py-8">
+                    <div className="flex justify-between items-center"><h1 className="text-2xl font-black">My <span className="gold-text">Account</span></h1><button onClick={app.logout} className="text-sm text-red-400 border border-red-400/30 px-4 py-1.5 rounded-lg">Logout</button></div>
+                    <div className="grid grid-cols-3 gap-3 mt-4">
+                        <div className="bg-card border border-gold/30 rounded-xl p-4"><p className="text-xs text-gray-400">Balance</p><p className="font-black text-xl text-gold">{formatPKR(me.balance)}</p></div>
+                        <div className="bg-card border border-white/10 rounded-xl p-4"><p className="text-xs text-gray-400">Total Spent</p><p className="font-black text-xl">{formatPKR(me.totalSpent)}</p></div>
+                        <div className="bg-card border border-white/10 rounded-xl p-4"><p className="text-xs text-gray-400">Winnings</p><p className="font-black text-xl text-green-400">{formatPKR(me.totalWinnings)}</p></div>
+                    </div>
+                    <div className="flex gap-2 mt-6">{["overview","deposit","withdraw","tickets"].map(t=><button key={t} onClick={()=>setTab(t)} className={`px-4 py-2 rounded-lg text-sm font-bold capitalize ${tab===t?"bg-neon text-black":"bg-white/10"}`}>{t}</button>)}</div>
 
-    {tab==="tickets" && <div className="bg-card border border-white/10 rounded-xl p-5 mt-4">
-      <h3 className="font-bold mb-3">Active & Past Tickets ({myTickets.length})</h3>
-      <div className="overflow-x-auto"><table className="w-full text-sm min-w-[600px]"><thead><tr className="text-gray-400 text-left border-b border-white/10"><th className="py-2">Ticket ID</th><th>Draw</th><th>Date</th><th>Status</th></tr></thead><tbody>
-      {myTickets.map((t:any)=>{ const dr=db.draws.find((x:any)=>x.id===t.drawId); return <tr key={t.id} className="border-b border-white/5"><td className="py-2 font-mono text-neon text-xs">{t.id}{t.isFree&&" (FREE)"}</td><td>{dr?.title||t.drawId}</td><td className="text-gray-400">{new Date(t.date).toLocaleDateString()}</td><td><span className={`px-2 py-0.5 rounded-full text-xs ${t.status==="active"?"bg-blue-500/20 text-blue-300":t.status==="won"?"bg-green-500/20 text-green-300":"bg-red-500/20 text-red-300"}`}>{t.status}</span></td></tr>;})}</tbody></table></div>
-    </div>}
+                    {tab==="overview" && <div className="bg-card border border-white/10 rounded-xl p-5 mt-4"><h3 className="font-bold text-gold">Deposit Instructions</h3><p className="text-sm mt-2">Send funds to Easypaisa/JazzCash: <b>{ADMIN_ACCOUNT}</b> and submit deposit proof.</p></div>}
+                    
+                    {tab==="deposit" && <div className="bg-card border border-white/10 rounded-xl p-5 mt-4 max-w-xl space-y-3">
+                        <h3 className="font-bold">Deposit Funds</h3>
+                        <input type="number" placeholder="Amount (Rs)" value={dep.amount} onChange={e=>setDep({...dep, amount:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
+                        <select value={dep.method} onChange={e=>setDep({...dep, method:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"><option>Easypaisa</option><option>JazzCash</option></select>
+                        <input placeholder="Transaction ID (TRX ID)" value={dep.trx} onChange={e=>setDep({...dep, trx:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
+                        <button onClick={()=>{ if(!dep.amount||!dep.trx) return alert("Fill all fields"); app.createDeposit(Number(dep.amount), dep.method, dep.trx, dep.img); alert("Deposit submitted!"); setDep({amount:"", method:"Easypaisa", trx:"", img:""}); }} className="w-full bg-green-500 text-black font-bold py-2.5 rounded-lg text-sm">Submit Deposit</button>
+                    </div>}
 
-    {tab==="referral" && <div className="bg-card border border-white/10 rounded-xl p-5 mt-4 max-w-xl">
-      <h3 className="font-bold text-gold">Referral System - Get FREE Ticket</h3>
-      <p className="text-sm text-gray-400 mt-1">Share link. When friend registers & buys first ticket = 1 valid referral. Reach 10 to claim free ticket.</p>
-      <div className="flex gap-2 mt-3"><input readOnly value={refLink} className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs"/><button onClick={()=>navigator.clipboard.writeText(refLink)} className="bg-white/10 px-3 rounded-lg"><Copy size={16}/></button></div>
-      <div className="mt-3"><div className="flex justify-between text-sm"><span>Progress</span><span>{me.referralsValid}/10</span></div><div className="h-3 bg-white/10 rounded-full mt-1"><div className="h-full bg-gradient-to-r from-neon to-gold rounded-full" style={{width:`${Math.min(me.referralsValid*10,100)}%`}}/></div></div>
-      {me.referralsValid>=10 ? <div className="mt-4 space-y-2"><select value={claimDraw} onChange={e=>setClaimDraw(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5"><option value="">Select Draw for Free Ticket</option>{db.draws.filter((d:any)=>d.status==="active").map((d:any)=><option key={d.id} value={d.id}>{d.title}</option>)}</select>
-        <button onClick={()=>{ if(!claimDraw) return alert("Select draw"); const r=a.claimFree(claimDraw); alert(r==="ok"?"Claim submitted to admin!":r); }} className="w-full bg-green-500 font-bold py-2.5 rounded-lg">🎁 Claim Free Ticket</button></div>
-      : <p className="text-xs text-gray-500 mt-3">Invite {10-me.referralsValid} more friends to unlock free ticket.</p>}
-    </div>}
-  </main>;
-}
-```
+                    {tab==="withdraw" && <div className="bg-card border border-white/10 rounded-xl p-5 mt-4 max-w-xl space-y-3">
+                        <h3 className="font-bold">Request Withdrawal</h3>
+                        <input type="number" placeholder="Amount" value={wd.amount} onChange={e=>setWd({...wd, amount:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
+                        <select value={wd.method} onChange={e=>setWd({...wd, method:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"><option>Easypaisa</option><option>JazzCash</option></select>
+                        <input placeholder="Account Number" value={wd.account} onChange={e=>setWd({...wd, account:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
+                        <button onClick={()=>{ const r=app.createWithdraw(Number(wd.amount), wd.method, wd.account); alert(r==="ok"?"Withdrawal requested!":r); }} className="w-full bg-gold text-black font-bold py-2.5 rounded-lg text-sm">Request Withdrawal</button>
+                    </div>}
 
-```tsx
-// app/contact/page.tsx
-import { Phone, Mail, MessageCircle, MapPin, Clock } from "lucide-react";
-export default function Contact(){
-  return <main className="max-w-5xl mx-auto px-4 py-8">
-    <h1 className="text-3xl font-black">Contact & <span className="gold-text">Creator Info</span></h1>
-    <div className="grid md:grid-cols-2 gap-6 mt-6">
-      <div className="bg-card border border-white/10 rounded-2xl p-6"><h3 className="font-bold text-neon">Platform Information</h3>
-        <p className="text-sm text-gray-300 mt-2">NaseebZone is Pakistan's trusted lucky draw platform offering transparent, verifiable draws with live countdowns, public winner ledger and instant Easypaisa/JazzCash payouts.</p>
-        <div className="mt-4 space-y-3 text-sm">
-          <p className="flex gap-2"><Phone size={16} className="text-gold"/> 03137648720 (Easypaisa & JazzCash)</p>
-          <p className="flex gap-2"><Mail size={16} className="text-gold"/> support@naseebzone.com</p>
-          <p className="flex gap-2"><MessageCircle size={16} className="text-gold"/> WhatsApp Support: 03137648720</p>
-          <p className="flex gap-2"><MapPin size={16} className="text-gold"/> Lahore, Punjab, Pakistan</p>
-          <p className="flex gap-2"><Clock size={16} className="text-gold"/> Support: 9AM - 11PM (PKT) Daily</p>
-        </div></div>
-      <div className="bg-card border border-white/10 rounded-2xl p-6"><h3 className="font-bold text-gold">Creator Details</h3>
-        <div className="flex items-center gap-4 mt-3"><div className="w-16 h-16 rounded-full bg-gradient-to-br from-neon to-gold flex items-center justify-center text-black font-black text-2xl">NZ</div>
-        <div><p className="font-bold">NaseebZone Official Team</p><p className="text-sm text-gray-400">Founder & Management</p></div></div>
-        <p className="text-sm text-gray-300 mt-3">Direct Line: <b>03137648720</b><br/>For partnerships, draw sponsorships and bulk tickets, contact directly on WhatsApp.</p>
-        <a href="https://wa.me/923137648720" target="_blank" className="inline-block mt-4 bg-green-500 font-bold px-6 py-2.5 rounded-lg text-sm">Chat on WhatsApp</a></div>
-    </div>
-  </main>;
-}
-```
+                    {tab==="tickets" && <div className="bg-card border border-white/10 rounded-xl p-5 mt-4">
+                        <h3 className="font-bold mb-3">My Tickets</h3>
+                        {db.tickets.filter(t=>t.userId===me.id).map(t=><div key={t.id} className="flex justify-between text-sm py-2 border-b border-white/5"><span className="font-mono text-neon">{t.id}</span><span>{t.status}</span></div>)}
+                    </div>}
+                </div>
+            );
+        }
 
----
-### 6. SECURE ADMIN PANEL
+        function ContactPage() {
+            return (
+                <div className="max-w-4xl mx-auto px-4 py-8">
+                    <h1 className="text-3xl font-black">Contact <span className="gold-text">Support</span></h1>
+                    <div className="bg-card border border-white/10 rounded-2xl p-6 mt-6 space-y-3">
+                        <p className="text-sm">Easypaisa / JazzCash: <b>03137648720</b></p>
+                        <p className="text-sm">Email: <b>support@naseebzone.com</b></p>
+                        <p className="text-sm">Timing: <b>9AM - 11PM PKT</b></p>
+                    </div>
+                </div>
+            );
+        }
 
-```tsx
-// app/admin/layout.tsx
-"use client";
-import { useApp } from "@/lib/store"; import Link from "next/link"; import { usePathname } from "next/navigation";
-import { LayoutDashboard, Wallet, PlusCircle, Users, Image as ImgIcon, Trophy, LogOut, Eye } from "lucide-react"; import { useState } from "react";
-export default function AdminLayout({children}:{children:React.ReactNode}){
-  const { db, adminLogin, adminLogout } = useApp(); const path=usePathname();
-  const [e,setE]=useState(""); const [p,setP]=useState(""); const [err,setErr]=useState("");
-  if(!db.isAdmin) return <main className="min-h-screen flex items-center justify-center px-4">
-    <div className="bg-card border border-white/10 rounded-2xl p-8 w-full max-w-sm"><h1 className="text-2xl font-black text-center">🔒 Admin <span className="text-neon">Secure Login</span></h1>
-    {err && <p className="text-red-400 text-sm mt-2">{err}</p>}
-    <input placeholder="admin@naseebzone.com" value={e} onChange={x=>setE(x.target.value)} className="w-full mt-4 bg-black/40 border border-white/10 rounded-lg px-4 py-2.5"/>
-    <input type="password" placeholder="Password" value={p} onChange={x=>setP(x.target.value)} className="w-full mt-3 bg-black/40 border border-white/10 rounded-lg px-4 py-2.5"/>
-    <button onClick={()=>{ const r=adminLogin(e,p); if(r!=="ok") setErr(r); }} className="w-full mt-4 bg-neon text-black font-bold py-2.5 rounded-lg">Secure Login</button>
-    <p className="text-xs text-gray-500 text-center mt-3">Protected Route: /admin</p></div></main>;
-  const links=[[ "/admin","Overview",LayoutDashboard],["/admin/finances","Finances",Wallet],["/admin/draws","Create Draw",PlusCircle],["/admin/draws/active","Active & Winners",Trophy],["/admin/players","Players",Users],["/admin/media","Media",ImgIcon]];
-  return <div className="min-h-screen flex">
-    <aside className="w-60 bg-black/60 border-r border-white/10 p-4 hidden md:block min-h-screen sticky top-0 h-screen">
-      <h2 className="font-black text-xl">NaseebZone <span className="text-gold">ADMIN</span></h2>
-      <nav className="mt-6 space-y-1">{links.map(([h,l,I]:any)=><Link key={h} href={h} className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm ${path===h?"bg-neon text-black font-bold":"text-gray-300 hover:bg-white/5"}`}><I size={16}/>{l}</Link>)}</nav>
-      <div className="mt-6 space-y-1"><Link href="/" className="flex items-center gap-2 px-3 py-2 text-sm text-gray-400"><Eye size={16}/>View Site</Link><button onClick={adminLogout} className="flex items-center gap-2 px-3 py-2 text-sm text-red-400"><LogOut size={16}/>Logout</button></div>
-    </aside>
-    <div className="flex-1">
-      <div className="md:hidden flex gap-2 overflow-x-auto p-3 bg-black/60 border-b border-white/10">{links.map(([h,l]:any)=><Link key={h} href={h} className={`px-3 py-1.5 rounded-lg text-xs whitespace-nowrap ${path===h?"bg-neon text-black font-bold":"bg-white/10"}`}>{l}</Link>)}<button onClick={adminLogout} className="px-3 py-1.5 rounded-lg text-xs bg-red-500/20 text-red-300">Logout</button></div>
-      <div className="p-4 md:p-8">{children}</div>
-    </div>
-  </div>;
-}
-```
+        // --- SECURE ADMIN PANEL ---
+        function AdminPanel() {
+            const app = useApp();
+            const { db } = app;
+            const [e, setE] = useState("");
+            const [p, setP] = useState("");
+            const [err, setErr] = useState("");
+            const [tab, setTab] = useState("finances");
+            const [drawForm, setDrawForm] = useState({title:"", prize:"", prizeValue:50000, ticketPrice:500, totalTickets:50, image:"https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800", endTime:new Date(Date.now()+86400000).toISOString().slice(0,16)});
+            const [selWinner, setSelWinner] = useState({});
 
-```tsx
-// app/admin/page.tsx
-"use client"; import { useApp } from "@/lib/store"; import { formatPKR } from "@/lib/utils";
-export default function AdminHome(){
-  const { db } = useApp();
-  const income=db.deposits.filter((d:any)=>d.status==="approved").reduce((s:any,x:any)=>s+x.amount,0);
-  const payouts=db.withdraws.filter((d:any)=>d.status==="approved").reduce((s:any,x:any)=>s+x.amount,0);
-  const cards=[["Total Users",db.users.length],["Total Income",formatPKR(income)],["Total Payouts",formatPKR(payouts)],["Net Profit",formatPKR(income-payouts)],["Tickets Sold",db.tickets.length],["Active Draws",db.draws.filter((d:any)=>d.status==="active").length]];
-  return <div><h1 className="text-2xl font-black">Analytics <span className="text-neon">Dashboard</span></h1>
-    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mt-4">{cards.map(([l,v]:any)=><div key={l} className="bg-card border border-white/10 rounded-xl p-5"><p className="text-xs text-gray-400">{l}</p><p className="text-xl md:text-2xl font-black text-gold mt-1">{v}</p></div>)}</div>
-    <div className="grid md:grid-cols-2 gap-4 mt-6">
-      <div className="bg-card border border-white/10 rounded-xl p-5"><h3 className="font-bold mb-3">Recent Users</h3>{db.users.slice(-5).reverse().map((u:any)=><div key={u.id} className="flex justify-between text-sm py-2 border-b border-white/5"><span>{u.name} • {u.phone}</span><span className="text-neon">{formatPKR(u.balance)}</span></div>)}</div>
-      <div className="bg-card border border-white/10 rounded-xl p-5"><h3 className="font-bold mb-3">Recent Tickets</h3>{db.tickets.slice(-5).reverse().map((t:any)=><div key={t.id} className="flex justify-between text-sm py-2 border-b border-white/5"><span className="font-mono text-xs">{t.id}</span><span>{t.userName}</span></div>)}{!db.tickets.length&&<p className="text-sm text-gray-500">No sales yet.</p>}</div>
-    </div></div>;
-}
-```
+            if(!db.isAdmin) return (
+                <div className="max-w-md mx-auto px-4 py-24">
+                    <div className="bg-card border border-white/10 rounded-2xl p-8">
+                        <h1 className="text-2xl font-black text-center">🔒 Admin Login</h1>
+                        {err && <p className="text-red-400 text-sm mt-2">{err}</p>}
+                        <input placeholder="admin@naseebzone.com" value={e} onChange={x=>setE(x.target.value)} className="w-full mt-4 bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
+                        <input type="password" placeholder="Password" value={p} onChange={x=>setP(x.target.value)} className="w-full mt-3 bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
+                        <button onClick={()=>{ const r=app.adminLogin(e,p); if(r!=="ok") setErr(r); }} className="w-full mt-4 bg-neon text-black font-bold py-2.5 rounded-lg text-sm">Secure Login</button>
+                        <p className="text-xs text-gray-500 text-center mt-3">admin@naseebzone.com / admin123</p>
+                    </div>
+                </div>
+            );
 
-```tsx
-// app/admin/finances/page.tsx
-"use client"; import { useApp } from "@/lib/store"; import { formatPKR } from "@/lib/utils";
-export default function Finances(){
-  const a:any=useApp(); const { db }=a;
-  return <div className="space-y-8"><h1 className="text-2xl font-black">Deposit & <span className="text-gold">Withdrawal Approvals</span></h1>
-  <section className="bg-card border border-white/10 rounded-xl p-5"><h3 className="font-bold">Pending Deposits ({db.deposits.filter((d:any)=>d.status==="pending").length})</h3>
-    <div className="space-y-3 mt-3">{db.deposits.filter((d:any)=>d.status==="pending").map((d:any)=><div key={d.id} className="bg-black/40 border border-white/10 rounded-xl p-4 flex flex-col md:flex-row gap-4">
-      <img src={d.screenshot} className="w-full md:w-40 h-28 object-cover rounded-lg border border-white/10"/>
-      <div className="flex-1 text-sm"><p><b>{d.userName}</b> • {formatPKR(d.amount)} • {d.method}</p><p className="text-gray-400">Admin Acc: 03137648720 • TRX: <span className="font-mono text-neon">{d.trxId}</span> • {new Date(d.date).toLocaleString()}</p>
-      <div className="flex gap-2 mt-2"><button onClick={()=>a.approveDeposit(d.id)} className="bg-green-500 text-black font-bold px-4 py-1.5 rounded-lg text-sm">Approve</button><button onClick={()=>a.rejectDeposit(d.id)} className="bg-red-500/20 text-red-300 px-4 py-1.5 rounded-lg text-sm">Reject</button></div></div></div>)}
-      {!db.deposits.filter((d:any)=>d.status==="pending").length && <p className="text-sm text-gray-500">No pending deposits.</p>}</div></section>
-  <section className="bg-card border border-white/10 rounded-xl p-5"><h3 className="font-bold">Pending Withdrawals ({db.withdraws.filter((d:any)=>d.status==="pending").length})</h3>
-    <div className="space-y-2 mt-3">{db.withdraws.filter((d:any)=>d.status==="pending").map((d:any)=><div key={d.id} className="bg-black/40 border border-white/10 rounded-xl p-4 flex justify-between items-center flex-wrap gap-3 text-sm"><span><b>{d.userName}</b> • {formatPKR(d.amount)} • {d.method} → {d.account}</span><span className="flex gap-2"><button onClick={()=>a.approveWithdraw(d.id)} className="bg-green-500 text-black font-bold px-4 py-1.5 rounded-lg">Paid</button><button onClick={()=>a.rejectWithdraw(d.id)} className="bg-red-500/20 text-red-300 px-4 py-1.5 rounded-lg">Reject</button></span></div>)}
-    {!db.withdraws.filter((d:any)=>d.status==="pending").length && <p className="text-sm text-gray-500">No pending withdrawals.</p>}</div></section>
-  </div>;
-}
-```
+            return (
+                <div className="max-w-6xl mx-auto px-4 py-8">
+                    <div className="flex justify-between items-center"><h1 className="text-2xl font-black">NaseebZone <span className="text-gold">ADMIN PANEL</span></h1><button onClick={app.adminLogout} className="bg-red-500/20 text-red-300 px-4 py-1.5 rounded-lg text-sm">Logout Admin</button></div>
+                    <div className="flex gap-2 mt-4 overflow-x-auto">{["finances","draws","active","players"].map(t=><button key={t} onClick={()=>setTab(t)} className={`px-4 py-2 rounded-lg text-sm font-bold capitalize whitespace-nowrap ${tab===t?"bg-neon text-black":"bg-white/10"}`}>{t}</button>)}</div>
 
-```tsx
-// app/admin/draws/page.tsx
-"use client"; import { useState } from "react"; import { useApp } from "@/lib/store";
-export default function CreateDraw(){
-  const { db, createDraw } = useApp();
-  const [f,setF]=useState({title:"",prize:"",prizeValue:"",ticketPrice:"",totalTickets:"50",image:"",startTime:"",endTime:""});
-  const s=(k:string,v:string)=>setF({...f,[k]:v});
-  return <div className="max-w-2xl"><h1 className="text-2xl font-black">Draw Management / <span className="text-neon">Plan Creator</span></h1>
-  <div className="bg-card border border-white/10 rounded-xl p-6 mt-4 space-y-3">
-    <input placeholder="Draw Title" value={f.title} onChange={e=>s("title",e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5"/>
-    <input placeholder="Prize Description" value={f.prize} onChange={e=>s("prize",e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5"/>
-    <div className="grid grid-cols-2 gap-3"><input type="number" placeholder="Prize Value (Rs)" value={f.prizeValue} onChange={e=>s("prizeValue",e.target.value)} className="bg-black/40 border border-white/10 rounded-lg px-4 py-2.5"/>
-    <input type="number" placeholder="Ticket Price" value={f.ticketPrice} onChange={e=>s("ticketPrice",e.target.value)} className="bg-black/40 border border-white/10 rounded-lg px-4 py-2.5"/></div>
-    <div className="grid grid-cols-2 gap-3"><select value={f.totalTickets} onChange={e=>s("totalTickets",e.target.value)} className="bg-black/40 border border-white/10 rounded-lg px-4 py-2.5"><option>10</option><option>50</option><option>100</option><option>200</option><option>500</option></select>
-    <input placeholder="Image URL" value={f.image} onChange={e=>s("image",e.target.value)} className="bg-black/40 border border-white/10 rounded-lg px-4 py-2.5"/></div>
-    <div className="grid grid-cols-2 gap-3"><label className="text-xs">Launch Time<input type="datetime-local" value={f.startTime} onChange={e=>s("startTime",e.target.value)} className="w-full mt-1 bg-black/40 border border-white/10 rounded-lg px-4 py-2.5"/></label>
-    <label className="text-xs">End Time<input type="datetime-local" value={f.endTime} onChange={e=>s("endTime",e.target.value)} className="w-full mt-1 bg-black/40 border border-white/10 rounded-lg px-4 py-2.5"/></label></div>
-    <button onClick={()=>{ if(!f.title||!f.ticketPrice||!f.endTime) return alert("Fill title, price, end time"); createDraw({...f,prizeValue:Number(f.prizeValue)||0,ticketPrice:Number(f.ticketPrice),totalTickets:Number(f.totalTickets),image:f.image||"https://images.unsplash.com/photo-1513151233558-d860c5398176?w=800",startTime:f.startTime?new Date(f.startTime).toISOString():new Date().toISOString(),endTime:new Date(f.endTime).toISOString()}); alert("Draw pushed LIVE!"); }} className="w-full bg-gold text-black font-bold py-2.5 rounded-lg">🚀 Launch Draw Instantly</button>
-  </div>
-  <h3 className="font-bold mt-6">All Draws ({db.draws.length})</h3>
-  <div className="space-y-2 mt-2">{db.draws.map((d:any)=><div key={d.id} className="bg-card border border-white/10 rounded-lg p-3 text-sm flex justify-between"><span>{d.title} • {d.totalTickets} tickets • Rs{d.ticketPrice}</span><span className="text-neon">{d.status}</span></div>)}</div></div>;
-}
-```
+                    {tab==="finances" && <div className="space-y-6 mt-6">
+                        <div className="bg-card border border-white/10 rounded-xl p-5">
+                            <h3 className="font-bold mb-3">Pending Deposits</h3>
+                            {db.deposits.filter(d=>d.status==="pending").map(d=>(
+                                <div key={d.id} className="flex justify-between items-center bg-black/40 p-3 rounded-lg text-sm mb-2">
+                                    <span><b>{d.userName}</b> • {formatPKR(d.amount)} • TRX: <span className="font-mono text-neon">{d.trxId}</span></span>
+                                    <div className="flex gap-2"><button onClick={()=>app.approveDeposit(d.id)} className="bg-green-500 text-black px-3 py-1 rounded font-bold">Approve</button><button onClick={()=>app.rejectDeposit(d.id)} className="bg-red-500 text-white px-3 py-1 rounded">Reject</button></div>
+                                </div>
+                            ))}
+                            {!db.deposits.filter(d=>d.status==="pending").length && <p className="text-gray-500 text-sm">No pending deposits.</p>}
+                        </div>
+                        <div className="bg-card border border-white/10 rounded-xl p-5">
+                            <h3 className="font-bold mb-3">Pending Withdrawals</h3>
+                            {db.withdraws.filter(w=>w.status==="pending").map(w=>(
+                                <div key={w.id} className="flex justify-between items-center bg-black/40 p-3 rounded-lg text-sm mb-2">
+                                    <span><b>{w.userName}</b> • {formatPKR(w.amount)} • {w.method} ({w.account})</span>
+                                    <div className="flex gap-2"><button onClick={()=>app.approveWithdraw(w.id)} className="bg-green-500 text-black px-3 py-1 rounded font-bold">Pay</button><button onClick={()=>app.rejectWithdraw(w.id)} className="bg-red-500 text-white px-3 py-1 rounded">Reject</button></div>
+                                </div>
+                            ))}
+                            {!db.withdraws.filter(w=>w.status==="pending").length && <p className="text-gray-500 text-sm">No pending withdrawals.</p>}
+                        </div>
+                    </div>}
 
-```tsx
-// app/admin/draws/active/page.tsx
-"use client"; import { useState } from "react"; import { useApp } from "@/lib/store";
-export default function ActiveDraws(){
-  const a:any=useApp(); const { db }=a; const [sel,setSel]=useState<any>({});
-  const active=db.draws.filter((d:any)=>d.status==="active");
-  return <div><h1 className="text-2xl font-black">Active Draws & <span className="text-gold">Winner Selection</span></h1>
-  {!active.length && <p className="text-gray-500 mt-4">No active draws.</p>}
-  <div className="space-y-4 mt-4">{active.map((d:any)=>{ const parts=db.tickets.filter((t:any)=>t.drawId===d.id); return (
-    <div key={d.id} className="bg-card border border-white/10 rounded-xl p-5">
-      <div className="flex justify-between flex-wrap gap-2"><h3 className="font-bold">{d.title} <span className="text-sm text-gray-400">({parts.length}/{d.totalTickets})</span></h3><span className="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded-full">LIVE</span></div>
-      <div className="mt-3 max-h-40 overflow-y-auto bg-black/30 rounded-lg p-2 text-xs space-y-1">{parts.map((p:any)=><div key={p.id} className="flex justify-between py-1 border-b border-white/5"><span className="font-mono">{p.id}</span><span>{p.userName}</span></div>)}{!parts.length&&<p className="text-gray-500 p-2">No participants yet.</p>}</div>
-      <div className="grid md:grid-cols-2 gap-3 mt-4">
-        <div className="bg-black/30 border border-white/10 rounded-lg p-3"><p className="text-sm font-bold">Manual Mode</p><div className="flex gap-2 mt-2"><select value={sel[d.id]||""} onChange={e=>setSel({...sel,[d.id]:e.target.value})} className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs"><option value="">Select winner ticket</option>{parts.map((p:any)=><option key={p.id} value={p.id}>{p.id} - {p.userName}</option>)}</select><button onClick={()=>{ if(!sel[d.id]) return alert("Select ticket"); a.pickWinner(d.id,sel[d.id]); alert("Winner locked!"); }} className="bg-gold text-black font-bold px-4 py-2 rounded-lg text-sm">Lock</button></div></div>
-        <div className="bg-black/30 border border-neon/30 rounded-lg p-3"><p className="text-sm font-bold text-neon">Automated Provably Fair</p><button onClick={()=>{ const r=a.autoWinner(d.id); alert(r); }} className="mt-2 w-full bg-neon text-black font-bold px-4 py-2 rounded-lg text-sm">🎲 Auto Pick Random Winner & Lock Draw</button></div>
-      </div>
-    </div>);})}</div>
-  <h2 className="font-bold mt-8">Completed ({db.draws.filter((d:any)=>d.status==="completed").length})</h2>
-  <div className="space-y-2 mt-2">{db.draws.filter((d:any)=>d.status==="completed").map((d:any)=><div key={d.id} className="bg-card border border-white/10 rounded-lg p-3 text-sm">🏆 {d.title} → Winner Ticket: <span className="font-mono text-green-300">{d.winnerTicketId}</span></div>)}</div></div>;
-}
-```
+                    {tab==="draws" && <div className="bg-card border border-white/10 rounded-xl p-6 mt-6 max-w-xl space-y-3">
+                        <h3 className="font-bold text-lg">Create New Draw</h3>
+                        <input placeholder="Title" value={drawForm.title} onChange={e=>setDrawForm({...drawForm, title:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
+                        <input placeholder="Prize Description" value={drawForm.prize} onChange={e=>setDrawForm({...drawForm, prize:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
+                        <div className="grid grid-cols-2 gap-3">
+                            <input type="number" placeholder="Prize Value" value={drawForm.prizeValue} onChange={e=>setDrawForm({...drawForm, prizeValue:Number(e.target.value)})} className="bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
+                            <input type="number" placeholder="Ticket Price" value={drawForm.ticketPrice} onChange={e=>setDrawForm({...drawForm, ticketPrice:Number(e.target.value)})} className="bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
+                        </div>
+                        <input placeholder="Image URL" value={drawForm.image} onChange={e=>setDrawForm({...drawForm, image:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
+                        <button onClick={()=>{ if(!drawForm.title) return alert("Enter title"); app.createDraw({...drawForm, startTime:new Date().toISOString(), endTime:new Date(drawForm.endTime).toISOString()}); alert("Draw created successfully!"); }} className="w-full bg-gold text-black font-bold py-2.5 rounded-lg text-sm">Launch Draw</button>
+                    </div>}
 
-```tsx
-// app/admin/players/page.tsx
-"use client"; import { useState } from "react"; import { useApp } from "@/lib/store"; import { formatPKR } from "@/lib/utils";
-export default function Players(){
-  const a:any=useApp(); const { db }=a; const [tab,setTab]=useState("players");
-  return <div><h1 className="text-2xl font-black">Players & <span className="text-neon">Referrals</span></h1>
-  <div className="flex gap-2 mt-4">{["players","claims"].map(t=><button key={t} onClick={()=>setTab(t)} className={`px-4 py-2 rounded-lg text-sm font-bold capitalize ${tab===t?"bg-neon text-black":"bg-white/10"}`}>{t==="claims"?`Referral Claims (${db.refClaims.filter((c:any)=>c.status==="pending").length})`:"All Players"}</button>)}</div>
-  {tab==="players" && <div className="bg-card border border-white/10 rounded-xl mt-4 overflow-x-auto"><table className="w-full text-sm min-w-[700px]"><thead><tr className="text-left text-gray-400 border-b border-white/10"><th className="p-4">Name</th><th>Phone</th><th>Balance</th><th>Spent</th><th>Referrals</th><th>Code</th></tr></thead><tbody>
-    {db.users.map((u:any)=><tr key={u.id} className="border-b border-white/5"><td className="p-4 font-bold">{u.name}</td><td>{u.phone}</td><td className="text-gold">{formatPKR(u.balance)}</td><td>{formatPKR(u.totalSpent)}</td><td className="text-neon font-bold">{u.referralsValid}</td><td className="font-mono text-xs">{u.referralCode}</td></tr>)}</tbody></table></div>}
-  {tab==="claims" && <div className="space-y-2 mt-4">{db.refClaims.map((c:any)=>{ const dr=db.draws.find((d:any)=>d.id===c.drawId); return <div key={c.id} className="bg-card border border-white/10 rounded-xl p-4 flex justify-between items-center flex-wrap gap-3 text-sm"><span><b>{c.userName}</b> claims free ticket for <b>{dr?.title}</b> • {c.count} referrals • <span className="text-yellow-300">{c.status}</span></span>{c.status==="pending"&&<span className="flex gap-2"><button onClick={()=>a.approveClaim(c.id)} className="bg-green-500 text-black font-bold px-4 py-1.5 rounded-lg">Approve & Issue Ticket</button><button onClick={()=>a.rejectClaim(c.id)} className="bg-red-500/20 text-red-300 px-4 py-1.5 rounded-lg">Reject</button></span>}</div>;})}{!db.refClaims.length&&<p className="text-gray-500 text-sm">No claims.</p>}</div>}
-  </div>;
-}
-```
+                    {tab==="active" && <div className="space-y-4 mt-6">
+                        {db.draws.filter(d=>d.status==="active").map(d=>{
+                            const parts = db.tickets.filter(t=>t.drawId===d.id);
+                            return (
+                                <div key={d.id} className="bg-card border border-white/10 rounded-xl p-5">
+                                    <h3 className="font-bold">{d.title} ({parts.length} tickets sold)</h3>
+                                    <div className="flex gap-2 mt-3">
+                                        <select value={selWinner[d.id]||""} onChange={e=>setSelWinner({...selWinner, [d.id]: e.target.value})} className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs">
+                                            <option value="">Select ticket to win</option>
+                                            {parts.map(p=><option key={p.id} value={p.id}>{p.id} - {p.userName}</option>)}
+                                        </select>
+                                        <button onClick={()=>{ if(!selWinner[d.id]) return alert("Select ticket"); app.pickWinner(d.id, selWinner[d.id]); alert("Winner locked!"); }} className="bg-gold text-black font-bold px-4 py-2 rounded-lg text-xs">Lock Winner</button>
+                                        <button onClick={()=>alert(app.autoWinner(d.id))} className="bg-neon text-black font-bold px-4 py-2 rounded-lg text-xs">Auto Pick</button>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>}
 
-```tsx
-// app/admin/media/page.tsx
-"use client"; import { useState } from "react"; import { useApp } from "@/lib/store";
-export default function MediaPage(){
-  const { db, addMedia, delMedia } = useApp();
-  const [b,setB]=useState({type:"image",url:"",title:"",subtitle:""});
-  const [p,setP]=useState({url:"",title:""});
-  const up=(f:File,cb:(s:string)=>void)=>{ const r=new FileReader(); r.onload=()=>cb(r.result as string); r.readAsDataURL(f); };
-  return <div className="space-y-8"><h1 className="text-2xl font-black">Media & <span className="text-gold">Banner Management</span></h1>
-  <section className="bg-card border border-white/10 rounded-xl p-5"><h3 className="font-bold">Hero Banners (Home Slider)</h3>
-    <div className="grid md:grid-cols-4 gap-2 mt-3">
-      <select value={b.type} onChange={e=>setB({...b,type:e.target.value})} className="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm"><option value="image">Image</option><option value="video">Video</option></select>
-      <input placeholder="Title" value={b.title} onChange={e=>setB({...b,title:e.target.value})} className="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm"/>
-      <input placeholder="Subtitle" value={b.subtitle} onChange={e=>setB({...b,subtitle:e.target.value})} className="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm"/>
-      <input placeholder="Image/Video URL" value={b.url} onChange={e=>setB({...b,url:e.target.value})} className="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm"/>
-    </div>
-    <div className="flex gap-2 mt-2"><label className="bg-white/10 px-4 py-2 rounded-lg text-sm cursor-pointer">📤 Upload File<input type="file" hidden onChange={e=>e.target.files&&up(e.target.files[0],s=>setB({...b,url:s}))}/></label>
-    <button onClick={()=>{ if(!b.url||!b.title) return alert("Need URL + title"); addMedia("banners",{id:Date.now().toString(),...b} as any); setB({type:"image",url:"",title:"",subtitle:""}); }} className="bg-neon text-black font-bold px-4 py-2 rounded-lg text-sm">Add Banner</button></div>
-    <div className="grid md:grid-cols-3 gap-3 mt-4">{db.banners.map((x:any)=><div key={x.id} className="bg-black/40 border border-white/10 rounded-lg overflow-hidden">{x.type==="video"?<video src={x.url} className="h-32 w-full object-cover"/>:<img src={x.url} className="h-32 w-full object-cover"/>}<div className="p-2 flex justify-between text-xs"><span>{x.title}</span><button onClick={()=>delMedia("banners",x.id)} className="text-red-400">Delete</button></div></div>)}</div></section>
-  <section className="bg-card border border-white/10 rounded-xl p-5"><h3 className="font-bold">Winner Proofs</h3>
-    <div className="flex gap-2 mt-3 flex-wrap"><input placeholder="Caption" value={p.title} onChange={e=>setP({...p,title:e.target.value})} className="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm"/>
-    <input placeholder="Image URL" value={p.url} onChange={e=>setP({...p,url:e.target.value})} className="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm flex-1"/>
-    <label className="bg-white/10 px-4 py-2 rounded-lg text-sm cursor-pointer">📤 Upload<input type="file" accept="image/*" hidden onChange={e=>e.target.files&&up(e.target.files[0],s=>setP({...p,url:s}))}/></label>
-    <button onClick={()=>{ if(!p.url) return alert("Need image"); addMedia("proofs",{id:Date.now().toString(),type:"image",...p} as any); setP({url:"",title:""}); }} className="bg-gold text-black font-bold px-4 py-2 rounded-lg text-sm">Add Proof</button></div>
-    <div className="grid grid-cols-3 md:grid-cols-5 gap-3 mt-4">{db.proofs.map((x:any)=><div key={x.id} className="bg-black/40 border border-white/10 rounded-lg overflow-hidden"><img src={x.url} className="h-24 w-full object-cover"/><div className="p-2 flex justify-between text-xs"><span className="truncate">{x.title}</span><button onClick={()=>delMedia("proofs",x.id)} className="text-red-400 ml-2">✕</button></div></div>)}</div></section>
-  </div>;
-}
-```
+                    {tab==="players" && <div className="bg-card border border-white/10 rounded-xl p-5 mt-6 overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead><tr className="text-left text-gray-400 border-b border-white/10"><th className="p-3">Name</th><th>Phone</th><th>Balance</th></tr></thead>
+                            <tbody>{db.users.map(u=><tr key={u.id} className="border-b border-white/5"><td className="p-3">{u.name}</td><td>{u.phone}</td><td className="text-gold">{formatPKR(u.balance)}</td></tr>)}</tbody>
+                        </table>
+                    </div>}
+                </div>
+            );
+        }
 
-### Production Notes
-1. **DB Swap:** `lib/store.tsx` is your repository interface. Replace `localStorage` with Prisma + Postgres calls in API routes (`/app/api/*`) without changing UI.
-2. **Auth:** Replace demo auth with NextAuth + bcrypt + JWT httpOnly cookies. Protect `/admin/*` via `middleware.ts`.
-3. **Uploads:** Replace base64 with Cloudinary/S3 presigned URLs.
-4. **Fairness:** For provably fair, store `serverSeedHash` at draw creation, reveal `serverSeed` on completion.
+        // --- MAIN APP ROUTER CONTAINER ---
+        function App() {
+            const { db } = useApp();
+            const route = db.currentRoute;
 
-You now have a fully routed, responsive, dark neon/gold **NaseebZone** with separated Public + Secure Admin panels, live timers, verifiable Ticket IDs, wallet, deposits with TRX + screenshot, withdrawals, 10-referral free ticket flow, dual winner picker, and dynamic media manager.
+            return (
+                <div className="min-h-screen flex flex-col justify-between">
+                    <Navbar />
+                    <div className="flex-1">
+                        {route === "home" && <HomePage />}
+                        {route === "draws" && <DrawsPage />}
+                        {route === "winners" && <WinnersPage />}
+                        {route === "account" && <AccountPage />}
+                        {route === "contact" && <ContactPage />}
+                        {route === "admin" && <AdminPanel />}
+                    </div>
+                    <Footer />
+                </div>
+            );
+        }
+
+        ReactDOM.render(<StoreProvider><App /></StoreProvider>, document.getElementById('root'));
+        setTimeout(() => lucide.createIcons(), 100);
+    </script>
+</body>
+</html>
