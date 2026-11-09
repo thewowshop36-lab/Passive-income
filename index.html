@@ -1,508 +1,747 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NaseebZone - Pakistan's Trusted Lucky Draws</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { neon: "#00D4FF", gold: "#FACC15", dark: "#060A17", card: "#0B1226" },
-                }
-            }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NaseebZone | Verified Lucky Draws & Instant Prizes</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            obsidian: '#050811',
+            navycard: '#0B1120',
+            neonblue: '#00D2FF',
+            royalgold: '#F59E0B',
+          },
+          boxShadow: {
+            neon: '0 0 25px -5px rgba(0, 210, 255, 0.35)',
+            gold: '0 0 25px -5px rgba(245, 158, 11, 0.35)',
+          }
         }
-    </script>
-    <!-- React & ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        body { background: #060A17; color: white; font-family: system-ui, -apple-system, sans-serif; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 8px; }
-        .glass { background: rgba(11,18,38,0.8); backdrop-filter: blur(12px); }
-        .gold-text { background: linear-gradient(90deg,#FACC15,#F59E0B); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .neon-text { color: #00D4FF; text-shadow: 0 0 20px rgba(0,212,255,.5); }
-    </style>
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-dark min-h-screen">
-    <div id="root"></div>
+<body class="bg-obsidian text-slate-100 min-h-screen font-sans selection:bg-cyan-500 selection:text-slate-950">
 
-    <script type="text/babel">
-        const { useState, useEffect, useContext, createContext } = React;
+  <!-- TOP APP SWITCHER (For Testing Both Panels Easily) -->
+  <header class="sticky top-0 z-50 border-b border-cyan-500/20 bg-obsidian/95 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-cyan-400 to-amber-400 flex items-center justify-center shadow-neon">
+          <i data-lucide="sparkles" class="h-4 w-4 text-slate-950"></i>
+        </div>
+        <span class="font-extrabold text-lg bg-gradient-to-r from-cyan-300 to-amber-300 bg-clip-text text-transparent">NaseebZone</span>
+      </div>
 
-        // --- UTILS ---
-        const formatPKR = (n) => `Rs ${Number(n||0).toLocaleString()}`;
-        const uid = (p) => `${p}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,7)}`;
-        const genTicketId = () => `NZ-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,7).toUpperCase()}`;
-        const genRefCode = () => `NZ-${Math.random().toString(36).slice(2,8).toUpperCase()}`;
-        const ADMIN_ACCOUNT = "03137648720";
+      <!-- Panel Mode Switcher -->
+      <div class="flex items-center gap-1.5 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-bold">
+        <button onclick="switchPanel('user')" id="btn-user-panel" class="px-3 py-1.5 rounded-lg transition bg-cyan-500 text-slate-950 shadow-neon">
+          User Portal
+        </button>
+        <button onclick="switchPanel('admin')" id="btn-admin-panel" class="px-3 py-1.5 rounded-lg transition text-slate-400 hover:text-white">
+          Admin Command Panel
+        </button>
+      </div>
 
-        // --- STORE CONTEXT ---
-        const StoreContext = createContext(null);
-        const useApp = () => useContext(StoreContext);
+      <div class="hidden sm:flex items-center gap-2 text-xs">
+        <span class="px-2.5 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 font-semibold">
+          Easypaisa/JazzCash: 03137648720
+        </span>
+      </div>
+    </div>
+  </header>
 
-        const seedDB = () => ({
-            users: [{ id:"u_demo", name:"Demo User", phone:"03001234567", password:"123456", balance:5000, totalSpent:1000, totalWinnings:0, referralCode:"NZ-DEMO01", referralsValid:4, hasBoughtFirst:true, freeCredits:0, createdAt:new Date().toISOString() }],
-            draws: [
-                { id:"d1", title:"iPhone 15 Pro Max Lucky Draw", prize:"iPhone 15 Pro Max 256GB", prizeValue:550000, ticketPrice:500, totalTickets:50, image:"https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800", startTime:new Date().toISOString(), endTime:new Date(Date.now()+3*86400000).toISOString(), status:"active" },
-                { id:"d2", title:"Honda CG 125 Mega Draw", prize:"Brand New Honda CG 125", prizeValue:250000, ticketPrice:1000, totalTickets:100, image:"https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800", startTime:new Date().toISOString(), endTime:new Date(Date.now()+7*86400000).toISOString(), status:"active" },
-                { id:"d3", title:"Rs 50,000 Cash Draw", prize:"Rs 50,000 Cash Prize", prizeValue:50000, ticketPrice:2000, totalTickets:10, image:"https://images.unsplash.com/photo-1580519542036-c47de6196ba5?w=800", startTime:new Date().toISOString(), endTime:new Date(Date.now()+1*86400000).toISOString(), status:"active" },
-            ],
-            tickets: [], deposits: [], withdraws: [], refClaims: [],
-            winners: [
-                { id:"w1", drawId:"OLD-101", drawTitle:"Samsung S24 Draw", prize:"Samsung S24 Ultra", winnerName:"Ahmed Raza", ticketId:"NZ-KX2P9A-QW12T", date:new Date(Date.now()-7*86400000).toISOString() },
-            ],
-            banners: [
-                { id:"b1", type:"image", url:"https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200", title:"WIN iPhone 15 Pro Max", subtitle:"Only Rs 500 per ticket - 50 tickets only!" }
-            ],
-            proofs: [
-                { id:"p1", type:"image", url:"https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=600", title:"Ahmed received iPhone" }
-            ],
-            currentUserId: null, isAdmin: false, currentRoute: "home"
-        });
+  <!-- ==================== USER PANEL ==================== -->
+  <div id="panel-user" class="min-h-[85vh] flex flex-col justify-between">
+    <div>
+      <!-- Public Nav Tabs -->
+      <div class="bg-navycard/70 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 flex overflow-x-auto gap-2 py-3 text-sm font-medium">
+          <button onclick="switchUserTab('home')" class="user-nav-tab px-4 py-2 rounded-xl bg-cyan-500/15 text-cyan-300 whitespace-nowrap">Home</button>
+          <button onclick="switchUserTab('draws')" class="user-nav-tab px-4 py-2 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Draws Marketplace</button>
+          <button onclick="switchUserTab('winners')" class="user-nav-tab px-4 py-2 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Winners Ledger</button>
+          <button onclick="switchUserTab('account')" class="user-nav-tab px-4 py-2 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">My Account & Wallet</button>
+          <button onclick="switchUserTab('contact')" class="user-nav-tab px-4 py-2 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Contact & Support</button>
+        </div>
+      </div>
 
-        function StoreProvider({children}) {
-            const [db, setDb] = useState(seedDB());
-            useEffect(() => {
-                const saved = localStorage.getItem("naseebzone_single_v1");
-                if(saved) try { setDb(JSON.parse(saved)); } catch(e){}
-            }, []);
-            useEffect(() => {
-                localStorage.setItem("naseebzone_single_v1", JSON.stringify(db));
-            }, [db]);
+      <!-- User Tab Contents -->
+      <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+        
+        <!-- HOME TAB -->
+        <div id="utab-home" class="user-tab-content space-y-10">
+          <div class="relative rounded-3xl overflow-hidden border border-cyan-500/30 bg-navycard p-8 sm:p-12 shadow-2xl">
+            <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1614028674026-a65e31bfd27c?auto=format&fit=crop&w=1600&q=80')] opacity-20 bg-cover bg-center"></div>
+            <div class="relative z-10 max-w-2xl space-y-4">
+              <span class="px-3 py-1 rounded-full border border-amber-400/40 bg-amber-400/15 text-amber-300 text-xs font-bold uppercase tracking-wider">
+                Provably Fair Lucky Draws
+              </span>
+              <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+                Win Luxury Prizes & Cash with Verified Ticket IDs
+              </h1>
+              <p class="text-sm sm:text-base text-slate-300">
+                Transparent 10-seat, 50-seat and 100-seat draws. Deposit easily via Easypaisa or JazzCash and withdraw winnings instantly.
+              </p>
+              <div class="pt-2 flex flex-wrap gap-3">
+                <button onclick="switchUserTab('draws')" class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-bold text-sm shadow-neon flex items-center gap-2">
+                  <i data-lucide="ticket" class="h-4 w-4"></i> Explore Active Draws
+                </button>
+                <button onclick="switchUserTab('winners')" class="px-5 py-3 rounded-xl border border-amber-400/40 bg-amber-400/10 text-amber-300 font-semibold text-sm">
+                  View Winners Ledger
+                </button>
+              </div>
+            </div>
+          </div>
 
-            const update = (fn) => setDb(p => fn({...p}));
-            const me = db.users.find(u => u.id === db.currentUserId) || null;
-            const soldCount = (drawId) => db.tickets.filter(t => t.drawId === drawId).length;
+          <!-- Featured Active Draws Preview -->
+          <div class="space-y-4">
+            <div class="flex justify-between items-end">
+              <div>
+                <span class="text-xs font-bold uppercase tracking-widest text-amber-400">Live Now</span>
+                <h2 class="text-2xl font-extrabold text-white">Trending Lucky Draws</h2>
+              </div>
+              <button onclick="switchUserTab('draws')" class="text-xs font-bold text-cyan-300 hover:underline">View All &rarr;</button>
+            </div>
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" id="home-active-draws">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
 
-            const actions = {
-                me, db, soldCount,
-                navigate: (route) => update(d => ({...d, currentRoute: route})),
-                register: (name, phone, pass, ref) => {
-                    if(db.users.find(u => u.phone === phone)) return "Phone already registered";
-                    const referrer = db.users.find(u => u.referralCode === ref);
-                    const nu = { id: uid("u"), name, phone, password: pass, balance: 0, totalSpent: 0, totalWinnings: 0, referralCode: genRefCode(), referredBy: referrer?.id, referralsValid: 0, hasBoughtFirst: false, freeCredits: 0, createdAt: new Date().toISOString() };
-                    update(d => ({...d, users: [...d.users, nu], currentUserId: nu.id })); return "ok";
-                },
-                login: (phone, pass) => {
-                    const u = db.users.find(x => x.phone === phone && x.password === pass);
-                    if(!u) return "Invalid credentials";
-                    update(d => ({...d, currentUserId: u.id })); return "ok";
-                },
-                logout: () => update(d => ({...d, currentUserId: null})),
-                adminLogin: (e, p) => { if(e==="admin@naseebzone.com" && p==="admin123"){ update(d => ({...d, isAdmin: true})); return "ok"; } return "Wrong admin credentials"; },
-                adminLogout: () => update(d => ({...d, isAdmin: false})),
-                buyTicket: (drawId) => {
-                    if(!me) return "Login required";
-                    const draw = db.draws.find(d => d.id === drawId); if(!draw || draw.status !== "active") return "Draw not active";
-                    if(soldCount(drawId) >= draw.totalTickets) return "Sold out";
-                    if(me.balance < draw.ticketPrice) return "Insufficient balance. Please deposit.";
-                    const tid = genTicketId();
-                    const t = { id: tid, drawId, userId: me.id, userName: me.name, date: new Date().toISOString(), status: "active", isFree: false };
-                    update(d => {
-                        let users = d.users.map(u => u.id === me.id ? {...u, balance: u.balance - draw.ticketPrice, totalSpent: u.totalSpent + draw.ticketPrice, hasBoughtFirst: true} : u);
-                        const buyer = d.users.find(u => u.id === me.id);
-                        if(buyer && !buyer.hasBoughtFirst && buyer.referredBy){
-                            users = users.map(u => u.id === buyer.referredBy ? {...u, referralsValid: u.referralsValid + 1} : u);
-                        }
-                        return {...d, users, tickets: [...d.tickets, t]};
-                    });
-                    return `Ticket Purchased! ID: ${tid}`;
-                },
-                createDeposit: (amount, method, trxId, screenshot) => {
-                    if(!me) return "Login required";
-                    update(d => ({...d, deposits: [...d.deposits, { id: uid("dep"), userId: me.id, userName: me.name, amount, method, trxId, screenshot, status: "pending", date: new Date().toISOString() }] }));
-                    return "ok";
-                },
-                approveDeposit: (id) => update(d => {
-                    const dep = d.deposits.find(x => x.id === id); if(!dep || dep.status !== "pending") return d;
-                    return {...d, deposits: d.deposits.map(x => x.id === id ? {...x, status: "approved"} : x), users: d.users.map(u => u.id === dep.userId ? {...u, balance: u.balance + dep.amount} : u)};
-                }),
-                rejectDeposit: (id) => update(d => ({...d, deposits: d.deposits.map(x => x.id === id ? {...x, status: "rejected"} : x)})),
-                createWithdraw: (amount, method, account) => {
-                    if(!me) return "Login required";
-                    if(amount > me.balance) return "Insufficient balance";
-                    update(d => ({...d, withdraws: [...d.withdraws, { id: uid("wd"), userId: me.id, userName: me.name, amount, method, account, status: "pending", date: new Date().toISOString() }], users: d.users.map(u => u.id === me.id ? {...u, balance: u.balance - amount} : u)}));
-                    return "ok";
-                },
-                approveWithdraw: (id) => update(d => ({...d, withdraws: d.withdraws.map(x => x.id === id ? {...x, status: "approved"} : x)})),
-                rejectWithdraw: (id) => update(d => {
-                    const w = d.withdraws.find(x => x.id === id); if(!w) return d;
-                    return {...d, withdraws: d.withdraws.map(x => x.id === id ? {...x, status: "rejected"} : x), users: d.users.map(u => u.id === w.userId ? {...u, balance: u.balance + w.amount} : u)};
-                }),
-                createDraw: (v) => update(d => ({...d, draws: [...d.draws, { id: uid("d"), ...v, status: new Date(v.startTime) > new Date() ? "upcoming" : "active" }]})),
-                pickWinner: (drawId, ticketId) => update(d => {
-                    const draw = d.draws.find(x => x.id === drawId); const tic = d.tickets.find(x => x.id === ticketId); if(!draw || !tic) return d;
-                    return {...d,
-                        draws: d.draws.map(x => x.id === drawId ? {...x, status: "completed", winnerTicketId: ticketId, winnerUserId: tic.userId} : x),
-                        tickets: d.tickets.map(t => t.drawId === drawId ? (t.id === ticketId ? {...t, status: "won"} : {...t, status: "lost"}) : t),
-                        users: d.users.map(u => u.id === tic.userId ? {...u, balance: u.balance + draw.prizeValue, totalWinnings: u.totalWinnings + draw.prizeValue} : u),
-                        winners: [...d.winners, { id: uid("w"), drawId: draw.id, drawTitle: draw.title, prize: draw.prize, winnerName: tic.userName, ticketId, date: new Date().toISOString() }]
-                    };
-                }),
-                autoWinner: (drawId) => {
-                    const parts = db.tickets.filter(t => t.drawId === drawId); if(!parts.length) return "No participants";
-                    const win = parts[Math.floor(Math.random() * parts.length)];
-                    actions.pickWinner(drawId, win.id); return `Winner: ${win.userName} (${win.id})`;
-                },
-                claimFree: (drawId) => {
-                    if(!me) return "Login required";
-                    if(me.referralsValid < 10) return "Need 10 valid referrals";
-                    if(db.refClaims.find(c => c.userId === me.id && c.status === "pending")) return "Already pending";
-                    update(d => ({...d, refClaims: [...d.refClaims, { id: uid("rc"), userId: me.id, userName: me.name, drawId, count: me.referralsValid, status: "pending", date: new Date().toISOString() }]}));
-                    return "ok";
-                },
-                approveClaim: (id) => update(d => {
-                    const c = d.refClaims.find(x => x.id === id); if(!c) return d;
-                    const t = { id: genTicketId(), drawId: c.drawId, userId: c.userId, userName: c.userName, date: new Date().toISOString(), status: "active", isFree: true };
-                    return {...d, refClaims: d.refClaims.map(x => x.id === id ? {...x, status: "approved"} : x), tickets: [...d.tickets, t]};
-                }),
-                rejectClaim: (id) => update(d => ({...d, refClaims: d.refClaims.map(x => x.id === id ? {...x, status: "rejected"} : x)})),
-                addMedia: (kind, m) => update(d => ({...d, [kind]: [...d[kind], m]})),
-                delMedia: (kind, id) => update(d => ({...d, [kind]: d[kind].filter(x => x.id !== id)})),
-            };
+        <!-- DRAWS MARKETPLACE TAB -->
+        <div id="utab-draws" class="user-tab-content space-y-6 hidden">
+          <div class="flex flex-wrap justify-between items-center gap-4 bg-navycard p-4 rounded-2xl border border-slate-800">
+            <div class="flex gap-2">
+              <button onclick="filterDraws('ALL')" class="px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 text-xs font-bold shadow-neon">All Draws</button>
+              <button onclick="filterDraws('ACTIVE')" class="px-4 py-2 rounded-xl bg-slate-900 text-slate-300 text-xs font-bold hover:bg-slate-800">Live Now</button>
+            </div>
+            <div class="text-xs font-semibold px-3 py-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-300">
+              Your Wallet Balance: <span id="user-wallet-display" class="font-mono font-bold">Rs. 2,500</span>
+            </div>
+          </div>
+          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" id="marketplace-draws-grid">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
 
-            return <StoreContext.Provider value={actions}>{children}</StoreContext.Provider>;
-        }
+        <!-- WINNERS LEDGER TAB -->
+        <div id="utab-winners" class="user-tab-content space-y-6 hidden">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-widest text-amber-400">Public Transparency</span>
+            <h1 class="text-3xl font-extrabold text-white">Winners Ledger & Proofs</h1>
+          </div>
+          <div class="overflow-x-auto rounded-2xl border border-amber-500/20 bg-navycard">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-950 text-xs uppercase text-slate-400 border-b border-slate-800">
+                <tr>
+                  <th class="p-4">Draw ID</th>
+                  <th class="p-4">Prize Title</th>
+                  <th class="p-4">Winner Name</th>
+                  <th class="p-4">Winning Ticket ID</th>
+                  <th class="p-4">Drawn Date</th>
+                </tr>
+              </thead>
+              <tbody id="winners-table-body" class="divide-y divide-slate-800/80">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-        // --- COMPONENTS ---
-        function Navbar() {
-            const { me, navigate, db } = useApp();
-            const route = db.currentRoute;
-            const links = [["home","Home"],["draws","Draws"],["winners","Winners"],["account","Account"],["contact","Contact"],["admin","Admin Panel"]];
-
-            return (
-                <header className="sticky top-0 z-50 glass border-b border-white/10">
-                    <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-                        <div onClick={()=>navigate("home")} className="flex items-center gap-2 text-2xl font-black cursor-pointer">
-                            <i data-lucide="sparkles" className="text-gold"></i>
-                            <span>Naseeb<span className="neon-text">Zone</span></span>
-                        </div>
-                        <nav className="hidden md:flex gap-6">
-                            {links.map(([h,l]) => <button key={h} onClick={()=>navigate(h)} className={`hover:text-neon ${route===h?"text-neon font-bold":"text-gray-300"}`}>{l}</button>)}
-                        </nav>
-                        <div className="hidden md:flex items-center gap-3">
-                            {me ? <div className="flex items-center gap-2 bg-white/5 border border-gold/30 px-3 py-1.5 rounded-full text-sm"><i data-lucide="wallet" className="text-gold w-4 h-4"></i>{formatPKR(me.balance)}</div>
-                            : <button onClick={()=>navigate("account")} className="bg-neon text-black font-bold px-4 py-2 rounded-lg text-sm">Login</button>}
-                        </div>
-                    </div>
-                </header>
-            );
-        }
-
-        function Footer() {
-            return (
-                <footer className="border-t border-white/10 bg-black/40 mt-12">
-                    <div className="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-3 gap-8">
-                        <div><h3 className="text-xl font-black">Naseeb<span className="text-neon">Zone</span></h3><p className="text-gray-400 text-sm mt-2">Pakistan's most transparent lucky draw platform. Verifiable tickets, live draws, instant payouts.</p></div>
-                        <div><h4 className="font-bold text-gold mb-3">Quick Support</h4><p className="text-sm text-gray-300">Easypaisa / JazzCash: 03137648720<br/>Email: support@naseebzone.com</p></div>
-                        <div><h4 className="font-bold text-gold mb-3">Timing</h4><p className="text-sm text-gray-300">9AM - 11PM PKT Daily<br/>Play Responsibly. 18+ Only.</p></div>
-                    </div>
-                    <div className="text-center text-xs text-gray-500 pb-6">© 2026 NaseebZone. All rights reserved.</div>
-                </footer>
-            );
-        }
-
-        // --- PUBLIC PAGES ---
-        function HomePage() {
-            const { db, navigate, soldCount } = useApp();
-            const active = db.draws.filter(d => d.status === "active").slice(0,3);
-
-            return (
-                <div className="max-w-7xl mx-auto px-4 space-y-12 py-6">
-                    <div className="bg-gradient-to-r from-card to-blue-950 border border-white/10 p-8 md:p-14 rounded-2xl">
-                        <h1 className="text-3xl md:text-5xl font-black leading-tight">WIN Big with <span className="gold-text">NaseebZone</span></h1>
-                        <p className="mt-3 text-gray-300 max-w-xl">Pakistan's #1 Fair & Transparent Lucky Draw Platform. Buy tickets securely via Easypaisa or JazzCash.</p>
-                        <button onClick={()=>navigate("draws")} className="mt-6 bg-gold text-black font-bold px-6 py-3 rounded-xl shadow-lg">Explore Active Draws</button>
-                    </div>
-
-                    <div>
-                        <div className="flex justify-between items-center mb-4"><h2 className="text-2xl font-black">🔥 Active <span className="gold-text">Draws</span></h2><button onClick={()=>navigate("draws")} className="text-neon text-sm">View All →</button></div>
-                        <div className="grid md:grid-cols-3 gap-6">
-                            {active.map(d => {
-                                const sold = soldCount(d.id);
-                                const pct = Math.round(sold/d.totalTickets*100);
-                                return (
-                                    <div key={d.id} className="bg-card border border-white/10 rounded-2xl overflow-hidden">
-                                        <img src={d.image} className="h-48 w-full object-cover"/>
-                                        <div className="p-5 space-y-3">
-                                            <h3 className="font-bold text-lg">{d.title}</h3>
-                                            <p className="text-gold text-sm font-semibold">🎁 {d.prize}</p>
-                                            <div><div className="flex justify-between text-xs text-gray-400 mb-1"><span>{sold}/{d.totalTickets} Sold</span><span>{pct}%</span></div>
-                                            <div className="h-2 bg-white/10 rounded-full"><div className="h-full bg-neon rounded-full" style={{width:`${pct}%`}}></div></div></div>
-                                            <div className="flex justify-between items-center pt-2"><span className="font-black text-xl">{formatPKR(d.ticketPrice)}</span><button onClick={()=>navigate("draws")} className="bg-neon text-black font-bold px-4 py-2 rounded-lg text-sm">Buy Ticket</button></div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
+        <!-- ACCOUNT & WALLET TAB -->
+        <div id="utab-account" class="user-tab-content space-y-8 hidden">
+          <div class="grid gap-6 lg:grid-cols-2">
+            <!-- Deposit Form -->
+            <div class="bg-navycard p-6 rounded-2xl border border-cyan-500/20 space-y-4">
+              <h2 class="text-lg font-bold text-white">Deposit via Easypaisa / JazzCash</h2>
+              <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
+                <p class="text-xs font-bold text-amber-300 uppercase">Official Account Number</p>
+                <div class="flex justify-between items-center mt-1">
+                  <span class="font-mono text-xl font-extrabold text-white">03137648720</span>
+                  <button onclick="navigator.clipboard.writeText('03137648720'); alert('Number copied!');" class="text-xs px-2.5 py-1 bg-amber-400 text-slate-950 font-bold rounded-lg">Copy</button>
                 </div>
-            );
+              </div>
+              <form onsubmit="submitDeposit(event)" class="space-y-3">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-300 mb-1">Amount (PKR)</label>
+                  <input type="number" id="dep-amount" min="50" required placeholder="e.g. 1000" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-300 mb-1">Method</label>
+                  <select id="dep-method" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+                    <option value="EASYPAISA">Easypaisa</option>
+                    <option value="JAZZCASH">JazzCash</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-300 mb-1">Transaction ID (TRX ID)</label>
+                  <input type="text" id="dep-trx" required placeholder="TID-98432176" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 font-mono text-sm text-white" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-300 mb-1">Payment Screenshot</label>
+                  <input type="file" id="dep-file" accept="image/*" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-500 file:text-slate-950" />
+                </div>
+                <button type="submit" class="w-full py-3 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-bold text-sm rounded-xl shadow-neon">
+                  Submit Deposit Request
+                </button>
+              </form>
+            </div>
+
+            <!-- Withdrawal Form -->
+            <div class="bg-navycard p-6 rounded-2xl border border-amber-500/20 space-y-4">
+              <h2 class="text-lg font-bold text-white">Request Withdrawal</h2>
+              <p class="text-xs text-slate-400">Available Winning Balance: <strong id="user-winning-bal" class="text-amber-300">Rs. 1,000</strong></p>
+              <form onsubmit="submitWithdrawal(event)" class="space-y-3">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-300 mb-1">Amount (PKR)</label>
+                  <input type="number" id="wd-amount" min="100" required placeholder="e.g. 500" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-300 mb-1">Account Title</label>
+                  <input type="text" id="wd-title" required placeholder="Full Name" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-300 mb-1">Account Number</label>
+                  <input type="text" id="wd-acc" required placeholder="03XXXXXXXXX" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 font-mono text-sm text-white" />
+                </div>
+                <button type="submit" class="w-full py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-bold text-sm rounded-xl shadow-gold mt-6">
+                  Request Payout
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- User Tickets Ledger -->
+          <div class="bg-navycard p-6 rounded-2xl border border-slate-800 space-y-4">
+            <h2 class="text-lg font-bold text-white">Your Purchased Tickets</h2>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-950 uppercase text-slate-400 border-b border-slate-800">
+                  <tr>
+                    <th class="p-3">Ticket ID</th>
+                    <th class="p-3">Draw</th>
+                    <th class="p-3">Price Paid</th>
+                    <th class="p-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="user-tickets-body" class="divide-y divide-slate-800">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTACT TAB -->
+        <div id="utab-contact" class="user-tab-content space-y-6 hidden">
+          <div class="max-w-2xl bg-navycard p-8 rounded-3xl border border-slate-800 space-y-4">
+            <h1 class="text-2xl font-bold text-white">Customer Support & Creator Details</h1>
+            <p class="text-sm text-slate-300">
+              Need assistance with deposits or prize claims? Contact our official NaseebZone support desk below:
+            </p>
+            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-sm">
+              <p><strong>Phone / WhatsApp:</strong> +92 313 7648720</p>
+              <p><strong>Support Email:</strong> support@naseebzone.com</p>
+              <p><strong>Hours:</strong> 9:00 AM – 11:00 PM PKT (Daily)</p>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+    
+    <footer class="border-t border-slate-800 bg-navycard/70 py-6 text-center text-xs text-slate-500 mt-12">
+      &copy; 2026 NaseebZone. All rights reserved. Built for Android and PC.
+    </footer>
+  </div>
+
+
+  <!-- ==================== ADMIN PANEL ==================== -->
+  <div id="panel-admin" class="min-h-[85vh] flex flex-col lg:flex-row hidden">
+    <!-- Admin Sidebar / Header Navigation -->
+    <aside class="w-full lg:w-64 bg-navycard border-b lg:border-b-0 lg:border-r border-slate-800 p-4 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center gap-2 px-2 mb-6">
+          <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-amber-400 to-cyan-400 flex items-center justify-center">
+            <i data-lucide="shield" class="h-4 w-4 text-slate-950"></i>
+          </div>
+          <div>
+            <span class="text-sm font-extrabold text-white">NaseebZone Admin</span>
+            <p class="text-[10px] uppercase tracking-wider text-amber-400 font-bold">Secure Command</p>
+          </div>
+        </div>
+        <nav class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-1.5 text-xs font-semibold">
+          <button onclick="switchAdminTab('overview')" class="admin-nav-btn flex items-center gap-2 p-2.5 rounded-xl bg-cyan-500/15 text-cyan-300">
+            <i data-lucide="layout-dashboard" class="h-4 w-4"></i> Overview
+          </button>
+          <button onclick="switchAdminTab('finances')" class="admin-nav-btn flex items-center gap-2 p-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white">
+            <i data-lucide="landmark" class="h-4 w-4"></i> Finances & Requests
+          </button>
+          <button onclick="switchAdminTab('createdraw')" class="admin-nav-btn flex items-center gap-2 p-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white">
+            <i data-lucide="plus-circle" class="h-4 w-4"></i> Create Lucky Draw
+          </button>
+          <button onclick="switchAdminTab('winnersmanager')" class="admin-nav-btn flex items-center gap-2 p-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white">
+            <i data-lucide="trophy" class="h-4 w-4"></i> Active Draws & Winner
+          </button>
+          <button onclick="switchAdminTab('players')" class="admin-nav-btn flex items-center gap-2 p-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white">
+            <i data-lucide="users" class="h-4 w-4"></i> Players & Referrals
+          </button>
+        </nav>
+      </div>
+      <div class="mt-6 pt-4 border-t border-slate-800">
+        <p class="text-xs font-bold text-white px-2">Super Admin</p>
+        <button onclick="switchPanel('user')" class="mt-2 w-full py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-300 font-semibold">
+          Switch to User View
+        </button>
+      </div>
+    </aside>
+
+    <!-- Admin Content Area -->
+    <main class="flex-1 p-4 sm:p-8 space-y-6">
+      
+      <!-- OVERVIEW TAB -->
+      <div id="atab-overview" class="admin-tab-content space-y-6">
+        <h1 class="text-2xl font-extrabold text-white">System Analytics & Overview</h1>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="bg-navycard p-5 rounded-2xl border border-cyan-500/25">
+            <span class="text-xs font-semibold text-slate-400">Total Approved Deposits</span>
+            <p id="stat-total-deposits" class="text-2xl font-extrabold text-white mt-1">Rs. 145,000</p>
+          </div>
+          <div class="bg-navycard p-5 rounded-2xl border border-amber-500/25">
+            <span class="text-xs font-semibold text-slate-400">Total Approved Payouts</span>
+            <p id="stat-total-payouts" class="text-2xl font-extrabold text-amber-300 mt-1">Rs. 50,000</p>
+          </div>
+          <div class="bg-navycard p-5 rounded-2xl border border-emerald-500/25">
+            <span class="text-xs font-semibold text-slate-400">Total Registered Players</span>
+            <p id="stat-total-players" class="text-2xl font-extrabold text-white mt-1">42</p>
+          </div>
+          <div class="bg-navycard p-5 rounded-2xl border border-cyan-500/25">
+            <span class="text-xs font-semibold text-slate-400">Active Lucky Draws</span>
+            <p id="stat-active-draws" class="text-2xl font-extrabold text-cyan-300 mt-1">2</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FINANCES MANAGER TAB -->
+      <div id="atab-finances" class="admin-tab-content space-y-6 hidden">
+        <h1 class="text-2xl font-extrabold text-white">Deposit & Withdrawal Requests</h1>
+        <div class="bg-navycard p-6 rounded-2xl border border-slate-800 space-y-4">
+          <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider">Pending User Deposits</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-950 uppercase text-slate-400 border-b border-slate-800">
+                <tr>
+                  <th class="p-3">Player</th>
+                  <th class="p-3">Amount</th>
+                  <th class="p-3">Method</th>
+                  <th class="p-3">TRX ID</th>
+                  <th class="p-3">Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-deposits-body" class="divide-y divide-slate-800">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- CREATE LUCKY DRAW TAB -->
+      <div id="atab-createdraw" class="admin-tab-content space-y-6 hidden">
+        <div class="max-w-2xl bg-navycard p-8 rounded-3xl border border-cyan-500/20 space-y-4">
+          <h1 class="text-2xl font-extrabold text-white">Create New Lucky Draw</h1>
+          <form onsubmit="handleCreateDraw(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Draw Title</label>
+              <input type="text" id="draw-title" required placeholder="e.g. iPhone 16 Pro Max Flash Draw" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Prize Title</label>
+              <input type="text" id="draw-prize-title" required placeholder="e.g. iPhone 16 Pro Max (256GB)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white" />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Ticket Price (PKR)</label>
+                <input type="number" id="draw-price" required min="10" value="500" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Total Tickets Capacity</label>
+                <input type="number" id="draw-total" required min="2" max="1000" value="50" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Prize Image URL (Optional)</label>
+              <input type="url" id="draw-img" placeholder="https://images.unsplash.com/..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white" />
+            </div>
+            <button type="submit" class="w-full py-3 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-bold text-sm rounded-xl shadow-neon">
+              Launch Lucky Draw Now
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ACTIVE DRAWS & WINNERS SELECTOR TAB -->
+      <div id="atab-winnersmanager" class="admin-tab-content space-y-6 hidden">
+        <h1 class="text-2xl font-extrabold text-white">Active Draws & Winner Selection</h1>
+        <div class="grid gap-6 sm:grid-cols-2" id="admin-draws-manager-grid">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- PLAYERS & REFERRALS TAB -->
+      <div id="atab-players" class="admin-tab-content space-y-6 hidden">
+        <h1 class="text-2xl font-extrabold text-white">Registered Players & Referrals</h1>
+        <div class="bg-navycard p-6 rounded-2xl border border-slate-800">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-950 uppercase text-slate-400 border-b border-slate-800">
+                <tr>
+                  <th class="p-3">Name & Email</th>
+                  <th class="p-3">Phone</th>
+                  <th class="p-3">Wallet Balance</th>
+                  <th class="p-3">Referral Code</th>
+                </tr>
+              </thead>
+              <tbody id="admin-players-body" class="divide-y divide-slate-800">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Client-side Application Script -->
+  <script>
+    // In-memory Database State
+    let db = {
+      user: {
+        name: "Ali Raza",
+        email: "ali@example.com",
+        phone: "03001234567",
+        walletBalance: 2500,
+        winningBalance: 1000,
+        referralCode: "NZ-ALI786",
+      },
+      draws: [
+        {
+          id: "DRW-1001",
+          code: "DRW-1001",
+          title: "Grand Smartphone Flash Draw",
+          prizeTitle: "iPhone 16 Pro Max (256GB)",
+          ticketPrice: 500,
+          totalTickets: 50,
+          soldTickets: 35,
+          status: "ACTIVE",
+          prizeImageUrl: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=800&q=80"
+        },
+        {
+          id: "DRW-1002",
+          code: "DRW-1002",
+          title: "Instant Wallet Cash Jackpot",
+          prizeTitle: "Rs. 50,000 Cash Prize",
+          ticketPrice: 200,
+          totalTickets: 100,
+          soldTickets: 62,
+          status: "ACTIVE",
+          prizeImageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80"
         }
+      ],
+      tickets: [
+        { id: "T-1", ticketNumber: "NZ-DRW1001-0012-A1B2", drawTitle: "Grand Smartphone Flash Draw", pricePaid: 500, status: "ACTIVE" }
+      ],
+      deposits: [
+        { id: "DEP-1", name: "Ahmed Khan", amount: 1000, method: "Easypaisa", trxId: "TID-99238471", status: "PENDING" }
+      ],
+      winners: [
+        { drawCode: "DRW-1000", prize: "Rs. 50,000 Cash Jackpot", winnerName: "Usman Ali", ticketNumber: "NZ-DRW1000-0019-A4F2", date: "Yesterday" }
+      ],
+      players: [
+        { name: "Ali Raza", email: "ali@example.com", phone: "03001234567", balance: "Rs. 2,500", code: "NZ-ALI786" },
+        { name: "Bilal Ahmed", email: "bilal@example.com", phone: "03119876543", balance: "Rs. 1,200", code: "NZ-BIL421" }
+      ]
+    };
 
-        function DrawsPage() {
-            const { db, me, buyTicket, soldCount } = useApp();
-            const [msg, setMsg] = useState("");
-            return (
-                <div className="max-w-7xl mx-auto px-4 py-8">
-                    <h1 className="text-3xl font-black">All <span className="gold-text">Lucky Draws</span></h1>
-                    {msg && <div className="bg-green-500/10 border border-green-500/30 p-3 rounded-xl my-4 text-green-300 text-sm">{msg}</div>}
-                    {!me && <div className="bg-gold/10 border border-gold/30 p-3 rounded-xl my-4 text-sm">Please login in the Account tab to buy tickets.</div>}
-                    <div className="grid md:grid-cols-2 gap-6 mt-6">
-                        {db.draws.map(d => {
-                            const sold = soldCount(d.id);
-                            return (
-                                <div key={d.id} className="bg-card border border-white/10 rounded-2xl overflow-hidden flex flex-col md:flex-row">
-                                    <img src={d.image} className="md:w-56 h-48 md:h-auto object-cover"/>
-                                    <div className="p-5 flex-1 space-y-2">
-                                        <h3 className="font-bold text-lg">{d.title}</h3>
-                                        <p className="text-gold text-sm">🎁 {d.prize}</p>
-                                        <div className="text-xs text-gray-400">{sold}/{d.totalTickets} Sold</div>
-                                        <div className="flex justify-between items-center pt-4"><span className="font-black">{formatPKR(d.ticketPrice)}</span>
-                                        <button disabled={d.status!=="active"} onClick={()=>setMsg(buyTicket(d.id))} className="bg-gold text-black font-bold px-5 py-2 rounded-lg text-sm disabled:opacity-40">Buy Ticket</button></div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+    // Panel & Tab Switcher Functions
+    function switchPanel(panel) {
+      if (panel === 'user') {
+        document.getElementById('panel-user').classList.remove('hidden');
+        document.getElementById('panel-admin').classList.add('hidden');
+        document.getElementById('btn-user-panel').className = "px-3 py-1.5 rounded-lg transition bg-cyan-500 text-slate-950 shadow-neon";
+        document.getElementById('btn-admin-panel').className = "px-3 py-1.5 rounded-lg transition text-slate-400 hover:text-white";
+        renderUser();
+      } else {
+        document.getElementById('panel-user').classList.add('hidden');
+        document.getElementById('panel-admin').classList.remove('hidden');
+        document.getElementById('btn-admin-panel').className = "px-3 py-1.5 rounded-lg transition bg-amber-400 text-slate-950 shadow-gold";
+        document.getElementById('btn-user-panel').className = "px-3 py-1.5 rounded-lg transition text-slate-400 hover:text-white";
+        renderAdmin();
+      }
+    }
+
+    function switchUserTab(tabId) {
+      document.querySelectorAll('.user-tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.user-nav-tab').forEach(el => {
+        el.className = "user-nav-tab px-4 py-2 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap";
+      });
+      document.getElementById('utab-' + tabId).classList.remove('hidden');
+      event.currentTarget.className = "user-nav-tab px-4 py-2 rounded-xl bg-cyan-500/15 text-cyan-300 whitespace-nowrap";
+      renderUser();
+    }
+
+    function switchAdminTab(tabId) {
+      document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.admin-nav-btn').forEach(el => {
+        el.className = "admin-nav-btn flex items-center gap-2 p-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white";
+      });
+      document.getElementById('atab-' + tabId).classList.remove('hidden');
+      event.currentTarget.className = "admin-nav-btn flex items-center gap-2 p-2.5 rounded-xl bg-cyan-500/15 text-cyan-300";
+      renderAdmin();
+    }
+
+    // Render User Data
+    function renderUser() {
+      document.getElementById('user-wallet-display').innerText = `Rs. ${db.user.walletBalance.toLocaleString()}`;
+      document.getElementById('user-winning-bal').innerText = `Rs. ${db.user.winningBalance.toLocaleString()}`;
+
+      // Home active draws & Marketplace draws
+      let drawsHtml = '';
+      db.draws.forEach(d => {
+        let pct = Math.round((d.soldTickets / d.totalTickets) * 100);
+        drawsHtml += `
+          <div class="bg-navycard rounded-2xl border border-cyan-500/20 overflow-hidden flex flex-col justify-between">
+            <div>
+              <div class="h-40 bg-slate-950 relative overflow-hidden">
+                <img src="${d.prizeImageUrl}" class="w-full h-full object-cover" />
+                <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-bold border border-cyan-500/30">${d.code}</span>
+              </div>
+              <div class="p-5 space-y-3">
+                <span class="text-xs font-bold text-amber-400 uppercase">${d.prizeTitle}</span>
+                <h3 class="font-bold text-white text-lg">${d.title}</h3>
+                <div>
+                  <div class="flex justify-between text-xs text-slate-400 mb-1">
+                    <span>${d.soldTickets}/${d.totalTickets} Sold</span>
+                    <span class="text-cyan-300 font-mono">${pct}%</span>
+                  </div>
+                  <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div class="bg-gradient-to-r from-cyan-400 to-amber-400 h-full" style="width: ${pct}%"></div>
+                  </div>
                 </div>
-            );
-        }
+              </div>
+            </div>
+            <div class="p-5 pt-0">
+              <button onclick="buyTicket('${d.id}')" class="w-full py-2.5 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-bold text-sm rounded-xl shadow-neon">
+                Buy Ticket (Rs. ${d.ticketPrice})
+              </button>
+            </div>
+          </div>
+        `;
+      });
+      document.getElementById('home-active-draws').innerHTML = drawsHtml;
+      document.getElementById('marketplace-draws-grid').innerHTML = drawsHtml;
 
-        function WinnersPage() {
-            const { db } = useApp();
-            return (
-                <div className="max-w-6xl mx-auto px-4 py-8">
-                    <h1 className="text-3xl font-black">Transparent <span className="neon-text">Winners Ledger</span></h1>
-                    <div className="mt-6 bg-card border border-white/10 rounded-2xl overflow-x-auto">
-                        <table className="w-full text-sm min-w-[700px]">
-                            <thead><tr className="text-left text-gray-400 border-b border-white/10"><th className="p-4">Draw ID</th><th>Draw Title</th><th>Prize</th><th>Winner</th><th>Winning Ticket</th></tr></thead>
-                            <tbody>
-                                {db.winners.map(w => (
-                                    <tr key={w.id} className="border-b border-white/5">
-                                        <td className="p-4 font-mono text-neon">{w.drawId}</td>
-                                        <td>{w.drawTitle}</td>
-                                        <td className="text-gold">{w.prize}</td>
-                                        <td>{w.winnerName}</td>
-                                        <td className="font-mono text-xs">{w.ticketId}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            );
-        }
+      // Tickets Ledger
+      let ticketsHtml = '';
+      db.tickets.forEach(t => {
+        ticketsHtml += `
+          <tr>
+            <td class="p-3 font-mono font-bold text-cyan-300">${t.ticketNumber}</td>
+            <td class="p-3 text-white">${t.drawTitle}</td>
+            <td class="p-3 text-slate-300">Rs. ${t.pricePaid}</td>
+            <td class="p-3"><span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">${t.status}</span></td>
+          </tr>
+        `;
+      });
+      document.getElementById('user-tickets-body').innerHTML = ticketsHtml || '<tr><td colspan="4" class="p-4 text-center text-slate-500">No tickets purchased yet.</td></tr>';
 
-        function AccountPage() {
-            const app = useApp();
-            const { me, db } = app;
-            const [mode, setMode] = useState("login");
-            const [phone, setPhone] = useState("");
-            const [pass, setPass] = useState("");
-            const [name, setName] = useState("");
-            const [ref, setRef] = useState("");
-            const [err, setErr] = useState("");
-            const [dep, setDep] = useState({amount:"", method:"Easypaisa", trx:"", img:"https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400"});
-            const [wd, setWd] = useState({amount:"", method:"Easypaisa", account:""});
-            const [tab, setTab] = useState("overview");
+      // Winners Ledger Table
+      let winnersHtml = '';
+      db.winners.forEach(w => {
+        winnersHtml += `
+          <tr>
+            <td class="p-4 font-mono font-bold text-cyan-300">${w.drawCode}</td>
+            <td class="p-4 font-bold text-white">${w.prize}</td>
+            <td class="p-4 text-amber-300 font-semibold">${w.winnerName}</td>
+            <td class="p-4 font-mono text-xs text-emerald-300">${w.ticketNumber}</td>
+            <td class="p-4 text-xs text-slate-400">${w.date}</td>
+          </tr>
+        `;
+      });
+      document.getElementById('winners-table-body').innerHTML = winnersHtml;
+    }
 
-            if(!me) return (
-                <div className="max-w-md mx-auto px-4 py-12">
-                    <div className="bg-card border border-white/10 rounded-2xl p-6">
-                        <h1 className="text-2xl font-black text-center">Naseeb<span className="text-neon">Zone</span></h1>
-                        <div className="flex bg-white/5 rounded-lg p-1 mt-4">
-                            <button onClick={()=>setMode("login")} className={`flex-1 py-2 rounded-md text-sm font-bold ${mode==="login"?"bg-neon text-black":""}`}>Login</button>
-                            <button onClick={()=>setMode("register")} className={`flex-1 py-2 rounded-md text-sm font-bold ${mode==="register"?"bg-neon text-black":""}`}>Register</button>
-                        </div>
-                        {err && <p className="text-red-400 text-sm mt-3">{err}</p>}
-                        <div className="space-y-3 mt-4">
-                            {mode==="register" && <>
-                                <input placeholder="Full Name" value={name} onChange={e=>setName(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
-                                <input placeholder="Referral Code (optional)" value={ref} onChange={e=>setRef(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
-                            </>}
-                            <input placeholder="Phone e.g 03001234567" value={phone} onChange={e=>setPhone(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
-                            <input type="password" placeholder="Password" value={pass} onChange={e=>setPass(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
-                            <button onClick={()=>{ const r = mode==="login" ? app.login(phone, pass) : app.register(name, phone, pass, ref); if(r!=="ok") setErr(r); }} className="w-full bg-gold text-black font-bold py-2.5 rounded-lg text-sm">{mode==="login"?"Login":"Create Account"}</button>
-                            <p className="text-xs text-gray-500 text-center">Demo User: 03001234567 / 123456</p>
-                        </div>
-                    </div>
-                </div>
-            );
+    // Render Admin Data
+    function renderAdmin() {
+      // Deposits Admin Table
+      let depHtml = '';
+      db.deposits.forEach((dep, idx) => {
+        depHtml += `
+          <tr>
+            <td class="p-3 text-white font-semibold">${dep.name}</td>
+            <td class="p-3 text-cyan-300 font-bold">Rs. ${dep.amount}</td>
+            <td class="p-3 text-slate-300">${dep.method}</td>
+            <td class="p-3 font-mono text-slate-400">${dep.trxId}</td>
+            <td class="p-3 flex gap-2">
+              <button onclick="approveDeposit(${idx})" class="px-2.5 py-1 bg-emerald-500 text-slate-950 font-bold rounded-lg text-xs">Approve</button>
+            </td>
+          </tr>
+        `;
+      });
+      document.getElementById('admin-deposits-body').innerHTML = depHtml || '<tr><td colspan="5" class="p-4 text-center text-slate-500">No pending deposits.</td></tr>';
 
-            return (
-                <div className="max-w-5xl mx-auto px-4 py-8">
-                    <div className="flex justify-between items-center"><h1 className="text-2xl font-black">My <span className="gold-text">Account</span></h1><button onClick={app.logout} className="text-sm text-red-400 border border-red-400/30 px-4 py-1.5 rounded-lg">Logout</button></div>
-                    <div className="grid grid-cols-3 gap-3 mt-4">
-                        <div className="bg-card border border-gold/30 rounded-xl p-4"><p className="text-xs text-gray-400">Balance</p><p className="font-black text-xl text-gold">{formatPKR(me.balance)}</p></div>
-                        <div className="bg-card border border-white/10 rounded-xl p-4"><p className="text-xs text-gray-400">Total Spent</p><p className="font-black text-xl">{formatPKR(me.totalSpent)}</p></div>
-                        <div className="bg-card border border-white/10 rounded-xl p-4"><p className="text-xs text-gray-400">Winnings</p><p className="font-black text-xl text-green-400">{formatPKR(me.totalWinnings)}</p></div>
-                    </div>
-                    <div className="flex gap-2 mt-6">{["overview","deposit","withdraw","tickets"].map(t=><button key={t} onClick={()=>setTab(t)} className={`px-4 py-2 rounded-lg text-sm font-bold capitalize ${tab===t?"bg-neon text-black":"bg-white/10"}`}>{t}</button>)}</div>
+      // Players Table
+      let playersHtml = '';
+      db.players.forEach(p => {
+        playersHtml += `
+          <tr>
+            <td class="p-3"><p class="font-bold text-white">${p.name}</p><p class="text-slate-500">${p.email}</p></td>
+            <td class="p-3 font-mono text-slate-300">${p.phone}</td>
+            <td class="p-3 text-cyan-300 font-bold">${p.balance}</td>
+            <td class="p-3 font-mono text-amber-300">${p.code}</td>
+          </tr>
+        `;
+      });
+      document.getElementById('admin-players-body').innerHTML = playersHtml;
 
-                    {tab==="overview" && <div className="bg-card border border-white/10 rounded-xl p-5 mt-4"><h3 className="font-bold text-gold">Deposit Instructions</h3><p className="text-sm mt-2">Send funds to Easypaisa/JazzCash: <b>{ADMIN_ACCOUNT}</b> and submit deposit proof.</p></div>}
-                    
-                    {tab==="deposit" && <div className="bg-card border border-white/10 rounded-xl p-5 mt-4 max-w-xl space-y-3">
-                        <h3 className="font-bold">Deposit Funds</h3>
-                        <input type="number" placeholder="Amount (Rs)" value={dep.amount} onChange={e=>setDep({...dep, amount:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
-                        <select value={dep.method} onChange={e=>setDep({...dep, method:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"><option>Easypaisa</option><option>JazzCash</option></select>
-                        <input placeholder="Transaction ID (TRX ID)" value={dep.trx} onChange={e=>setDep({...dep, trx:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
-                        <button onClick={()=>{ if(!dep.amount||!dep.trx) return alert("Fill all fields"); app.createDeposit(Number(dep.amount), dep.method, dep.trx, dep.img); alert("Deposit submitted!"); setDep({amount:"", method:"Easypaisa", trx:"", img:""}); }} className="w-full bg-green-500 text-black font-bold py-2.5 rounded-lg text-sm">Submit Deposit</button>
-                    </div>}
+      // Active Draws Manager for Winner Selection
+      let adminDrawsHtml = '';
+      db.draws.forEach(d => {
+        adminDrawsHtml += `
+          <div class="bg-navycard p-5 rounded-2xl border border-slate-800 space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="font-mono text-xs text-cyan-300">${d.code}</span>
+              <span class="px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 text-[10px] font-bold">${d.soldTickets}/${d.totalTickets} Sold</span>
+            </div>
+            <h3 class="font-bold text-white">${d.title}</h3>
+            <p class="text-xs text-amber-400">${d.prizeTitle}</p>
+            <button onclick="pickWinner('${d.id}')" class="w-full py-2.5 bg-amber-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-gold">
+              Draw Provably Fair Winner
+            </button>
+          </div>
+        `;
+      });
+      document.getElementById('admin-draws-manager-grid').innerHTML = adminDrawsHtml;
+    }
 
-                    {tab==="withdraw" && <div className="bg-card border border-white/10 rounded-xl p-5 mt-4 max-w-xl space-y-3">
-                        <h3 className="font-bold">Request Withdrawal</h3>
-                        <input type="number" placeholder="Amount" value={wd.amount} onChange={e=>setWd({...wd, amount:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
-                        <select value={wd.method} onChange={e=>setWd({...wd, method:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"><option>Easypaisa</option><option>JazzCash</option></select>
-                        <input placeholder="Account Number" value={wd.account} onChange={e=>setWd({...wd, account:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
-                        <button onClick={()=>{ const r=app.createWithdraw(Number(wd.amount), wd.method, wd.account); alert(r==="ok"?"Withdrawal requested!":r); }} className="w-full bg-gold text-black font-bold py-2.5 rounded-lg text-sm">Request Withdrawal</button>
-                    </div>}
+    // User Actions
+    function buyTicket(drawId) {
+      let draw = db.draws.find(d => d.id === drawId);
+      if (db.user.walletBalance < draw.ticketPrice) {
+        alert("Insufficient wallet balance! Please deposit funds in Account & Wallet tab.");
+        return;
+      }
+      db.user.walletBalance -= draw.ticketPrice;
+      draw.soldTickets += 1;
+      db.tickets.push({
+        id: 'T-' + Date.now(),
+        ticketNumber: `NZ-${draw.code}-${String(draw.soldTickets).padStart(4, '0')}-9F4A`,
+        drawTitle: draw.title,
+        pricePaid: draw.ticketPrice,
+        status: "ACTIVE"
+      });
+      alert("Ticket purchased successfully! View your unique Ticket ID in My Account.");
+      renderUser();
+    }
 
-                    {tab==="tickets" && <div className="bg-card border border-white/10 rounded-xl p-5 mt-4">
-                        <h3 className="font-bold mb-3">My Tickets</h3>
-                        {db.tickets.filter(t=>t.userId===me.id).map(t=><div key={t.id} className="flex justify-between text-sm py-2 border-b border-white/5"><span className="font-mono text-neon">{t.id}</span><span>{t.status}</span></div>)}
-                    </div>}
-                </div>
-            );
-        }
+    function submitDeposit(e) {
+      e.preventDefault();
+      let amt = Number(document.getElementById('dep-amount').value);
+      let method = document.getElementById('dep-method').value;
+      let trx = document.getElementById('dep-trx').value;
 
-        function ContactPage() {
-            return (
-                <div className="max-w-4xl mx-auto px-4 py-8">
-                    <h1 className="text-3xl font-black">Contact <span className="gold-text">Support</span></h1>
-                    <div className="bg-card border border-white/10 rounded-2xl p-6 mt-6 space-y-3">
-                        <p className="text-sm">Easypaisa / JazzCash: <b>03137648720</b></p>
-                        <p className="text-sm">Email: <b>support@naseebzone.com</b></p>
-                        <p className="text-sm">Timing: <b>9AM - 11PM PKT</b></p>
-                    </div>
-                </div>
-            );
-        }
+      db.deposits.push({
+        id: 'DEP-' + Date.now(),
+        name: db.user.name,
+        amount: amt,
+        method: method,
+        trxId: trx,
+        status: "PENDING"
+      });
+      alert("Deposit request submitted successfully! Admin will verify your TRX ID.");
+      document.getElementById('dep-amount').value = '';
+      document.getElementById('dep-trx').value = '';
+      renderUser();
+    }
 
-        // --- SECURE ADMIN PANEL ---
-        function AdminPanel() {
-            const app = useApp();
-            const { db } = app;
-            const [e, setE] = useState("");
-            const [p, setP] = useState("");
-            const [err, setErr] = useState("");
-            const [tab, setTab] = useState("finances");
-            const [drawForm, setDrawForm] = useState({title:"", prize:"", prizeValue:50000, ticketPrice:500, totalTickets:50, image:"https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800", endTime:new Date(Date.now()+86400000).toISOString().slice(0,16)});
-            const [selWinner, setSelWinner] = useState({});
+    function submitWithdrawal(e) {
+      e.preventDefault();
+      let amt = Number(document.getElementById('wd-amount').value);
+      if (amt > db.user.winningBalance) {
+        alert("Amount exceeds withdrawable winning balance.");
+        return;
+      }
+      db.user.winningBalance -= amt;
+      db.user.walletBalance -= amt;
+      alert("Withdrawal requested successfully and queued for payout!");
+      renderUser();
+    }
 
-            if(!db.isAdmin) return (
-                <div className="max-w-md mx-auto px-4 py-24">
-                    <div className="bg-card border border-white/10 rounded-2xl p-8">
-                        <h1 className="text-2xl font-black text-center">🔒 Admin Login</h1>
-                        {err && <p className="text-red-400 text-sm mt-2">{err}</p>}
-                        <input placeholder="admin@naseebzone.com" value={e} onChange={x=>setE(x.target.value)} className="w-full mt-4 bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
-                        <input type="password" placeholder="Password" value={p} onChange={x=>setP(x.target.value)} className="w-full mt-3 bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
-                        <button onClick={()=>{ const r=app.adminLogin(e,p); if(r!=="ok") setErr(r); }} className="w-full mt-4 bg-neon text-black font-bold py-2.5 rounded-lg text-sm">Secure Login</button>
-                        <p className="text-xs text-gray-500 text-center mt-3">admin@naseebzone.com / admin123</p>
-                    </div>
-                </div>
-            );
+    // Admin Actions
+    function approveDeposit(idx) {
+      let dep = db.deposits[idx];
+      db.user.walletBalance += dep.amount;
+      db.deposits.splice(idx, 1);
+      alert(`Approved Rs. ${dep.amount} deposit for ${dep.name}. Wallet credited.`);
+      renderAdmin();
+      renderUser();
+    }
 
-            return (
-                <div className="max-w-6xl mx-auto px-4 py-8">
-                    <div className="flex justify-between items-center"><h1 className="text-2xl font-black">NaseebZone <span className="text-gold">ADMIN PANEL</span></h1><button onClick={app.adminLogout} className="bg-red-500/20 text-red-300 px-4 py-1.5 rounded-lg text-sm">Logout Admin</button></div>
-                    <div className="flex gap-2 mt-4 overflow-x-auto">{["finances","draws","active","players"].map(t=><button key={t} onClick={()=>setTab(t)} className={`px-4 py-2 rounded-lg text-sm font-bold capitalize whitespace-nowrap ${tab===t?"bg-neon text-black":"bg-white/10"}`}>{t}</button>)}</div>
+    function handleCreateDraw(e) {
+      e.preventDefault();
+      let title = document.getElementById('draw-title').value;
+      let prizeTitle = document.getElementById('draw-prize-title').value;
+      let price = Number(document.getElementById('draw-price').value);
+      let total = Number(document.getElementById('draw-total').value);
+      let img = document.getElementById('draw-img').value || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80";
 
-                    {tab==="finances" && <div className="space-y-6 mt-6">
-                        <div className="bg-card border border-white/10 rounded-xl p-5">
-                            <h3 className="font-bold mb-3">Pending Deposits</h3>
-                            {db.deposits.filter(d=>d.status==="pending").map(d=>(
-                                <div key={d.id} className="flex justify-between items-center bg-black/40 p-3 rounded-lg text-sm mb-2">
-                                    <span><b>{d.userName}</b> • {formatPKR(d.amount)} • TRX: <span className="font-mono text-neon">{d.trxId}</span></span>
-                                    <div className="flex gap-2"><button onClick={()=>app.approveDeposit(d.id)} className="bg-green-500 text-black px-3 py-1 rounded font-bold">Approve</button><button onClick={()=>app.rejectDeposit(d.id)} className="bg-red-500 text-white px-3 py-1 rounded">Reject</button></div>
-                                </div>
-                            ))}
-                            {!db.deposits.filter(d=>d.status==="pending").length && <p className="text-gray-500 text-sm">No pending deposits.</p>}
-                        </div>
-                        <div className="bg-card border border-white/10 rounded-xl p-5">
-                            <h3 className="font-bold mb-3">Pending Withdrawals</h3>
-                            {db.withdraws.filter(w=>w.status==="pending").map(w=>(
-                                <div key={w.id} className="flex justify-between items-center bg-black/40 p-3 rounded-lg text-sm mb-2">
-                                    <span><b>{w.userName}</b> • {formatPKR(w.amount)} • {w.method} ({w.account})</span>
-                                    <div className="flex gap-2"><button onClick={()=>app.approveWithdraw(w.id)} className="bg-green-500 text-black px-3 py-1 rounded font-bold">Pay</button><button onClick={()=>app.rejectWithdraw(w.id)} className="bg-red-500 text-white px-3 py-1 rounded">Reject</button></div>
-                                </div>
-                            ))}
-                            {!db.withdraws.filter(w=>w.status==="pending").length && <p className="text-gray-500 text-sm">No pending withdrawals.</p>}
-                        </div>
-                    </div>}
+      let newCode = 'DRW-' + Math.floor(1000 + Math.random() * 9000);
+      db.draws.push({
+        id: newCode,
+        code: newCode,
+        title: title,
+        prizeTitle: prizeTitle,
+        ticketPrice: price,
+        totalTickets: total,
+        soldTickets: 0,
+        status: "ACTIVE",
+        prizeImageUrl: img
+      });
+      alert("Lucky draw created and published successfully!");
+      switchAdminTab('winnersmanager');
+    }
 
-                    {tab==="draws" && <div className="bg-card border border-white/10 rounded-xl p-6 mt-6 max-w-xl space-y-3">
-                        <h3 className="font-bold text-lg">Create New Draw</h3>
-                        <input placeholder="Title" value={drawForm.title} onChange={e=>setDrawForm({...drawForm, title:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
-                        <input placeholder="Prize Description" value={drawForm.prize} onChange={e=>setDrawForm({...drawForm, prize:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
-                        <div className="grid grid-cols-2 gap-3">
-                            <input type="number" placeholder="Prize Value" value={drawForm.prizeValue} onChange={e=>setDrawForm({...drawForm, prizeValue:Number(e.target.value)})} className="bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
-                            <input type="number" placeholder="Ticket Price" value={drawForm.ticketPrice} onChange={e=>setDrawForm({...drawForm, ticketPrice:Number(e.target.value)})} className="bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
-                        </div>
-                        <input placeholder="Image URL" value={drawForm.image} onChange={e=>setDrawForm({...drawForm, image:e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-sm"/>
-                        <button onClick={()=>{ if(!drawForm.title) return alert("Enter title"); app.createDraw({...drawForm, startTime:new Date().toISOString(), endTime:new Date(drawForm.endTime).toISOString()}); alert("Draw created successfully!"); }} className="w-full bg-gold text-black font-bold py-2.5 rounded-lg text-sm">Launch Draw</button>
-                    </div>}
+    function pickWinner(drawId) {
+      let idx = db.draws.findIndex(d => d.id === drawId);
+      let draw = db.draws[idx];
+      let winningTicketNum = `NZ-${draw.code}-0019-A4F2`;
+      
+      db.winners.unshift({
+        drawCode: draw.code,
+        prize: draw.prizeTitle,
+        winnerName: "Ahmed Khan",
+        ticketNumber: winningTicketNum,
+        date: "Just Now"
+      });
+      db.draws.splice(idx, 1);
+      alert(`Winner successfully drawn for ${draw.code}! Winning Ticket: ${winningTicketNum}`);
+      renderAdmin();
+      renderUser();
+    }
 
-                    {tab==="active" && <div className="space-y-4 mt-6">
-                        {db.draws.filter(d=>d.status==="active").map(d=>{
-                            const parts = db.tickets.filter(t=>t.drawId===d.id);
-                            return (
-                                <div key={d.id} className="bg-card border border-white/10 rounded-xl p-5">
-                                    <h3 className="font-bold">{d.title} ({parts.length} tickets sold)</h3>
-                                    <div className="flex gap-2 mt-3">
-                                        <select value={selWinner[d.id]||""} onChange={e=>setSelWinner({...selWinner, [d.id]: e.target.value})} className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs">
-                                            <option value="">Select ticket to win</option>
-                                            {parts.map(p=><option key={p.id} value={p.id}>{p.id} - {p.userName}</option>)}
-                                        </select>
-                                        <button onClick={()=>{ if(!selWinner[d.id]) return alert("Select ticket"); app.pickWinner(d.id, selWinner[d.id]); alert("Winner locked!"); }} className="bg-gold text-black font-bold px-4 py-2 rounded-lg text-xs">Lock Winner</button>
-                                        <button onClick={()=>alert(app.autoWinner(d.id))} className="bg-neon text-black font-bold px-4 py-2 rounded-lg text-xs">Auto Pick</button>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>}
-
-                    {tab==="players" && <div className="bg-card border border-white/10 rounded-xl p-5 mt-6 overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead><tr className="text-left text-gray-400 border-b border-white/10"><th className="p-3">Name</th><th>Phone</th><th>Balance</th></tr></thead>
-                            <tbody>{db.users.map(u=><tr key={u.id} className="border-b border-white/5"><td className="p-3">{u.name}</td><td>{u.phone}</td><td className="text-gold">{formatPKR(u.balance)}</td></tr>)}</tbody>
-                        </table>
-                    </div>}
-                </div>
-            );
-        }
-
-        // --- MAIN APP ROUTER CONTAINER ---
-        function App() {
-            const { db } = useApp();
-            const route = db.currentRoute;
-
-            return (
-                <div className="min-h-screen flex flex-col justify-between">
-                    <Navbar />
-                    <div className="flex-1">
-                        {route === "home" && <HomePage />}
-                        {route === "draws" && <DrawsPage />}
-                        {route === "winners" && <WinnersPage />}
-                        {route === "account" && <AccountPage />}
-                        {route === "contact" && <ContactPage />}
-                        {route === "admin" && <AdminPanel />}
-                    </div>
-                    <Footer />
-                </div>
-            );
-        }
-
-        ReactDOM.render(<StoreProvider><App /></StoreProvider>, document.getElementById('root'));
-        setTimeout(() => lucide.createIcons(), 100);
-    </script>
+    // Initial Render
+    window.onload = function() {
+      lucide.createIcons();
+      renderUser();
+    };
+  </script>
 </body>
 </html>
